@@ -48,7 +48,13 @@ inline qhb *qhb_create(qhi *hash)
 	if (hash->bucket_buffer_pos % QHB_BUFFER_PREALLOC_INC == 0) {
 		hash->bucket_buffer_nr++;
 		hash->bucket_buffer = realloc(hash->bucket_buffer, sizeof(qhb*) * (hash->bucket_buffer_nr + 1));
+		if (!hash->bucket_buffer) {
+			return NULL;
+		}
 		hash->bucket_buffer[hash->bucket_buffer_nr] = malloc(sizeof(qhb) * QHB_BUFFER_PREALLOC_INC);
+		if (!hash->bucket_buffer[hash->bucket_buffer_nr]) {
+			return NULL;
+		}
 		hash->bucket_buffer_pos = 0;
 	}
 	tmp = &(hash->bucket_buffer[hash->bucket_buffer_nr][hash->bucket_buffer_pos]);
