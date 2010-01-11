@@ -34,5 +34,7 @@ typedef struct _qhi {
 qhi *qhi_create(uint32_t size);
 void qhi_free(qhi *hash);
 
-int qhi_set_add(qhi *hash, uint32_t position);
-int qhi_set_exists(qhi *hash, uint32_t position);
+int qhi_set_add(qhi *hash, int32_t position);
+int qhi_set_exists(qhi *hash, int32_t position);
+
+qhi *qhi_set_load_from_file(int fd);

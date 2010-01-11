@@ -1,4 +1,8 @@
 #include <malloc.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include "quickhash.h"
 
 /**
@@ -67,6 +71,9 @@ qhi *qhi_create(uint32_t size)
 
 	if (size < 4) {
 		return NULL;
+	}
+	if (size > 1048576) {
+		size = 1048576;
 	}
 
 	tmp = malloc(sizeof(qhi));
@@ -139,7 +146,7 @@ inline uint32_t qhi_set_hash(qhi *hash, uint32_t key)
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-int qhi_set_add(qhi *hash, uint32_t key)
+int qhi_set_add(qhi *hash, int32_t key)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -180,7 +187,7 @@ int qhi_set_add(qhi *hash, uint32_t key)
  * - 1 if the element is part of the set or 0 if the element is not part of the
  *   set
  */
-int qhi_set_exists(qhi *hash, uint32_t key)
+int qhi_set_exists(qhi *hash, int32_t key)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -204,4 +211,48 @@ int qhi_set_exists(qhi *hash, uint32_t key)
 		} while(p);
 	}
 	return 0;
+}
+
+/**
+ * Loads a set from a file pointed to by the file descriptor
+ *
+ * Parameters:
+ * - fd: a file descriptor that is suitable for reading from
+ *
+ * Returns:
+ * - A new hash, or NULL upon failure
+ */
+qhi *qhi_set_load_from_file(int fd)
+{
+	struct stat finfo;
+	uint32_t    nr_of_elements, elements_read = 0;
+	uint32_t    i, bytes_read;
+	int32_t     key_buffer[1024];
+	qhi        *tmp;
+
+	if (fstat(fd, &finfo) != 0) {
+		return NULL;
+	}
+
+	// if the filesize is not an increment of 4, abort
+	if (finfo.st_size % 4 != 0) {
+		return NULL;
+	}
+
+	// create the set
+	nr_of_elements = finfo.st_size / 4;
+	tmp = qhi_create(nr_of_elements);
+	if (!tmp) {
+		return NULL;
+	}
+
+	// read the elements and add them to the set
+	do {
+		bytes_read = read(fd, &key_buffer, sizeof(key_buffer));
+		for (i = 0; i < bytes_read / 4; i++) {
+			qhi_set_add(tmp, key_buffer[i]);
+		}
+		elements_read += (bytes_read / 4);
+	} while (elements_read < nr_of_elements);
+	return tmp;
 }
