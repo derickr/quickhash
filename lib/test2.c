@@ -23,4 +23,6 @@ int main(int argc, char *argv[])
 	printf("done checking\n");
 
 	qhi_free(h);
+
+	return 0;
 }

@@ -17,4 +17,6 @@ int main(void)
 	printf("exists: %d\n", qhi_set_exists(h, 53));
 
 	qhi_free(h);
+
+	return 0;
 }
