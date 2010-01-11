@@ -27,12 +27,16 @@ static uint32_t jenkins(uint32_t key)
     return key;
 }
 
+/**
+ * Defines the number of buckets to pre-allocate
+ */
 #define QHB_BUFFER_PREALLOC_INC 1024
+
 /**
  * Allocates a hash bucket.
  *
- * It is separated into its own function so that we potentionally can do
- * something clever here and pre-allocate a whole lot of stuff.
+ * The algorithm allocates memory for QHB_BUFFER_PREALLOC_INC buckets at the
+ * same time to avoid having too many allocs and frees.
  *
  * Returns:
  * - A newly allocated hash bucket or NULL upon allocation failure
