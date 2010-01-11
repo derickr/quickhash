@@ -2,20 +2,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "quickhash.h"
-
-/**
- * Generic integer set implementation
- *
- * mem use:
- * 64bit machine: 16*size + 24*item + 24
- * 32bit machine:  8*size + 12*item + 12
- *
- * allocations:
- * 2 + item
- */
-
 
 /**
  * Hashes the key
@@ -38,6 +27,7 @@ static uint32_t jenkins(uint32_t key)
     return key;
 }
 
+#define QHB_BUFFER_PREALLOC_INC 1024
 /**
  * Allocates a hash bucket.
  *
@@ -47,9 +37,19 @@ static uint32_t jenkins(uint32_t key)
  * Returns:
  * - A newly allocated hash bucket or NULL upon allocation failure
  */
-inline qhb *qhb_create(void)
+inline qhb *qhb_create(qhi *hash)
 {
-	qhb *tmp = calloc(sizeof(qhb), 1);
+	qhb *tmp = NULL;
+
+	if (hash->bucket_buffer_pos % QHB_BUFFER_PREALLOC_INC == 0) {
+		hash->bucket_buffer_nr++;
+		hash->bucket_buffer = realloc(hash->bucket_buffer, sizeof(qhb*) * (hash->bucket_buffer_nr + 1));
+		hash->bucket_buffer[hash->bucket_buffer_nr] = malloc(sizeof(qhb) * QHB_BUFFER_PREALLOC_INC);
+		hash->bucket_buffer_pos = 0;
+	}
+	tmp = &(hash->bucket_buffer[hash->bucket_buffer_nr][hash->bucket_buffer_pos]);
+	hash->bucket_buffer_pos++;
+
 	return tmp;
 }
 
@@ -85,6 +85,10 @@ qhi *qhi_create(uint32_t size)
 	tmp->bucket_count = size;
 	tmp->bucket_list = calloc(sizeof(qhl) * size, 1);
 
+	tmp->bucket_buffer_nr   = -1;
+	tmp->bucket_buffer_pos  = 0;
+	tmp->bucket_buffer      = NULL;
+
 	if (!tmp->bucket_list) {
 		free(tmp);
 		return NULL;
@@ -103,19 +107,11 @@ void qhi_free(qhi *hash)
 {
 	uint32_t idx;
 
-	for (idx = 0; idx < hash->bucket_count; idx++)	{
-		qhl *list = &(hash->bucket_list[idx]);
-		qhb *p = list->head;
-		qhb *n;
-
-		if (p) {
-			while(p) {
-				n = p->next;
-				free(p);
-				p = n;
-			}
-		}
+	for (idx = 0; idx <= hash->bucket_buffer_nr; idx++) {
+		free(hash->bucket_buffer[idx]);
 	}
+
+	free(hash->bucket_buffer);
 	free(hash->bucket_list);
 	free(hash);
 }
@@ -157,11 +153,12 @@ int qhi_set_add(qhi *hash, int32_t key)
 	list = &(hash->bucket_list[idx]);
 
 	// create new bucket
-	bucket = qhb_create();
+	bucket = qhb_create(hash);
 	if (!bucket) {
 		return 0;
 	}
 	bucket->key = key;
+	bucket->next = NULL;
 
 	// add bucket to list
 	if (list->head == NULL) {

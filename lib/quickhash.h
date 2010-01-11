@@ -28,6 +28,11 @@ typedef struct _qhi {
 	qha_t     hasher; // hash algorithm
 	uint32_t  bucket_count;
 	qhl      *bucket_list;
+
+	// for pre-allocating buckets
+	int32_t   bucket_buffer_nr;
+	uint32_t  bucket_buffer_pos;
+	qhb     **bucket_buffer;
 } qhi;
 
 
