@@ -45,6 +45,9 @@ typedef struct _qhi {
 	qhb     **bucket_buffer;
 
 	qho      *options;
+#if DEBUG
+	uint32_t  collisions;
+#endif
 } qhi;
 
 

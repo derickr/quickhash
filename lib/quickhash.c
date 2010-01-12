@@ -114,6 +114,10 @@ qhi *qhi_create(qho *options)
 
 	tmp->options = options;
 
+#if DEBUG
+	tmp->collisions = 0;
+#endif
+
 	return tmp;
 }
 
@@ -127,6 +131,9 @@ void qhi_free(qhi *hash)
 {
 	uint32_t idx;
 
+#if DEBUG
+	printf("Collisions: %u\n", hash->collisions);
+#endif
 	for (idx = 0; idx <= hash->bucket_buffer_nr; idx++) {
 		free(hash->bucket_buffer[idx]);
 	}
@@ -223,6 +230,9 @@ int qhi_set_add(qhi *hash, int32_t key)
 		// following bucked in a list
 		list->tail->next = bucket;
 		list->tail = bucket;
+#if DEBUG
+		hash->collisions++;
+#endif
 	}
 	return 1;
 }
@@ -305,6 +315,9 @@ qhi *qhi_set_load_from_file(int fd, qho *options)
 
 	// override the nr of bucket lists as we know better
 	options->size = nr_of_elements;
+#if DEBUG
+	printf("Picking size: %u\n", options->size);
+#endif
 
 	// create the set
 	tmp = qhi_create(options);

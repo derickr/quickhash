@@ -1,4 +1,4 @@
-CFLAGS=-Wall -O3 -ggdb3
+CFLAGS=-Wall -O3 -ggdb3 -DDEBUG=1
 
 all: test1 test2 test3
 
