@@ -5,6 +5,6 @@ PHP_ARG_ENABLE(quickhash, whether to enable quickhash support,
 [  --enable-quickhash      Enable quickhash support])
 
 if test "$PHP_QUICKHASH" != "no"; then
-  PHP_NEW_EXTENSION(quickhash, quickhash.c lib/quickhash.c, $ext_shared,,,,yes)
+  PHP_NEW_EXTENSION(quickhash, quickhash.c qh_intset.c lib/quickhash.c, $ext_shared,,,,yes)
   PHP_SUBST(QUICKHASH_SHARED_LIBADD)
 fi
