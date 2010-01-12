@@ -143,6 +143,35 @@ inline uint32_t qhi_set_hash(qhi *hash, uint32_t key)
 }
 
 /**
+ * Internal: checks whether a key exists in a specific list
+ *
+ * Parameters:
+ * - list: the list belonging to the index of the hashed key
+ * - key: the element's key
+ *
+ * Returns:
+ * - 1 if the key exists in the list, 0 if not
+ */
+static int find_entry_in_list(qhl *list, int32_t key)
+{
+	if (!list->head) {
+		// there is no bucket list for this hashed key
+		return 0;
+	} else {
+		qhb *p = list->head;
+
+		// loop over the elements in this bucket list to see if the key exists
+		do {
+			if (p->key == key) {
+				return 1;
+			}
+			p = p->next;
+		} while(p);
+	}
+	return 0;
+}
+
+/**
  * Adds a new element to the hash
  *
  * Parameters:
@@ -203,21 +232,7 @@ int qhi_set_exists(qhi *hash, int32_t key)
 	idx = qhi_set_hash(hash, key);
 	list = &(hash->bucket_list[idx]);
 
-	if (!list->head) {
-		// there is no bucket list for this hashed key
-		return 0;
-	} else {
-		qhb *p = list->head;
-
-		// loop over the elements in this bucket list to see if the key exists
-		do {
-			if (p->key == key) {
-				return 1;
-			}
-			p = p->next;
-		} while(p);
-	}
-	return 0;
+	return find_entry_in_list(list, key);
 }
 
 /**
