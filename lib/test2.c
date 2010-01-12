@@ -7,10 +7,14 @@
 int main(int argc, char *argv[])
 {
 	qhi *h;
-	int fd;
+	qho  options;
+	int  fd;
+
+	options.size = 1048576;
+	options.check_for_dupes = 1;
 
 	fd = open(argv[1] ,O_RDONLY);
-	h = qhi_set_load_from_file(fd);
+	h = qhi_set_load_from_file(fd, &options);
 
 	printf("done loading\n");
 	printf("exists: %d\n", qhi_set_exists(h, 1623693378));

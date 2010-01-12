@@ -22,6 +22,16 @@ typedef struct _qhl {
 } qhl;
 
 /**
+ * Contains options for the hashes:
+ * - size: the number of hash bucket lists to create
+ * - check_for_dupes: whether insertions should be checked for duplicates
+ */
+typedef struct _qho {
+	uint32_t size;
+	char     check_for_dupes;
+} qho;
+
+/**
  * Integer hash type
  */
 typedef struct _qhi {
@@ -33,14 +43,16 @@ typedef struct _qhi {
 	int32_t   bucket_buffer_nr;
 	uint32_t  bucket_buffer_pos;
 	qhb     **bucket_buffer;
+
+	qho      *options;
 } qhi;
 
 
-qhi *qhi_create(uint32_t size);
+qhi *qhi_create(qho *options);
 void qhi_free(qhi *hash);
 
 int qhi_set_add(qhi *hash, int32_t position);
 int qhi_set_exists(qhi *hash, int32_t position);
 
-qhi *qhi_set_load_from_file(int fd);
+qhi *qhi_set_load_from_file(int fd, qho *options);
 int qhi_set_save_to_file(int fd, qhi *hash);

@@ -3,7 +3,12 @@
 
 int main(void)
 {
-	qhi *h = qhi_create(2000);
+	qhi *h;
+	qho  options;
+	
+	options.size = 2000;
+	options.check_for_dupes = 1;
+	h = qhi_create(&options);
 
 	printf("exists: %d\n", qhi_set_exists(h, 7));
 	qhi_set_add(h, 1);

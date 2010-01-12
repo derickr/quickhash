@@ -67,22 +67,30 @@ inline qhb *qhb_create(qhi *hash)
  * Creates a new integer quick hash
  *
  * Parameters:
- * - size: the number of buckets to use. A typical value to pick here is to
- *         pick the expected amount of set elements.
+ * - options: the options to create the hash with. This structure contains at
+ *   least the nr of hash buckets, and whether set additions should be checked
+ *   for duplicates. See the description of qho for a full list of options.
  *
  * Returns:
  * - a pointer to the hash, or NULL if:
  *   - upon memory allocation failures.
  *   - size < 4
  */
-qhi *qhi_create(uint32_t size)
+qhi *qhi_create(qho *options)
 {
-	qhi *tmp;
+	qhi      *tmp;
+	uint32_t  size;
 
-	if (size < 4) {
+	if (options == NULL) {
 		return NULL;
 	}
-	if (size > 1048576) {
+
+	if (options->size < 4) {
+		return NULL;
+	}
+	if (options->size < 1048576) {
+		size = options->size;
+	} else {
 		size = 1048576;
 	}
 
@@ -103,6 +111,8 @@ qhi *qhi_create(uint32_t size)
 		free(tmp);
 		return NULL;
 	}
+
+	tmp->options = options;
 
 	return tmp;
 }
@@ -191,6 +201,11 @@ int qhi_set_add(qhi *hash, int32_t key)
 	idx = qhi_set_hash(hash, key);
 	list = &(hash->bucket_list[idx]);
 
+	// check if we already have the key in the list if requested
+	if (hash->options->check_for_dupes && find_entry_in_list(list, key)) {
+		return 0;
+	}
+
 	// create new bucket
 	bucket = qhb_create(hash);
 	if (!bucket) {
@@ -240,11 +255,14 @@ int qhi_set_exists(qhi *hash, int32_t key)
  *
  * Parameters:
  * - fd: a file descriptor that is suitable for reading from
+ * - options: the options to create the hash with. This structure contains at
+ *   least the nr of hash buckets, and whether set additions should be checked
+ *   for duplicates. See the description of qho for a full list of options.
  *
  * Returns:
  * - A new hash, or NULL upon failure
  */
-qhi *qhi_set_load_from_file(int fd)
+qhi *qhi_set_load_from_file(int fd, qho *options)
 {
 	struct stat finfo;
 	uint32_t    nr_of_elements, elements_read = 0;
@@ -260,10 +278,13 @@ qhi *qhi_set_load_from_file(int fd)
 	if (finfo.st_size % 4 != 0) {
 		return NULL;
 	}
+	nr_of_elements = finfo.st_size / 4;
+
+	// override the nr of bucket lists as we know better
+	options->size = nr_of_elements;
 
 	// create the set
-	nr_of_elements = finfo.st_size / 4;
-	tmp = qhi_create(nr_of_elements);
+	tmp = qhi_create(options);
 	if (!tmp) {
 		return NULL;
 	}

@@ -8,10 +8,14 @@
 int main(int argc, char *argv[])
 {
 	qhi *h;
-	int fd;
+	qho  options;
+	int  fd;
+
+	options.size = 1048576;
+	options.check_for_dupes = 1;
 
 	fd = open(argv[1] ,O_RDONLY);
-	h = qhi_set_load_from_file(fd);
+	h = qhi_set_load_from_file(fd, &options);
 	close(fd);
 
 	printf("done loading\n");
