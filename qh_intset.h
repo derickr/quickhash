@@ -15,7 +15,7 @@
    | Authors: Derick Rethans <derick@derickrethans.nl>                    |
    +----------------------------------------------------------------------+
  */
-/* $Id: quickhash.c,v 1.40 2009-03-30 18:36:55 derick Exp $ */
+/* $Id$ */
 
 #ifndef PHP_QUICKHASH_INTSET_H
 #define PHP_QUICKHASH_INTSET_H
