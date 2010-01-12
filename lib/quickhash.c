@@ -101,12 +101,12 @@ qhi *qhi_create(qho *options)
 
 	tmp->hasher = jenkins;
 	tmp->bucket_count = size;
+
+	tmp->bucket_buffer_nr  = -1;
+	tmp->bucket_buffer_pos = 0;
+	tmp->bucket_buffer     = NULL;
+
 	tmp->bucket_list = calloc(sizeof(qhl) * size, 1);
-
-	tmp->bucket_buffer_nr   = -1;
-	tmp->bucket_buffer_pos  = 0;
-	tmp->bucket_buffer      = NULL;
-
 	if (!tmp->bucket_list) {
 		free(tmp);
 		return NULL;
