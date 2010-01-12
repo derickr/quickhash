@@ -251,6 +251,29 @@ int qhi_set_exists(qhi *hash, int32_t key)
 }
 
 /**
+ * Adds elements contained in a buffer to set
+ *
+ * Parameters:
+ * - hash: the set to add elements to
+ * - buffer: the buffer containing the keys
+ * - nr_of_elements: the number of elements in the buffer
+ *
+ * Returns:
+ * - The number of elements that were added to the set. This number can be less
+ *   than the number of elements in the buffer because de-duping might happen.
+ */
+uint32_t qhi_set_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t nr_of_elements)
+{
+	uint32_t i;
+	uint32_t added = 0;
+
+	for (i = 0; i < nr_of_elements; i++) {
+		added += qhi_set_add(hash, buffer[i]);
+	}
+	return added;
+}
+
+/**
  * Loads a set from a file pointed to by the file descriptor
  *
  * Parameters:
@@ -266,7 +289,7 @@ qhi *qhi_set_load_from_file(int fd, qho *options)
 {
 	struct stat finfo;
 	uint32_t    nr_of_elements, elements_read = 0;
-	uint32_t    i, bytes_read;
+	uint32_t    bytes_read;
 	int32_t     key_buffer[1024];
 	qhi        *tmp;
 
@@ -292,9 +315,7 @@ qhi *qhi_set_load_from_file(int fd, qho *options)
 	// read the elements and add them to the set
 	do {
 		bytes_read = read(fd, &key_buffer, sizeof(key_buffer));
-		for (i = 0; i < bytes_read / 4; i++) {
-			qhi_set_add(tmp, key_buffer[i]);
-		}
+		qhi_set_add_elements_from_buffer(tmp, key_buffer, bytes_read / 4);
 		elements_read += (bytes_read / 4);
 	} while (elements_read < nr_of_elements);
 	return tmp;
