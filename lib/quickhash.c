@@ -129,7 +129,7 @@ qhi *qhi_create(qho *options)
  */
 void qhi_free(qhi *hash)
 {
-	uint32_t idx;
+	int32_t idx;
 
 #if DEBUG
 	printf("Collisions: %u\n", hash->collisions);
