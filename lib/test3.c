@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 	options.size = 1048576;
 	options.check_for_dupes = 1;
 
-	fd = open(argv[1] ,O_RDONLY);
+	fd = open(argv[1], O_RDONLY);
 	h = qhi_set_load_from_file(fd, &options);
 	close(fd);
 
