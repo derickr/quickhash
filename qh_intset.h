@@ -29,6 +29,9 @@ struct _php_qh_intset_obj {
 	qhi          *hash;
 };
 
+/* Bitfield for hash options */
+#define QH_NO_DUPLICATES 1
+
 PHP_METHOD(QuickHashIntSet, __construct);
 PHP_METHOD(QuickHashIntSet, add);
 PHP_METHOD(QuickHashIntSet, exists);

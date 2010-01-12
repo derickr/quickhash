@@ -63,6 +63,8 @@ void qh_register_class_intset(TSRMLS_D)
 	ce_intset.create_object = qh_object_new_intset;
 	qh_ce_intset = zend_register_internal_class_ex(&ce_intset, NULL, NULL TSRMLS_CC);
 	memcpy(&qh_object_handlers_intset, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+
+	zend_declare_class_constant_long(qh_ce_intset, "CHECK_FOR_DUPES", sizeof("CHECK_FOR_DUPES") - 1, QH_NO_DUPLICATES TSRMLS_CC);
 }
 
 static inline zend_object_value qh_object_new_intset_ex(zend_class_entry *class_type, php_qh_intset_obj **ptr TSRMLS_DC)
@@ -95,15 +97,42 @@ static void qh_object_free_storage_intset(void *object TSRMLS_DC)
 {
 	php_qh_intset_obj *intern = (php_qh_intset_obj *) object;
 
-	/* internal cleanup */
+	if (intern->hash) {
+		efree(intern->hash->options);
+		qhi_free(intern->hash);
+	}
 
 	zend_object_std_dtor(&intern->std TSRMLS_CC);
 	efree(object);
 }
 
+static int qh_intset_initialize(php_qh_intset_obj *obj, long size, long flags TSRMLS_DC)
+{
+	qho *options = emalloc(sizeof(qho));
+
+	options->size = size;
+	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
+
+	obj->hash = qhi_create(options);
+	if (obj->hash == NULL) {
+		efree(options);
+		return 0;
+	}
+	return 1;
+}
 
 PHP_METHOD(QuickHashIntSet, __construct)
 {
+	long size;
+	long options = 0;
+
+	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &size, &options) == SUCCESS) {
+		if (!qh_intset_initialize(zend_object_store_get_object(getThis() TSRMLS_CC), size, options TSRMLS_CC)) {
+			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not initialize set.");
+		}
+	}
+	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
 
 PHP_METHOD(QuickHashIntSet, add)
