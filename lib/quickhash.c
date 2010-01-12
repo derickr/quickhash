@@ -263,3 +263,51 @@ qhi *qhi_set_load_from_file(int fd)
 	} while (elements_read < nr_of_elements);
 	return tmp;
 }
+
+/**
+ * Saves a set to a file point to by the file descriptor
+ *
+ * Parameters:
+ * - hash: the set to write
+ * - fd: a file descriptor that is suitable for reading to
+ *
+ * Returns:
+ * - 1 on success, and 0 on failure
+ */
+int qhi_set_save_to_file(int fd, qhi *hash)
+{
+	uint32_t    idx;
+	uint32_t    elements_in_buffer = 0;
+	int32_t     key_buffer[1024];
+
+	for (idx = 0; idx < hash->bucket_count; idx++)	{
+		qhl *list = &(hash->bucket_list[idx]);
+		qhb *p = list->head;
+		qhb *n;
+
+		if (p) {
+			while(p) {
+				n = p->next;
+
+				key_buffer[elements_in_buffer] = p->key;
+				elements_in_buffer++;
+
+				if (elements_in_buffer == 1024) {
+					if (write(fd, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+						return 0;
+					}
+					elements_in_buffer = 0;
+				}
+
+				p = n;
+			}
+		}
+	}
+
+	if (elements_in_buffer > 0) {
+		if (write(fd, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+			return 0;
+		}
+	}
+	return 1;
+}

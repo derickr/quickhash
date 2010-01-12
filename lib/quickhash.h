@@ -43,3 +43,4 @@ int qhi_set_add(qhi *hash, int32_t position);
 int qhi_set_exists(qhi *hash, int32_t position);
 
 qhi *qhi_set_load_from_file(int fd);
+int qhi_set_save_to_file(int fd, qhi *hash);
