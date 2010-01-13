@@ -137,8 +137,26 @@ PHP_METHOD(QuickHashIntSet, __construct)
 
 PHP_METHOD(QuickHashIntSet, add)
 {
+	zval              *object;
+	php_qh_intset_obj *intset_obj;
+	long               key;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_intset, &key) == FAILURE) {
+		RETURN_FALSE;
+	}
+	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	RETURN_BOOL(qhi_set_add(intset_obj->hash, key));
 }
 
 PHP_METHOD(QuickHashIntSet, exists)
 {
+	zval              *object;
+	php_qh_intset_obj *intset_obj;
+	long               key;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_intset, &key) == FAILURE) {
+		RETURN_FALSE;
+	}
+	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	RETURN_BOOL(qhi_set_exists(intset_obj->hash, key));
 }
