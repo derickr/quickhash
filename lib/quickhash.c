@@ -75,6 +75,7 @@ qho *qho_create(void)
 
 	tmp->size = 1024;
 	tmp->check_for_dupes = 0;
+	return tmp;
 }
 
 /**
