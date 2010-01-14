@@ -1,3 +1,6 @@
+- Split out options generation into a helper function so we can provide defaults.
+- Split out option parsing in the php extension to a seperate func for re-use.
+- Allow different allocation methods for the backend code.
 - Strip out writing/collecting just like I did with loading so that other
   writers (like PHP streams) can be used.
 - Check out other hashing algorithms depending on what stats show.
