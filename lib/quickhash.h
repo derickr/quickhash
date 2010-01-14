@@ -51,6 +51,9 @@ typedef struct _qhi {
 } qhi;
 
 
+qho *qho_create(void);
+void qho_free(qho *options);
+
 qhi *qhi_create(qho *options);
 void qhi_free(qhi *hash);
 

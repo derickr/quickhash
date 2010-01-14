@@ -64,6 +64,31 @@ inline qhb *qhb_create(qhi *hash)
 }
 
 /**
+ * Creates a new options struct and sets defaults
+ *
+ * Returns:
+ * - An options struct with default values.
+ */
+qho *qho_create(void)
+{
+	qho *tmp = malloc(sizeof(qho));
+
+	tmp->size = 1024;
+	tmp->check_for_dupes = 0;
+}
+
+/**
+ * Frees an options struct
+ *
+ * Parameters:
+ * - options: the options struct to free
+ */
+void qho_free(qho *options)
+{
+	free(options);
+}
+
+/**
  * Creates a new integer quick hash
  *
  * Parameters:

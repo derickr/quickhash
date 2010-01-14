@@ -106,7 +106,7 @@ static void qh_object_free_storage_intset(void *object TSRMLS_DC)
 	php_qh_intset_obj *intern = (php_qh_intset_obj *) object;
 
 	if (intern->hash) {
-		efree(intern->hash->options);
+		qho_free(intern->hash->options);
 		qhi_free(intern->hash);
 	}
 
@@ -116,14 +116,14 @@ static void qh_object_free_storage_intset(void *object TSRMLS_DC)
 
 static int qh_intset_initialize(php_qh_intset_obj *obj, long size, long flags TSRMLS_DC)
 {
-	qho *options = emalloc(sizeof(qho));
+	qho *options = qho_create();
 
 	options->size = size;
 	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
 
 	obj->hash = qhi_create(options);
 	if (obj->hash == NULL) {
-		efree(options);
+		qho_free(options);
 		return 0;
 	}
 	return 1;
@@ -175,28 +175,28 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 	uint32_t           nr_of_elements, elements_read = 0;
 	uint32_t           bytes_read;
 	int32_t            key_buffer[1024];
-	qho               *options = emalloc(sizeof(qho));
+	qho               *options = qho_create();
 
 	// deal with options
 	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
 
 	// obtain the filesize
 	if (php_stream_stat(stream, &finfo) != 0) {
-		efree(options);
+		qho_free(options);
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not obtain file information");
 		return 0;
 	}
 
 	// check whether we have a real file (and not a directory or something)
 	if (!S_ISREG(finfo.sb.st_mode)) {
-		efree(options);
+		qho_free(options);
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is not a normal file");
 		return 0;
 	}
 
 	// if the filesize is not an increment of 4, abort
 	if (finfo.sb.st_size % 4 != 0) {
-		efree(options);
+		qho_free(options);
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format (not a multiple of 4 bytes)");
 		return 0;
 	}
@@ -208,7 +208,7 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 	// create the hash
 	obj->hash = qhi_create(options);
 	if (obj->hash == NULL) {
-		efree(options);
+		qho_free(options);
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set");
 		return 0;
 	}
