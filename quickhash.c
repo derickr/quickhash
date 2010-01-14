@@ -26,6 +26,7 @@
 #include "php_globals.h"
 
 #include "qh_intset.h"
+#include "quickhash.h"
 
 function_entry quickhash_functions[] = {
 	{NULL, NULL, NULL}
@@ -65,7 +66,7 @@ static void quickhash_init_globals(zend_quickhash_globals *quickhash_globals)
 	/* Empty */
 }
 
-static zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC)
+zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC)
 {
 	Z_TYPE_P(object) = IS_OBJECT;
 	object_init_ex(object, pce);

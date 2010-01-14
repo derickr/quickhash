@@ -20,6 +20,7 @@
 #include "php.h"
 #include "zend.h"
 #include "zend_API.h"
+#include "quickhash.h"
 #include "qh_intset.h"
 
 zend_class_entry *qh_ce_intset;
@@ -34,6 +35,7 @@ zend_object_handlers qh_object_handlers_intset;
 static void qh_object_free_storage_intset(void *object TSRMLS_DC);
 static zend_object_value qh_object_new_intset(zend_class_entry *class_type TSRMLS_DC);
 
+/* Reflection Information Structs */
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_construct, 0, 0, 1)
 	ZEND_ARG_INFO(0, size)
 	ZEND_ARG_INFO(0, options)
@@ -47,11 +49,17 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_exists, 0, 0, 1)
 	ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_load_from_file, 0, 0, 1)
+	ZEND_ARG_INFO(0, filename)
+	ZEND_ARG_INFO(0, options)
+ZEND_END_ARG_INFO()
 
+/* Class methods definition */
 zend_function_entry qh_funcs_intset[] = {
-	PHP_ME(QuickHashIntSet, __construct, arginfo_qh_intset_construct, ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntSet, add,         arginfo_qh_intset_add,       ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntSet, exists,      arginfo_qh_intset_exists,    ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, __construct,  arginfo_qh_intset_construct,      ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, add,          arginfo_qh_intset_add,            ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, exists,       arginfo_qh_intset_exists,         ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, loadFromFile, arginfo_qh_intset_load_from_file, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	{NULL, NULL, NULL}
 };
 
@@ -159,4 +167,78 @@ PHP_METHOD(QuickHashIntSet, exists)
 	}
 	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
 	RETURN_BOOL(qhi_set_exists(intset_obj->hash, key));
+}
+
+static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_stream *stream, int filename_len, long flags TSRMLS_DC)
+{
+	php_stream_statbuf finfo;
+	uint32_t           nr_of_elements, elements_read = 0;
+	uint32_t           bytes_read;
+	int32_t            key_buffer[1024];
+	qho               *options = emalloc(sizeof(qho));
+
+	// deal with options
+	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
+
+	// obtain the filesize
+	if (php_stream_stat(stream, &finfo) != 0) {
+		efree(options);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not obtain file information");
+		return 0;
+	}
+
+	// check whether we have a real file (and not a directory or something)
+	if (!S_ISREG(finfo.sb.st_mode)) {
+		efree(options);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is not a normal file");
+		return 0;
+	}
+
+	// if the filesize is not an increment of 4, abort
+	if (finfo.sb.st_size % 4 != 0) {
+		efree(options);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format (not a multiple of 4 bytes)");
+		return 0;
+	}
+	nr_of_elements = finfo.sb.st_size / 4;
+
+	// override the nr of bucket lists as we know better
+	options->size = nr_of_elements;
+
+	// create the hash
+	obj->hash = qhi_create(options);
+	if (obj->hash == NULL) {
+		efree(options);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set");
+		return 0;
+	}
+
+	// read the elements and add them to the set
+	do {
+		bytes_read = php_stream_read(stream, &key_buffer, sizeof(key_buffer));
+		qhi_set_add_elements_from_buffer(obj->hash, key_buffer, bytes_read / 4);
+		elements_read += (bytes_read / 4);
+	} while (elements_read < nr_of_elements);
+	return nr_of_elements;
+}
+
+PHP_METHOD(QuickHashIntSet, loadFromFile)
+{
+	char *filename;
+	int   filename_len;
+	long  options = 0;
+	php_stream *stream;
+
+	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &filename, &filename_len, &options) == FAILURE) {
+		return;
+	}
+
+	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
+	stream = php_stream_open_wrapper(filename, "r", IGNORE_PATH | REPORT_ERRORS, NULL);
+	if (stream) {
+		uint32_t added_elements = qh_intset_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, filename_len, options);
+		php_stream_close(stream);
+	}
+	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
