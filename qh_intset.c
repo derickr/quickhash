@@ -54,12 +54,17 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_load_from_file, 0, 0, 1)
 	ZEND_ARG_INFO(0, options)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_save_to_file, 0, 0, 1)
+	ZEND_ARG_INFO(0, filename)
+ZEND_END_ARG_INFO()
+
 /* Class methods definition */
 zend_function_entry qh_funcs_intset[] = {
 	PHP_ME(QuickHashIntSet, __construct,  arginfo_qh_intset_construct,      ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, add,          arginfo_qh_intset_add,            ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, exists,       arginfo_qh_intset_exists,         ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, loadFromFile, arginfo_qh_intset_load_from_file, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, saveToFile,   arginfo_qh_intset_save_to_file,   ZEND_ACC_PUBLIC)
 	{NULL, NULL, NULL}
 };
 
@@ -181,7 +186,7 @@ PHP_METHOD(QuickHashIntSet, exists)
 	RETURN_BOOL(qhi_set_exists(intset_obj->hash, key));
 }
 
-static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_stream *stream, int filename_len, long flags TSRMLS_DC)
+static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_stream *stream, long flags TSRMLS_DC)
 {
 	php_stream_statbuf finfo;
 	uint32_t           nr_of_elements, elements_read = 0;
@@ -249,7 +254,69 @@ PHP_METHOD(QuickHashIntSet, loadFromFile)
 	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
 	stream = php_stream_open_wrapper(filename, "r", IGNORE_PATH | REPORT_ERRORS, NULL);
 	if (stream) {
-		uint32_t added_elements = qh_intset_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, filename_len, options);
+		uint32_t added_elements = qh_intset_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, options);
+		php_stream_close(stream);
+	}
+	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+}
+
+int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
+{
+	uint32_t    idx;
+	uint32_t    elements_in_buffer = 0;
+	int32_t     key_buffer[1024];
+	qhi        *hash = obj->hash;
+
+	for (idx = 0; idx < hash->bucket_count; idx++)	{
+		qhl *list = &(hash->bucket_list[idx]);
+		qhb *p = list->head;
+		qhb *n;
+
+		if (p) {
+			while(p) {
+				n = p->next;
+
+				key_buffer[elements_in_buffer] = p->key;
+				elements_in_buffer++;
+
+				if (elements_in_buffer == 1024) {
+					if (php_stream_write(stream, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+						return 0;
+					}
+					elements_in_buffer = 0;
+				}
+
+				p = n;
+			}
+		}
+	}
+
+	if (elements_in_buffer > 0) {
+		if (php_stream_write(stream, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
+PHP_METHOD(QuickHashIntSet, saveToFile)
+{
+	char *filename;
+	int   filename_len;
+	zval              *object;
+	php_qh_intset_obj *intset_obj;
+	php_stream *stream;
+
+	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Os", &object, qh_ce_intset, &filename, &filename_len) == FAILURE) {
+		return;
+	}
+
+	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	stream = php_stream_open_wrapper(filename, "w", IGNORE_PATH | REPORT_ERRORS, NULL);
+
+	if (stream) {
+		qh_intset_save_to_file(stream, intset_obj);
 		php_stream_close(stream);
 	}
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);

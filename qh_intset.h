@@ -37,6 +37,7 @@ PHP_METHOD(QuickHashIntSet, __construct);
 PHP_METHOD(QuickHashIntSet, add);
 PHP_METHOD(QuickHashIntSet, exists);
 PHP_METHOD(QuickHashIntSet, loadFromFile);
+PHP_METHOD(QuickHashIntSet, saveToFile);
 
 void qh_register_class_intset(TSRMLS_D);
 
