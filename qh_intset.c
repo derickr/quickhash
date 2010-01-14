@@ -20,8 +20,8 @@
 #include "php.h"
 #include "zend.h"
 #include "zend_API.h"
-#include "quickhash.h"
 #include "qh_intset.h"
+#include "quickhash.h"
 
 zend_class_entry *qh_ce_intset;
 
@@ -73,6 +73,7 @@ void qh_register_class_intset(TSRMLS_D)
 	memcpy(&qh_object_handlers_intset, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	zend_declare_class_constant_long(qh_ce_intset, "CHECK_FOR_DUPES", sizeof("CHECK_FOR_DUPES") - 1, QH_NO_DUPLICATES TSRMLS_CC);
+	zend_declare_class_constant_long(qh_ce_intset, "DO_NOT_USE_ZEND_ALLOC",  sizeof("DO_NOT_USE_ZEND_ALLOC") - 1, QH_DO_NOT_USE_ZEND_ALLOC TSRMLS_CC);
 }
 
 static inline zend_object_value qh_object_new_intset_ex(zend_class_entry *class_type, php_qh_intset_obj **ptr TSRMLS_DC)
@@ -106,8 +107,10 @@ static void qh_object_free_storage_intset(void *object TSRMLS_DC)
 	php_qh_intset_obj *intern = (php_qh_intset_obj *) object;
 
 	if (intern->hash) {
+		qho *tmp_options = intern->hash->options;
+
 		qhi_free(intern->hash);
-		qho_free(intern->hash->options);
+		qho_free(tmp_options);
 	}
 
 	zend_object_std_dtor(&intern->std TSRMLS_CC);
@@ -118,6 +121,9 @@ static void qh_object_free_storage_intset(void *object TSRMLS_DC)
 static int process_flags(qho *options, long flags)
 {
 	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
+	if ((flags & QH_DO_NOT_USE_ZEND_ALLOC) == 0) {
+		qh_set_memory_functions(options);
+	}
 }
 
 static int qh_intset_initialize(php_qh_intset_obj *obj, long size, long flags TSRMLS_DC)

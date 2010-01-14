@@ -171,7 +171,9 @@ void qhi_free(qhi *hash)
 		hash->options->memory.free(hash->bucket_buffer[idx]);
 	}
 
-	hash->options->memory.free(hash->bucket_buffer);
+	if (hash->bucket_buffer) {
+		hash->options->memory.free(hash->bucket_buffer);
+	}
 	hash->options->memory.free(hash->bucket_list);
 	hash->options->memory.free(hash);
 }

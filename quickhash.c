@@ -22,6 +22,8 @@
 #endif
 
 #include "php.h"
+#include "zend.h"
+#include "zend_alloc.h"
 #include "php_quickhash.h"
 #include "php_globals.h"
 
@@ -73,6 +75,37 @@ zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC)
 	Z_SET_REFCOUNT_P(object, 1);
 	Z_UNSET_ISREF_P(object);
 	return object;
+}
+
+static void *qh_malloc(size_t size)
+{
+	return emalloc(size);
+}
+
+static void *qh_calloc(size_t nmemb, size_t size)
+{
+	return ecalloc(nmemb, size);
+}
+
+static void *qh_realloc(void *ptr, size_t size)
+{
+	return erealloc(ptr, size);
+}
+
+static void qh_free(void *ptr)
+{
+	if (ptr == NULL) {
+		abort();
+	}
+	return efree(ptr);
+}
+
+void qh_set_memory_functions(qho *options)
+{
+	options->memory.malloc = qh_malloc;
+	options->memory.realloc = qh_realloc;
+	options->memory.calloc = qh_calloc;
+	options->memory.free = qh_free;
 }
 
 PHP_MINIT_FUNCTION(quickhash)
