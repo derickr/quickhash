@@ -26,8 +26,8 @@ int main(int argc, char *argv[])
 	printf("exists: %d\n", qhi_set_exists(h, 0x5453494c));
 	printf("done checking\n");
 
-	qho_free(options);
 	qhi_free(h);
+	qho_free(options);
 
 	return 0;
 }

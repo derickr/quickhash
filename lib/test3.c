@@ -31,8 +31,8 @@ int main(int argc, char *argv[])
 	fd = open("/tmp/test-save", O_WRONLY | O_CREAT);
 	qhi_set_save_to_file(fd, h);
 
-	qho_free(options);
 	qhi_free(h);
+	qho_free(options);
 
 	return 0;
 }

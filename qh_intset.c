@@ -106,8 +106,8 @@ static void qh_object_free_storage_intset(void *object TSRMLS_DC)
 	php_qh_intset_obj *intern = (php_qh_intset_obj *) object;
 
 	if (intern->hash) {
-		qho_free(intern->hash->options);
 		qhi_free(intern->hash);
+		qho_free(intern->hash->options);
 	}
 
 	zend_object_std_dtor(&intern->std TSRMLS_CC);

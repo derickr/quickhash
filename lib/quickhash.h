@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdlib.h>
 
 /**
  * Hasher algorithm
@@ -22,6 +23,16 @@ typedef struct _qhl {
 } qhl;
 
 /**
+ * Memory allocation functions struct
+ */
+typedef struct _qhm {
+	void *(*malloc)(size_t size);
+	void *(*calloc)(size_t nmemb, size_t size);
+	void (*free)(void *ptr);
+	void *(*realloc)(void *ptr, size_t size);
+} qhm;
+
+/**
  * Contains options for the hashes:
  * - size: the number of hash bucket lists to create
  * - check_for_dupes: whether insertions should be checked for duplicates
@@ -29,6 +40,7 @@ typedef struct _qhl {
 typedef struct _qho {
 	uint32_t size;
 	char     check_for_dupes;
+	qhm      memory;
 } qho;
 
 /**

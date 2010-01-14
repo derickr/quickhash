@@ -47,11 +47,11 @@ inline qhb *qhb_create(qhi *hash)
 
 	if (hash->bucket_buffer_pos % QHB_BUFFER_PREALLOC_INC == 0) {
 		hash->bucket_buffer_nr++;
-		hash->bucket_buffer = realloc(hash->bucket_buffer, sizeof(qhb*) * (hash->bucket_buffer_nr + 1));
+		hash->bucket_buffer = hash->options->memory.realloc(hash->bucket_buffer, sizeof(qhb*) * (hash->bucket_buffer_nr + 1));
 		if (!hash->bucket_buffer) {
 			return NULL;
 		}
-		hash->bucket_buffer[hash->bucket_buffer_nr] = malloc(sizeof(qhb) * QHB_BUFFER_PREALLOC_INC);
+		hash->bucket_buffer[hash->bucket_buffer_nr] = hash->options->memory.malloc(sizeof(qhb) * QHB_BUFFER_PREALLOC_INC);
 		if (!hash->bucket_buffer[hash->bucket_buffer_nr]) {
 			return NULL;
 		}
@@ -75,6 +75,11 @@ qho *qho_create(void)
 
 	tmp->size = 1024;
 	tmp->check_for_dupes = 0;
+	tmp->memory.malloc = malloc;
+	tmp->memory.calloc = calloc;
+	tmp->memory.realloc = realloc;
+	tmp->memory.free = free;
+
 	return tmp;
 }
 
@@ -96,6 +101,8 @@ void qho_free(qho *options)
  * - options: the options to create the hash with. This structure contains at
  *   least the nr of hash buckets, and whether set additions should be checked
  *   for duplicates. See the description of qho for a full list of options.
+ *   This options struct must *NOT* be freed before the hash itself, as it
+ *   contains pointers to memory allocation functions.
  *
  * Returns:
  * - a pointer to the hash, or NULL if:
@@ -120,7 +127,7 @@ qhi *qhi_create(qho *options)
 		size = 1048576;
 	}
 
-	tmp = malloc(sizeof(qhi));
+	tmp = options->memory.malloc(sizeof(qhi));
 	if (!tmp) {
 		return NULL;
 	}
@@ -132,9 +139,9 @@ qhi *qhi_create(qho *options)
 	tmp->bucket_buffer_pos = 0;
 	tmp->bucket_buffer     = NULL;
 
-	tmp->bucket_list = calloc(sizeof(qhl) * size, 1);
+	tmp->bucket_list = options->memory.calloc(sizeof(qhl) * size, 1);
 	if (!tmp->bucket_list) {
-		free(tmp);
+		options->memory.free(tmp);
 		return NULL;
 	}
 
@@ -161,12 +168,12 @@ void qhi_free(qhi *hash)
 	printf("Collisions: %u\n", hash->collisions);
 #endif
 	for (idx = 0; idx <= hash->bucket_buffer_nr; idx++) {
-		free(hash->bucket_buffer[idx]);
+		hash->options->memory.free(hash->bucket_buffer[idx]);
 	}
 
-	free(hash->bucket_buffer);
-	free(hash->bucket_list);
-	free(hash);
+	hash->options->memory.free(hash->bucket_buffer);
+	hash->options->memory.free(hash->bucket_list);
+	hash->options->memory.free(hash);
 }
 
 /**

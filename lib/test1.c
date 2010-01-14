@@ -21,8 +21,8 @@ int main(void)
 	printf("exists: %d\n", qhi_set_exists(h, 17));
 	printf("exists: %d\n", qhi_set_exists(h, 53));
 
-	qho_free(options);
 	qhi_free(h);
+	qho_free(options);
 
 	return 0;
 }
