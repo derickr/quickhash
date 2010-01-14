@@ -35,6 +35,7 @@ struct _php_qh_intset_obj {
 PHP_METHOD(QuickHashIntSet, __construct);
 PHP_METHOD(QuickHashIntSet, add);
 PHP_METHOD(QuickHashIntSet, exists);
+PHP_METHOD(QuickHashIntSet, loadFromFile);
 
 void qh_register_class_intset(TSRMLS_D);
 
