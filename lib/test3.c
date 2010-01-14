@@ -8,14 +8,14 @@
 int main(int argc, char *argv[])
 {
 	qhi *h;
-	qho  options;
+	qho *options = qho_create();
 	int  fd;
 
-	options.size = 1048576;
-	options.check_for_dupes = 1;
+	options->size = 1048576;
+	options->check_for_dupes = 1;
 
 	fd = open(argv[1], O_RDONLY);
-	h = qhi_set_load_from_file(fd, &options);
+	h = qhi_set_load_from_file(fd, options);
 	close(fd);
 
 	printf("done loading\n");
@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
 	fd = open("/tmp/test-save", O_WRONLY | O_CREAT);
 	qhi_set_save_to_file(fd, h);
 
+	qho_free(options);
 	qhi_free(h);
 
 	return 0;

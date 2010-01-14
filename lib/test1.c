@@ -4,11 +4,11 @@
 int main(void)
 {
 	qhi *h;
-	qho  options;
+	qho *options = qho_create();
 	
-	options.size = 2000;
-	options.check_for_dupes = 1;
-	h = qhi_create(&options);
+	options->size = 2000;
+	options->check_for_dupes = 1;
+	h = qhi_create(options);
 
 	printf("exists: %d\n", qhi_set_exists(h, 7));
 	qhi_set_add(h, 1);
@@ -21,6 +21,7 @@ int main(void)
 	printf("exists: %d\n", qhi_set_exists(h, 17));
 	printf("exists: %d\n", qhi_set_exists(h, 53));
 
+	qho_free(options);
 	qhi_free(h);
 
 	return 0;
