@@ -114,12 +114,18 @@ static void qh_object_free_storage_intset(void *object TSRMLS_DC)
 	efree(object);
 }
 
+
+static int process_flags(qho *options, long flags)
+{
+	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
+}
+
 static int qh_intset_initialize(php_qh_intset_obj *obj, long size, long flags TSRMLS_DC)
 {
 	qho *options = qho_create();
 
 	options->size = size;
-	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
+	process_flags(options, flags);
 
 	obj->hash = qhi_create(options);
 	if (obj->hash == NULL) {
@@ -178,7 +184,7 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 	qho               *options = qho_create();
 
 	// deal with options
-	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
+	process_flags(options, flags);
 
 	// obtain the filesize
 	if (php_stream_stat(stream, &finfo) != 0) {

@@ -1,4 +1,3 @@
-- Split out option parsing in the php extension to a seperate func for re-use.
 - Allow different allocation methods for the backend code.
 - Strip out writing/collecting just like I did with loading so that other
   writers (like PHP streams) can be used.
