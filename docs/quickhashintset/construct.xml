@@ -4,22 +4,21 @@
 <refentry xml:id="quickhashintset.construct" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
  <refnamediv>
   <refname>QuickHashIntSet::__construct</refname>
-  <refpurpose>The __construct purpose</refpurpose>
+  <refpurpose>Creates a new QuickHashIntSet object</refpurpose>
  </refnamediv>
 
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
    <methodname>QuickHashIntSet::__construct</methodname>
-   <methodparam><type>string</type><parameter>size</parameter></methodparam>
-   <methodparam choice="opt"><type>string</type><parameter>options</parameter></methodparam>
+   <methodparam><type>integer</type><parameter>size</parameter></methodparam>
+   <methodparam choice="opt"><type>integer</type><parameter>options</parameter></methodparam>
   </methodsynopsis>
   <para>
-
+   This constructor creates a new QuickHashIntSet. The size is the amount of
+   bucket lists to create. The more lists there are, the less collisions you
+   will have. Options are also supported.
   </para>
-
-  &warn.undocumented.func;
-
  </refsect1>
 
  <refsect1 role="parameters">
@@ -30,7 +29,9 @@
      <term><parameter>size</parameter></term>
      <listitem>
       <para>
-       
+       The amount of bucket lists to configure. The number you pass in will be
+       automatically rounded up to the next power of two. It is also
+       automatically limited from 4 to 4194304.
       </para>
      </listitem>
     </varlistentry>
@@ -38,7 +39,13 @@
      <term><parameter>options</parameter></term>
      <listitem>
       <para>
-       
+       The options that you can pass in are: QuickHashIntSet::CHECK_FOR_DUPES,
+       which makes sure no duplicate entries are added to the set;
+       QuickHashIntSet::DO_NOT_USE_ZEND_ALLOC to not use PHP's internal memory
+       manager as well as one of QuickHashIntSet::HASHER_NO_HASH,
+       QuickHashIntSet::HASHER_JENKINS1 or QuickHashIntSet::HASHER_JENKINS2.
+       These last three configure which hashing algorithm to use. All options
+       can be combined using bitmasks.
       </para>
      </listitem>
     </varlistentry>
@@ -49,7 +56,7 @@
  <refsect1 role="returnvalues">
   &reftitle.returnvalues;
   <para>
-
+   Returns a new QuickHashIntSet object.
   </para>
  </refsect1>
 
@@ -61,18 +68,17 @@
     <programlisting role="php">
 <![CDATA[
 <?php
-
-/* ... */
-
+var_dump( new QuickHashIntSet( 1024 ) );
+var_dump( new QuickHashIntSet( 1024, QuickHashIntSet::CHECK_FOR_DUPES ) );
+var_dump(
+    new QuickHashIntSet(
+        1024,
+        QuickHashIntSet::DO_NOT_USE_ZEND_ALLOC | QuickHashIntSet::HASHER_JENKINS2 
+    )
+);
 ?>
 ]]>
     </programlisting>
-    &example.outputs.similar;
-    <screen>
-<![CDATA[
-...
-]]>
-    </screen>
    </example>
   </para>
  </refsect1>

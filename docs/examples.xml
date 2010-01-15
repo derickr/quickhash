@@ -8,16 +8,31 @@
   <programlisting role="php">
 <![CDATA[
 <?php
+$set = new QuickHashIntSet( 1024, QuickHashIntSet::CHECK_FOR_DUPES );
+$set->add( 1 );
+$set->add( 3 );
 
-/* ... */
+var_dump( $set->exists( 3 ) );
+var_dump( $set->exists( 4 ) );
 
+$set->saveToFile( "/tmp/test-set.set" );
+
+$newSet = QuickHashIntSet::loadFromFile(
+    "/tmp/test-set.set"
+);
+
+var_dump( $newSet->exists( 3 ) );
+var_dump( $newSet->exists( 4 ) );
 ?>
 ]]>
   </programlisting>
   &example.outputs.similar;
   <screen>
 <![CDATA[
-...
+bool(true)
+bool(false)
+bool(true)
+bool(false)
 ]]>
   </screen>
  </example>

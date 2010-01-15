@@ -8,7 +8,8 @@
  <preface xml:id="intro.quickhash">
   &reftitle.intro;
   <para>
-
+   The quickhash extension contains a set of specific strongly-typed classes
+   to deal with specific set and hash implementions.
   </para>
  </preface>
 
