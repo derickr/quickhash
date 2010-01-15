@@ -182,9 +182,6 @@ qhi *qhi_create(qho *options)
 		return NULL;
 	}
 
-	if (options->size < 4) {
-		return NULL;
-	}
 	size = qhi_normalize_size(options->size);
 
 	tmp = options->memory.malloc(sizeof(qhi));

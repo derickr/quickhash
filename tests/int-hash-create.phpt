@@ -26,16 +26,6 @@ catch ( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
-
-try
-{
-	new QuickHashIntSet( 2 );
-}
-catch ( Exception $e )
-{
-	echo $e->getMessage(), "\n";
-}
-?>
 --EXPECT--
 object(QuickHashIntSet)#1 (0) {
 }
@@ -45,4 +35,3 @@ object(QuickHashIntSet)#1 (0) {
 }
 QuickHashIntSet::__construct() expects at least 1 parameter, 0 given
 QuickHashIntSet::__construct() expects at most 2 parameters, 3 given
-QuickHashIntSet::__construct(): Could not initialize set.
