@@ -161,6 +161,8 @@ static int qh_intset_initialize(php_qh_intset_obj *obj, long size, long flags TS
 	return 1;
 }
 
+/* {{{ proto QuickHashIntSet QuickHashIntSet::__construct( int size, [ int options] )
+   Creates a new QuickHashIntSet */
 PHP_METHOD(QuickHashIntSet, __construct)
 {
 	long size;
@@ -174,7 +176,10 @@ PHP_METHOD(QuickHashIntSet, __construct)
 	}
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
+/* }}} */
 
+/* {{{ proto bool QuickHashIntSet::add( int key )
+   Adds an element with key key to the set */
 PHP_METHOD(QuickHashIntSet, add)
 {
 	zval              *object;
@@ -187,7 +192,10 @@ PHP_METHOD(QuickHashIntSet, add)
 	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
 	RETURN_BOOL(qhi_set_add(intset_obj->hash, key));
 }
+/* }}} */
 
+/* {{{ proto bool QuickHashIntSet::exists( int key )
+   Tests whether the element with key key is part of the set */
 PHP_METHOD(QuickHashIntSet, exists)
 {
 	zval              *object;
@@ -200,6 +208,7 @@ PHP_METHOD(QuickHashIntSet, exists)
 	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
 	RETURN_BOOL(qhi_set_exists(intset_obj->hash, key));
 }
+/* }}} */
 
 static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_stream *stream, long flags TSRMLS_DC)
 {
@@ -254,6 +263,8 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 	return nr_of_elements;
 }
 
+/* {{{ proto QuickHashIntSet QuickHashIntSet::loadFromFile( string filename [, int options ] )
+   Creates a QuickHashIntSet from data in file filename */
 PHP_METHOD(QuickHashIntSet, loadFromFile)
 {
 	char *filename;
@@ -274,6 +285,7 @@ PHP_METHOD(QuickHashIntSet, loadFromFile)
 	}
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
+/* }}} */
 
 int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
 {
@@ -314,6 +326,8 @@ int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
 	return 1;
 }
 
+/* {{{ proto void QuickHashIntSet::saveToFile( string filename )
+   Saves the hash to a file */
 PHP_METHOD(QuickHashIntSet, saveToFile)
 {
 	char *filename;
@@ -336,3 +350,4 @@ PHP_METHOD(QuickHashIntSet, saveToFile)
 	}
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
+/* }}} */
