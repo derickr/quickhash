@@ -17,15 +17,52 @@
  * Returns:
  * - the hash key
  */
-static uint32_t jenkins(uint32_t key)
+uint32_t qha_jenkins1(uint32_t key)
 {
-    key = (key ^ 61) ^ (key >> 16);
-    key = key + (key << 3);
-    key = key ^ (key >> 4);
-    key = key * 0x27d4eb2d;
-    key = key ^ (key >> 15);
-    return key;
+	key = (key ^ 61) ^ (key >> 16);
+	key = key + (key << 3);
+	key = key ^ (key >> 4);
+	key = key * 0x27d4eb2d;
+	key = key ^ (key >> 15);
+	return key;
 }
+
+/**
+ * Hashes the key
+ *
+ * The algorithm is from: http://www.concentric.net/~Ttwang/tech/inthash.htm
+ *
+ * Parameters:
+ * - key, the key to be hashsed
+ *
+ * Returns:
+ * - the hash key
+ */
+uint32_t qha_jenkins2(uint32_t key)
+{
+	key = (key+0x7ed55d16) + (key<<12);
+	key = (key^0xc761c23c) ^ (key>>19);
+	key = (key+0x165667b1) + (key<<5);
+	key = (key+0xd3a2646c) ^ (key<<9);
+	key = (key+0xfd7046c5) + (key<<3);
+	key = (key^0xb55a4f09) ^ (key>>16);
+	return key;
+}
+
+/**
+ * 'Hashes' the key by passing it straight through
+ *
+ * Parameters:
+ * - key, the key to be hashsed
+ *
+ * Returns:
+ * - the hash key
+ */
+uint32_t qha_no_hash(uint32_t key)
+{
+	return key;
+}
+
 
 /**
  * Defines the number of buckets to pre-allocate
@@ -79,6 +116,7 @@ qho *qho_create(void)
 	tmp->memory.calloc = calloc;
 	tmp->memory.realloc = realloc;
 	tmp->memory.free = free;
+	tmp->hasher = qha_jenkins2;
 
 	return tmp;
 }
@@ -92,6 +130,32 @@ qho *qho_create(void)
 void qho_free(qho *options)
 {
 	free(options);
+}
+
+/**
+ * Normalizes the size to a power of two.
+ *
+ * The function also limits the size from sizes 4 to 4194304.
+ *
+ * Parameters:
+ * - size: the number of (expected) elements in the set.
+ *
+ * Returns:
+ * - The normalized size
+ */
+uint32_t qhi_normalize_size(uint32_t size)
+{
+	uint32_t i;
+
+	if (size > 1<<22) {
+		return 1<<22;
+	}
+	for (i = 22; i > 2; i--) {
+		if (size > (1<< (i - 1))) {
+			return 1<<i;
+		}
+	}
+	return 4;
 }
 
 /**
@@ -121,18 +185,14 @@ qhi *qhi_create(qho *options)
 	if (options->size < 4) {
 		return NULL;
 	}
-	if (options->size < 1048576) {
-		size = options->size;
-	} else {
-		size = 1048576;
-	}
+	size = qhi_normalize_size(options->size);
 
 	tmp = options->memory.malloc(sizeof(qhi));
 	if (!tmp) {
 		return NULL;
 	}
 
-	tmp->hasher = jenkins;
+	tmp->hasher = options->hasher;
 	tmp->bucket_count = size;
 
 	tmp->bucket_buffer_nr  = -1;
@@ -191,7 +251,7 @@ void qhi_free(qhi *hash)
 inline uint32_t qhi_set_hash(qhi *hash, uint32_t key)
 {
 	uint32_t idx = hash->hasher(key);
-	return idx % hash->bucket_count;
+	return idx & (hash->bucket_count - 1);
 }
 
 /**
@@ -349,7 +409,7 @@ qhi *qhi_set_load_from_file(int fd, qho *options)
 	nr_of_elements = finfo.st_size / 4;
 
 	// override the nr of bucket lists as we know better
-	options->size = nr_of_elements;
+	options->size = qhi_normalize_size(nr_of_elements);
 #if DEBUG
 	printf("Picking size: %u\n", options->size);
 #endif

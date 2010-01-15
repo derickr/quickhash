@@ -40,6 +40,7 @@ typedef struct _qhm {
 typedef struct _qho {
 	uint32_t size;
 	char     check_for_dupes;
+	qha_t    hasher;
 	qhm      memory;
 } qho;
 
@@ -62,10 +63,15 @@ typedef struct _qhi {
 #endif
 } qhi;
 
+uint32_t qha_jenkins1(uint32_t key);
+uint32_t qha_jenkins2(uint32_t key);
+uint32_t qha_no_hash(uint32_t key);
+
 
 qho *qho_create(void);
 void qho_free(qho *options);
 
+uint32_t qhi_normalize_size(uint32_t size);
 qhi *qhi_create(qho *options);
 void qhi_free(qhi *hash);
 

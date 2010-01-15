@@ -1,3 +1,2 @@
 - Strip out writing/collecting just like I did with loading so that other
   writers (like PHP streams) can be used.
-- Check out other hashing algorithms depending on what stats show.

@@ -30,8 +30,13 @@ struct _php_qh_intset_obj {
 };
 
 /* Bitfield for hash options */
-#define QH_NO_DUPLICATES          1
-#define QH_DO_NOT_USE_ZEND_ALLOC  2
+#define QH_NO_DUPLICATES          0x0001
+#define QH_DO_NOT_USE_ZEND_ALLOC  0x0002
+
+#define QH_HASHER_NO_HASH         0x0100
+#define QH_HASHER_JENKINS1        0x0200
+#define QH_HASHER_JENKINS2        0x0400
+#define QH_HASHER_MASK            0xFF00
 
 PHP_METHOD(QuickHashIntSet, __construct);
 PHP_METHOD(QuickHashIntSet, add);
