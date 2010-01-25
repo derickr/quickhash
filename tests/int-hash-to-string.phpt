@@ -1,7 +1,6 @@
 --TEST--
 Basic test for returning sets as strings.
 --INI--
-extension=quickhash.so
 xdebug.default_enable=0
 --FILE--
 <?php

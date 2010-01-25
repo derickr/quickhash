@@ -1,7 +1,6 @@
 --TEST--
 Basic test for using different hashers.
 --INI--
-extension=quickhash.so
 xdebug.default_enable=0
 --FILE--
 <?php

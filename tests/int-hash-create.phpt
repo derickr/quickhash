@@ -1,7 +1,6 @@
 --TEST--
 Basic tests for creating an IntHash
 --INI--
-extension=quickhash.so
 xdebug.default_enable=0
 --FILE--
 <?php

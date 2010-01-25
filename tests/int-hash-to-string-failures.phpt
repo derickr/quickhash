@@ -1,7 +1,6 @@
 --TEST--
 Test for failure conditions for saveToFile.
 --INI--
-extension=quickhash.so
 xdebug.default_enable=0
 --FILE--
 <?php

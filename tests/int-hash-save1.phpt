@@ -1,7 +1,6 @@
 --TEST--
 Basic test for writing sets to files.
 --INI--
-extension=quickhash.so
 xdebug.default_enable=0
 --FILE--
 <?php
