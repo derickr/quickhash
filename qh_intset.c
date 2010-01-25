@@ -63,6 +63,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_load_from_string, 0, 0, 1)
 	ZEND_ARG_INFO(0, options)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_save_to_string, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
 /* Class methods definition */
 zend_function_entry qh_funcs_intset[] = {
 	PHP_ME(QuickHashIntSet, __construct,    arginfo_qh_intset_construct,        ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
@@ -71,6 +74,7 @@ zend_function_entry qh_funcs_intset[] = {
 	PHP_ME(QuickHashIntSet, loadFromFile,   arginfo_qh_intset_load_from_file,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, saveToFile,     arginfo_qh_intset_save_to_file,     ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, loadFromString, arginfo_qh_intset_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, saveToString,   arginfo_qh_intset_save_to_string,   ZEND_ACC_PUBLIC)
 	{NULL, NULL, NULL}
 };
 
@@ -407,5 +411,64 @@ PHP_METHOD(QuickHashIntSet, loadFromString)
 	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
 	added_elements = qh_intset_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, options);
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+}
+/* }}} */
+
+#define PHP_QH_BUFFER_GROWTH 1024
+
+char *qh_intset_save_to_string(uint32_t *string_len, php_qh_intset_obj *obj)
+{
+	uint32_t    idx;
+	uint32_t    elements_in_buffer = 0;
+	int32_t    *key_buffer;
+	qhi        *hash = obj->hash;
+
+	key_buffer = emalloc(PHP_QH_BUFFER_GROWTH + 4);
+
+	for (idx = 0; idx < hash->bucket_count; idx++)	{
+		qhl *list = &(hash->bucket_list[idx]);
+		qhb *p = list->head;
+		qhb *n;
+
+		if (p) {
+			while(p) {
+				n = p->next;
+
+				key_buffer[elements_in_buffer] = p->key;
+				elements_in_buffer++;
+
+				if (elements_in_buffer % PHP_QH_BUFFER_GROWTH == 0) {
+					key_buffer = erealloc(key_buffer, elements_in_buffer + PHP_QH_BUFFER_GROWTH + 4);
+				}
+
+				p = n;
+			}
+		}
+	}
+
+	key_buffer[elements_in_buffer] = 0;
+	*string_len = elements_in_buffer * 4;
+	return key_buffer;
+}
+
+/* {{{ proto string QuickHashIntSet::saveToString()
+   Returns the hash as a string */
+PHP_METHOD(QuickHashIntSet, saveToString)
+{
+	zval              *object;
+	php_qh_intset_obj *intset_obj;
+	char              *string;
+	uint32_t           string_len;
+
+	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &object, qh_ce_intset) == FAILURE) {
+		return;
+	}
+
+	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
+
+	string = qh_intset_save_to_string(&string_len, intset_obj);
+	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	RETURN_STRINGL(string, string_len, 0);
 }
 /* }}} */
