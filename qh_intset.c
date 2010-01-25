@@ -58,13 +58,19 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_save_to_file, 0, 0, 1)
 	ZEND_ARG_INFO(0, filename)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_load_from_string, 0, 0, 1)
+	ZEND_ARG_INFO(0, contents)
+	ZEND_ARG_INFO(0, options)
+ZEND_END_ARG_INFO()
+
 /* Class methods definition */
 zend_function_entry qh_funcs_intset[] = {
-	PHP_ME(QuickHashIntSet, __construct,  arginfo_qh_intset_construct,      ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntSet, add,          arginfo_qh_intset_add,            ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntSet, exists,       arginfo_qh_intset_exists,         ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntSet, loadFromFile, arginfo_qh_intset_load_from_file, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntSet, saveToFile,   arginfo_qh_intset_save_to_file,   ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, __construct,    arginfo_qh_intset_construct,        ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, add,            arginfo_qh_intset_add,              ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, exists,         arginfo_qh_intset_exists,           ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, loadFromFile,   arginfo_qh_intset_load_from_file,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, saveToFile,     arginfo_qh_intset_save_to_file,     ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, loadFromString, arginfo_qh_intset_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	{NULL, NULL, NULL}
 };
 
@@ -348,6 +354,58 @@ PHP_METHOD(QuickHashIntSet, saveToFile)
 		qh_intset_save_to_file(stream, intset_obj);
 		php_stream_close(stream);
 	}
+	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+}
+/* }}} */
+
+static uint32_t qh_intset_initialize_from_string(php_qh_intset_obj *obj, char *contents, long length, long flags TSRMLS_DC)
+{
+	uint32_t  nr_of_elements;
+	qho      *options = qho_create();
+
+	// deal with options
+	process_flags(options, flags);
+
+	// if the size is not an increment of 4, abort
+	if (length % 4 != 0) {
+		qho_free(options);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "String is in the wrong format (not a multiple of 4 bytes)");
+		return 0;
+	}
+	nr_of_elements = length / 4;
+
+	// override the nr of bucket lists as we know better
+	options->size = nr_of_elements;
+
+	// create the hash
+	obj->hash = qhi_create(options);
+	if (obj->hash == NULL) {
+		qho_free(options);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set");
+		return 0;
+	}
+
+	// read the elements and add them to the set
+	qhi_set_add_elements_from_buffer(obj->hash, contents, nr_of_elements);
+	return nr_of_elements;
+}
+
+/* {{{ proto QuickHashIntSet QuickHashIntSet::loadFromString( string contents [, int options ] )
+   Creates a QuickHashIntSet from data in a string */
+PHP_METHOD(QuickHashIntSet, loadFromString)
+{
+	char    *contents;
+	int      contents_len;
+	long     options = 0;
+	uint32_t added_elements;
+
+	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &contents, &contents_len, &options) == FAILURE) {
+		return;
+	}
+
+	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
+	added_elements = qh_intset_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, options);
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
 /* }}} */
