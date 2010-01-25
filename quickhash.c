@@ -26,6 +26,7 @@
 #include "zend_alloc.h"
 #include "php_quickhash.h"
 #include "php_globals.h"
+#include "ext/standard/info.h"
 
 #include "qh_intset.h"
 #include "quickhash.h"

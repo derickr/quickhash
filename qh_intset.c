@@ -136,7 +136,7 @@ static void qh_object_free_storage_intset(void *object TSRMLS_DC)
 }
 
 
-static int process_flags(qho *options, long flags)
+static void process_flags(qho *options, long flags)
 {
 	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
 	if ((flags & QH_DO_NOT_USE_ZEND_ALLOC) == 0) {
@@ -266,7 +266,7 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 
 	// read the elements and add them to the set
 	do {
-		bytes_read = php_stream_read(stream, &key_buffer, sizeof(key_buffer));
+		bytes_read = php_stream_read(stream, (char*)&key_buffer, sizeof(key_buffer));
 		qhi_set_add_elements_from_buffer(obj->hash, key_buffer, bytes_read / 4);
 		elements_read += (bytes_read / 4);
 	} while (elements_read < nr_of_elements);
@@ -290,7 +290,7 @@ PHP_METHOD(QuickHashIntSet, loadFromFile)
 	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
 	stream = php_stream_open_wrapper(filename, "r", IGNORE_PATH | REPORT_ERRORS, NULL);
 	if (stream) {
-		uint32_t added_elements = qh_intset_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, options);
+		qh_intset_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, options);
 		php_stream_close(stream);
 	}
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
@@ -317,7 +317,7 @@ int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
 				elements_in_buffer++;
 
 				if (elements_in_buffer == 1024) {
-					if (php_stream_write(stream, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+					if (php_stream_write(stream, (char*)key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
 						return 0;
 					}
 					elements_in_buffer = 0;
@@ -329,7 +329,7 @@ int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
 	}
 
 	if (elements_in_buffer > 0) {
-		if (php_stream_write(stream, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+		if (php_stream_write(stream, (char*)key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
 			return 0;
 		}
 	}
@@ -390,7 +390,7 @@ static uint32_t qh_intset_initialize_from_string(php_qh_intset_obj *obj, char *c
 	}
 
 	// read the elements and add them to the set
-	qhi_set_add_elements_from_buffer(obj->hash, contents, nr_of_elements);
+	qhi_set_add_elements_from_buffer(obj->hash, (int32_t*)contents, nr_of_elements);
 	return nr_of_elements;
 }
 
@@ -401,7 +401,6 @@ PHP_METHOD(QuickHashIntSet, loadFromString)
 	char    *contents;
 	int      contents_len;
 	long     options = 0;
-	uint32_t added_elements;
 
 	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &contents, &contents_len, &options) == FAILURE) {
@@ -409,7 +408,7 @@ PHP_METHOD(QuickHashIntSet, loadFromString)
 	}
 
 	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
-	added_elements = qh_intset_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, options);
+	qh_intset_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, options);
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
 /* }}} */
@@ -448,7 +447,7 @@ char *qh_intset_save_to_string(uint32_t *string_len, php_qh_intset_obj *obj)
 
 	key_buffer[elements_in_buffer] = 0;
 	*string_len = elements_in_buffer * 4;
-	return key_buffer;
+	return (char*)key_buffer;
 }
 
 /* {{{ proto string QuickHashIntSet::saveToString()
