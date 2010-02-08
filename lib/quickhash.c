@@ -219,6 +219,10 @@ qhi *qhi_create(qho *options)
 		return NULL;
 	}
 
+	tmp->values_count = 0;
+	tmp->values_size  = 0;
+	tmp->values = NULL;
+
 	tmp->options = options;
 
 #if DEBUG
@@ -248,6 +252,10 @@ void qhi_free(qhi *hash)
 	if (hash->bucket_buffer) {
 		hash->options->memory.free(hash->bucket_buffer);
 	}
+	if (hash->values) {
+		hash->options->memory.free(hash->values);
+	}
+
 	hash->options->memory.free(hash->bucket_list);
 	hash->options->memory.free(hash);
 }
@@ -274,11 +282,12 @@ inline uint32_t qhi_set_hash(qhi *hash, uint32_t key)
  * Parameters:
  * - list: the list belonging to the index of the hashed key
  * - key: the element's key
+ * - value_idx: pointer to store the value_idx in
  *
  * Returns:
  * - 1 if the key exists in the list, 0 if not
  */
-static int find_entry_in_list(qhl *list, int32_t key)
+static int find_entry_in_list(qhl *list, int32_t key, uint32_t *value_idx)
 {
 	if (!list->head) {
 		// there is no bucket list for this hashed key
@@ -289,6 +298,9 @@ static int find_entry_in_list(qhl *list, int32_t key)
 		// loop over the elements in this bucket list to see if the key exists
 		do {
 			if (p->key == key) {
+				if (value_idx) {
+					*value_idx = p->value_idx;
+				}
 				return 1;
 			}
 			p = p->next;
@@ -318,7 +330,7 @@ int qhi_set_add(qhi *hash, int32_t key)
 	list = &(hash->bucket_list[idx]);
 
 	// check if we already have the key in the list if requested
-	if (hash->options->check_for_dupes && find_entry_in_list(list, key)) {
+	if (hash->options->check_for_dupes && find_entry_in_list(list, key, NULL)) {
 		return 0;
 	}
 
@@ -366,7 +378,7 @@ int qhi_set_exists(qhi *hash, int32_t key)
 	idx = qhi_set_hash(hash, key);
 	list = &(hash->bucket_list[idx]);
 
-	return find_entry_in_list(list, key);
+	return find_entry_in_list(list, key, NULL);
 }
 
 /**
@@ -489,4 +501,107 @@ int qhi_set_save_to_file(int fd, qhi *hash)
 		}
 	}
 	return 1;
+}
+
+/**
+ * Internal: Adds a value to the value storage and returns the index
+ *
+ * Parameters:
+ * - hash: the hash to add the value to
+ * - value: the value itself
+ *
+ * Returns:
+ * - The index under which the value was added (which is stored in the hash)
+ */
+static uint32_t hash_add_value(qhi *hash, uint32_t value)
+{
+	if (hash->values_count == hash->values_size) {
+		hash->values = hash->options->memory.realloc(hash->values, (hash->values_size + QHB_BUFFER_PREALLOC_INC) * sizeof(uint32_t));
+		hash->values_size += QHB_BUFFER_PREALLOC_INC;
+	}
+	hash->values[hash->values_count] = value;
+	hash->values_count++;
+	return hash->values_count - 1;
+}
+
+/**
+ * Adds a new element to the hash
+ *
+ * Parameters:
+ * - hash: A valid quickhash
+ * - key: The key
+ * - value: A pointer to a value, or a value itself
+ *
+ * Returns:
+ * - 1 if the element was added or 0 if the element couldn't be added
+ */
+int qhi_hash_add(qhi *hash, int32_t key, uint32_t value)
+{
+	uint32_t idx;
+	qhl     *list;
+	qhb     *bucket;
+
+	// obtain the hashed key, and the bucket list for the hashed key
+	idx = qhi_set_hash(hash, key);
+	list = &(hash->bucket_list[idx]);
+
+	// check if we already have the key in the list if requested
+	if (hash->options->check_for_dupes && find_entry_in_list(list, key, NULL)) {
+		return 0;
+	}
+
+	// create new bucket
+	bucket = qhb_create(hash);
+	if (!bucket) {
+		return 0;
+	}
+	bucket->key = key;
+	bucket->next = NULL;
+	bucket->value_idx = hash_add_value(hash, value);
+
+	// add bucket to list
+	if (list->head == NULL) {
+		// first bucket in list
+		list->head = bucket;
+		list->tail = bucket;
+	} else {
+		// following bucked in a list
+		list->tail->next = bucket;
+		list->tail = bucket;
+#if DEBUG
+		hash->collisions++;
+#endif
+	}
+	return 1;
+}
+
+/**
+ * Tests whether the key exists in the hash
+ *
+ * Parameters:
+ * - hash: A valid quickhash
+ * - key: The key
+ *
+ * Returns:
+ * - 1 if the element is part of the set or 0 if the element is not part of the
+ *   set
+ */
+int qhi_hash_get_value(qhi *hash, int32_t key, uint32_t *value)
+{
+	uint32_t idx;
+	qhl     *list;
+	uint32_t value_idx;
+
+	// obtain the hashed key, and the bucket list for the hashed key
+	idx = qhi_set_hash(hash, key);
+	list = &(hash->bucket_list[idx]);
+
+	if (find_entry_in_list(list, key, &value_idx)) {
+		if (value) {
+			*value = hash->values[value_idx];
+		}
+		return 1;
+	} else {
+		return 0;
+	}
 }

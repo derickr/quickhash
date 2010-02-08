@@ -29,6 +29,7 @@ typedef uint32_t (*qha_t)(uint32_t key);
 typedef struct _qhb {
 	uint32_t     key;
 	struct _qhb *next;
+	uint32_t     value_idx;
 } qhb;
 
 /**
@@ -74,6 +75,11 @@ typedef struct _qhi {
 	uint32_t  bucket_buffer_pos;
 	qhb     **bucket_buffer;
 
+	// for values
+	uint32_t  values_count;
+	uint32_t  values_size;
+	uint32_t *values;
+
 	qho      *options;
 #if DEBUG
 	uint32_t  collisions;
@@ -92,9 +98,15 @@ uint32_t qhi_normalize_size(uint32_t size);
 qhi *qhi_create(qho *options);
 void qhi_free(qhi *hash);
 
+/* sets */
 int qhi_set_add(qhi *hash, int32_t position);
 int qhi_set_exists(qhi *hash, int32_t position);
 
 uint32_t qhi_set_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t nr_of_elements);
 qhi *qhi_set_load_from_file(int fd, qho *options);
 int qhi_set_save_to_file(int fd, qhi *hash);
+
+/* hash */
+int qhi_hash_add(qhi *hash, int32_t position, uint32_t value);
+int qhi_hash_get_value(qhi *hash, int32_t position, uint32_t *value);
+
