@@ -605,3 +605,58 @@ int qhi_hash_get_value(qhi *hash, int32_t key, uint32_t *value)
 		return 0;
 	}
 }
+
+/**
+ * Saves a hash to a file point to by the file descriptor
+ *
+ * Parameters:
+ * - hash: the hash to write
+ * - fd: a file descriptor that is suitable for reading to
+ *
+ * Returns:
+ * - 1 on success, and 0 on failure
+ */
+int qhi_hash_save_to_file(int fd, qhi *hash)
+{
+	uint32_t    idx;
+	uint32_t    elements_in_buffer = 0;
+	int32_t     key_buffer[1024];
+
+	// write keys and value-indices
+	for (idx = 0; idx < hash->bucket_count; idx++)	{
+		qhl *list = &(hash->bucket_list[idx]);
+		qhb *p = list->head;
+		qhb *n;
+
+		if (p) {
+			while(p) {
+				n = p->next;
+
+				key_buffer[elements_in_buffer] = p->key;
+				key_buffer[elements_in_buffer + 1] = p->value_idx;
+				elements_in_buffer += 2;
+
+				if (elements_in_buffer == 512) {
+					if (write(fd, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+						return 0;
+					}
+					elements_in_buffer = 0;
+				}
+
+				p = n;
+			}
+		}
+	}
+
+	if (elements_in_buffer > 0) {
+		if (write(fd, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+			return 0;
+		}
+	}
+
+	// write values
+	if (write(fd, hash->values, hash->values_count * 4) != (hash->values_count * 4)) {
+		return 0;
+	}
+	return 1;
+}
