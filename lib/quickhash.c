@@ -607,6 +607,81 @@ int qhi_hash_get_value(qhi *hash, int32_t key, uint32_t *value)
 }
 
 /**
+ * Adds elements contained in a buffer to hash
+ *
+ * Parameters:
+ * - hash: the hash to add elements to
+ * - buffer: the buffer containing the keys
+ * - nr_of_elements: the number of elements in the buffer
+ *
+ * Returns:
+ * - The number of elements that were added to the set. This number can be less
+ *   than the number of elements in the buffer because de-duping might happen.
+ */
+uint32_t qhi_hash_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t nr_of_elements)
+{
+	uint32_t i;
+	uint32_t added = 0;
+
+	for (i = 0; i < nr_of_elements; i += 2) {
+		added += qhi_hash_add(hash, buffer[i], buffer[i + 1]);
+	}
+	return added;
+}
+
+/**
+ * Loads a hash from a file pointed to by the file descriptor
+ *
+ * Parameters:
+ * - fd: a file descriptor that is suitable for reading from
+ * - options: the options to create the hash with. This structure contains at
+ *   least the nr of hash buckets, and whether set additions should be checked
+ *   for duplicates. See the description of qho for a full list of options.
+ *
+ * Returns:
+ * - A new hash, or NULL upon failure
+ */
+qhi *qhi_hash_load_from_file(int fd, qho *options)
+{
+	struct stat finfo;
+	uint32_t    nr_of_elements, elements_read = 0;
+	uint32_t    bytes_read;
+	int32_t     key_buffer[1024];
+	qhi        *tmp;
+
+	if (fstat(fd, &finfo) != 0) {
+		return NULL;
+	}
+
+	// if the filesize is not an increment of 8 (4*key+value), abort
+	if (finfo.st_size % 8 != 0) {
+		return NULL;
+	}
+	nr_of_elements = finfo.st_size / 8;
+
+	// override the nr of bucket lists as we know better
+	options->size = qhi_normalize_size(nr_of_elements);
+#if DEBUG
+	printf("Picking size: %u\n", options->size);
+#endif
+
+	// create the hash
+	tmp = qhi_create(options);
+	if (!tmp) {
+		return NULL;
+	}
+
+	// read the elements (key and value idx) and add them to the hash
+	do {
+		bytes_read = read(fd, &key_buffer, sizeof(key_buffer));
+		qhi_hash_add_elements_from_buffer(tmp, key_buffer, bytes_read / 4);
+		elements_read += (bytes_read / 8);
+	} while (elements_read < nr_of_elements);
+
+	return tmp;
+}
+
+/**
  * Saves a hash to a file point to by the file descriptor
  *
  * Parameters:
@@ -633,7 +708,7 @@ int qhi_hash_save_to_file(int fd, qhi *hash)
 				n = p->next;
 
 				key_buffer[elements_in_buffer] = p->key;
-				key_buffer[elements_in_buffer + 1] = p->value_idx;
+				key_buffer[elements_in_buffer + 1] = hash->values[p->value_idx];
 				elements_in_buffer += 2;
 
 				if (elements_in_buffer == 512) {
@@ -654,9 +729,5 @@ int qhi_hash_save_to_file(int fd, qhi *hash)
 		}
 	}
 
-	// write values
-	if (write(fd, hash->values, hash->values_count * 4) != (hash->values_count * 4)) {
-		return 0;
-	}
 	return 1;
 }
