@@ -114,6 +114,7 @@ PHP_MINIT_FUNCTION(quickhash)
 	ZEND_INIT_MODULE_GLOBALS(quickhash, quickhash_init_globals, NULL);
 
 	qh_register_class_intset(TSRMLS_C);
+	qh_register_class_inthash(TSRMLS_C);
 
 	return SUCCESS;
 }
