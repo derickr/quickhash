@@ -28,7 +28,7 @@
 #include "php_globals.h"
 #include "ext/standard/info.h"
 
-#include "qh_intset.h"
+#include "lib/quickhash.h"
 #include "quickhash.h"
 
 function_entry quickhash_functions[] = {
