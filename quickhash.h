@@ -37,6 +37,15 @@
 #define Z_UNSET_ISREF_P(pz)           (pz)->is_ref = 0
 #endif
 
+/* Bitfield for hash options */
+#define QH_NO_DUPLICATES          0x0001
+#define QH_DO_NOT_USE_ZEND_ALLOC  0x0002
+
+#define QH_HASHER_NO_HASH         0x0100
+#define QH_HASHER_JENKINS1        0x0200
+#define QH_HASHER_JENKINS2        0x0400
+#define QH_HASHER_MASK            0xFF00
+
 zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC);
 void qh_set_memory_functions(qho *options);
 
