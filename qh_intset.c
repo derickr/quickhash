@@ -132,32 +132,12 @@ static void qh_object_free_storage_intset(void *object TSRMLS_DC)
 }
 
 
-static void process_flags(qho *options, long flags)
-{
-	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
-	if ((flags & QH_DO_NOT_USE_ZEND_ALLOC) == 0) {
-		qh_set_memory_functions(options);
-	}
-	// if no hasher selected, pick jenkins1 as default
-	if ((flags & QH_HASHER_MASK) == 0) {
-		options->hasher = qha_jenkins1;
-	} else {
-		if (flags & QH_HASHER_NO_HASH) {
-			options->hasher = qha_no_hash;
-		} else if (flags & QH_HASHER_JENKINS1) {
-			options->hasher = qha_jenkins1;
-		} else if (flags & QH_HASHER_JENKINS2) {
-			options->hasher = qha_jenkins2;
-		}
-	}
-}
-
 static int qh_intset_initialize(php_qh_intset_obj *obj, long size, long flags TSRMLS_DC)
 {
 	qho *options = qho_create();
 
 	options->size = size;
-	process_flags(options, flags);
+	qh_process_flags(options, flags);
 
 	obj->hash = qhi_create(options);
 	if (obj->hash == NULL) {
@@ -225,7 +205,7 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 	qho               *options = qho_create();
 
 	// deal with options
-	process_flags(options, flags);
+	qh_process_flags(options, flags);
 
 	// obtain the filesize
 	if (php_stream_stat(stream, &finfo) != 0) {
@@ -364,7 +344,7 @@ static uint32_t qh_intset_initialize_from_string(php_qh_intset_obj *obj, char *c
 	qho      *options = qho_create();
 
 	// deal with options
-	process_flags(options, flags);
+	qh_process_flags(options, flags);
 
 	// if the size is not an increment of 4, abort
 	if (length % 4 != 0) {

@@ -87,6 +87,27 @@ void qh_add_constants(zend_class_entry *ce TSRMLS_DC)
 	zend_declare_class_constant_long(ce, "HASHER_JENKINS2",  sizeof("HASHER_JENKINS2") - 1, QH_HASHER_JENKINS2 TSRMLS_CC);
 }
 
+void qh_process_flags(qho *options, long flags)
+{
+	options->check_for_dupes = (flags & QH_NO_DUPLICATES);
+	if ((flags & QH_DO_NOT_USE_ZEND_ALLOC) == 0) {
+		qh_set_memory_functions(options);
+	}
+	// if no hasher selected, pick jenkins1 as default
+	if ((flags & QH_HASHER_MASK) == 0) {
+		options->hasher = qha_jenkins1;
+	} else {
+		if (flags & QH_HASHER_NO_HASH) {
+			options->hasher = qha_no_hash;
+		} else if (flags & QH_HASHER_JENKINS1) {
+			options->hasher = qha_jenkins1;
+		} else if (flags & QH_HASHER_JENKINS2) {
+			options->hasher = qha_jenkins2;
+		}
+	}
+}
+
+
 static void *qh_malloc(size_t size)
 {
 	return emalloc(size);

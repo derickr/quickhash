@@ -48,6 +48,7 @@
 
 zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC);
 void qh_add_constants(zend_class_entry *ce TSRMLS_DC);
+void qh_process_flags(qho *options, long flags);
 void qh_set_memory_functions(qho *options);
 
 #endif
