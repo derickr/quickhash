@@ -20,6 +20,7 @@
 
 #ifndef QUICK_HASH_H
 #define QUICK_HASH_H
+
 /**
  * Hasher algorithm
  */
@@ -87,6 +88,11 @@ typedef struct _qhi {
 	uint32_t  collisions;
 #endif
 } qhi;
+
+/**
+ * Function type to be used as an utility function with qhi_process_set
+ */
+typedef int (*qhi_buffer_apply_func)(void *context, int32_t *buffer, uint32_t elements);
 
 uint32_t qha_jenkins1(uint32_t key);
 uint32_t qha_jenkins2(uint32_t key);

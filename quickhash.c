@@ -139,6 +139,29 @@ void qh_set_memory_functions(qho *options)
 	options->memory.free = qh_free;
 }
 
+int php_qh_save_to_string_func(void *context, int32_t *buffer, uint32_t elements)
+{
+	php_qh_save_to_string_context *ctxt = (php_qh_save_to_string_context*) context;
+
+	ctxt->string = erealloc(ctxt->string, ctxt->string_len + (elements * sizeof(int32_t)) + 1);
+	memcpy(ctxt->string + ctxt->string_len, buffer, elements * sizeof(int32_t));
+	ctxt->string_len += (elements * sizeof(int32_t));
+	ctxt->string[ctxt->string_len] = '\0';
+
+	return 1;
+}
+
+int php_qh_save_to_stream_func(void *context, int32_t *buffer, uint32_t elements)
+{
+	php_qh_save_to_stream_context *ctxt = (php_qh_save_to_stream_context*) context;
+
+	if (php_stream_write(ctxt->stream, (char*)buffer, elements * sizeof(int32_t)) != (elements * sizeof(int32_t))) {
+		return 0;
+	}
+	return 1;
+}
+
+
 PHP_MINIT_FUNCTION(quickhash)
 {
 	ZEND_INIT_MODULE_GLOBALS(quickhash, quickhash_init_globals, NULL);

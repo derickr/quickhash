@@ -275,41 +275,12 @@ PHP_METHOD(QuickHashIntSet, loadFromFile)
 
 int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
 {
-	uint32_t    idx;
-	uint32_t    elements_in_buffer = 0;
-	int32_t     key_buffer[1024];
-	qhi        *hash = obj->hash;
+	qhi                           *hash = obj->hash;
+	php_qh_save_to_stream_context  ctxt;
 
-	for (idx = 0; idx < hash->bucket_count; idx++)	{
-		qhl *list = &(hash->bucket_list[idx]);
-		qhb *p = list->head;
-		qhb *n;
+	ctxt.stream = stream;
 
-		if (p) {
-			while(p) {
-				n = p->next;
-
-				key_buffer[elements_in_buffer] = p->key;
-				elements_in_buffer++;
-
-				if (elements_in_buffer == 1024) {
-					if (php_stream_write(stream, (char*)key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
-						return 0;
-					}
-					elements_in_buffer = 0;
-				}
-
-				p = n;
-			}
-		}
-	}
-
-	if (elements_in_buffer > 0) {
-		if (php_stream_write(stream, (char*)key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
-			return 0;
-		}
-	}
-	return 1;
+	return qhi_process_set(hash, (void *) &ctxt, php_qh_save_to_stream_func);
 }
 
 /* {{{ proto void QuickHashIntSet::saveToFile( string filename )
@@ -389,41 +360,17 @@ PHP_METHOD(QuickHashIntSet, loadFromString)
 }
 /* }}} */
 
-#define PHP_QH_BUFFER_GROWTH 1024
-
 char *qh_intset_save_to_string(uint32_t *string_len, php_qh_intset_obj *obj)
 {
-	uint32_t    idx;
-	uint32_t    elements_in_buffer = 0;
-	int32_t    *key_buffer;
-	qhi        *hash = obj->hash;
+	qhi                           *hash = obj->hash;
+	php_qh_save_to_string_context  ctxt;
 
-	key_buffer = emalloc(PHP_QH_BUFFER_GROWTH + 4);
+	ctxt.string = NULL;
+	ctxt.string_len = 0;
 
-	for (idx = 0; idx < hash->bucket_count; idx++)	{
-		qhl *list = &(hash->bucket_list[idx]);
-		qhb *p = list->head;
-		qhb *n;
-
-		if (p) {
-			while(p) {
-				n = p->next;
-
-				key_buffer[elements_in_buffer] = p->key;
-				elements_in_buffer++;
-
-				if (elements_in_buffer % PHP_QH_BUFFER_GROWTH == 0) {
-					key_buffer = erealloc(key_buffer, elements_in_buffer + PHP_QH_BUFFER_GROWTH + 4);
-				}
-
-				p = n;
-			}
-		}
-	}
-
-	key_buffer[elements_in_buffer] = 0;
-	*string_len = elements_in_buffer * 4;
-	return (char*)key_buffer;
+	qhi_process_set(hash, (void *) &ctxt, php_qh_save_to_string_func);
+	*string_len = ctxt.string_len;
+	return ctxt.string;
 }
 
 /* {{{ proto string QuickHashIntSet::saveToString()

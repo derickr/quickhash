@@ -80,6 +80,38 @@ uint32_t qha_no_hash(uint32_t key)
 	return key;
 }
 
+/**
+ * Helper struct that contains the file descriptor for use with
+ * qhi_process_set or qhi_process_hash.
+ */
+typedef struct _fd_write_apply_context {
+	int fd;
+} fd_write_apply_context;
+
+/**
+ * Function that is used by qhi_set_save_to_file as an apply function for
+ * qhi_process_set or qhi_process_hash. It is called when the buffer is full,
+ * and will write the buffer's contents to the filedescriptor that is
+ * contained in the fd_write_apply_context struct.
+ *
+ * Parameters:
+ * - context: The context containing the filedescriptor
+ * - buffer: The buffer containing the data
+ * - elements: The number of elements in the buffer
+ *
+ * Returns:
+ * - 1 if all elements could be written, or 0 if not.
+ */
+static int fd_write_apply_func(void *context, int32_t *buffer, uint32_t elements)
+{
+	fd_write_apply_context *ctxt = (fd_write_apply_context*) context;
+
+	if (write(ctxt->fd, buffer, elements * sizeof(int32_t)) != (elements * sizeof(int32_t))) {
+		return 0;
+	}
+	return 1;
+}
+
 
 /**
  * Defines the number of buckets to pre-allocate
@@ -456,16 +488,20 @@ qhi *qhi_set_load_from_file(int fd, qho *options)
 }
 
 /**
- * Saves a set to a file point to by the file descriptor
+ * Generic function that loops over a set and calls the apply_func when the buffer is full.
  *
  * Parameters:
- * - hash: the set to write
- * - fd: a file descriptor that is suitable for reading to
+ * - hash: The hash to operator on
+ * - context: A structure, that is dependent on which apply_func is used. This
+ *   structure is passed to the apply_func.
+ * - apply_func: Whenever the buffer is full, this function is called with as
+ *   parameters the context, the buffer, and the length of the buffer's
+ *   contents.
  *
  * Returns:
- * - 1 on success, and 0 on failure
+ * - 1 of the function succeeded, and 0 if it did not.
  */
-int qhi_set_save_to_file(int fd, qhi *hash)
+int qhi_process_set(qhi *hash, void *context, qhi_buffer_apply_func apply_func)
 {
 	uint32_t    idx;
 	uint32_t    elements_in_buffer = 0;
@@ -484,7 +520,7 @@ int qhi_set_save_to_file(int fd, qhi *hash)
 				elements_in_buffer++;
 
 				if (elements_in_buffer == 1024) {
-					if (write(fd, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+					if (!apply_func(context, key_buffer, elements_in_buffer)) {
 						return 0;
 					}
 					elements_in_buffer = 0;
@@ -496,11 +532,28 @@ int qhi_set_save_to_file(int fd, qhi *hash)
 	}
 
 	if (elements_in_buffer > 0) {
-		if (write(fd, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+		if (!apply_func(context, key_buffer, elements_in_buffer)) {
 			return 0;
 		}
 	}
 	return 1;
+}
+
+/**
+ * Saves a set to a file pointed to by the file descriptor
+ *
+ * Parameters:
+ * - hash: the set to write
+ * - fd: a file descriptor that is suitable for reading to
+ *
+ * Returns:
+ * - 1 on success, and 0 on failure
+ */
+int qhi_set_save_to_file(int fd, qhi *hash)
+{
+	fd_write_apply_context ctxt;
+	ctxt.fd = fd;
+	return qhi_process_set(hash, (void *) &ctxt, fd_write_apply_func);
 }
 
 /**
@@ -682,22 +735,25 @@ qhi *qhi_hash_load_from_file(int fd, qho *options)
 }
 
 /**
- * Saves a hash to a file point to by the file descriptor
+ * Generic function that loops over a hash and calls the apply_func when the buffer is full.
  *
  * Parameters:
- * - hash: the hash to write
- * - fd: a file descriptor that is suitable for reading to
+ * - hash: The hash to operator on
+ * - context: A structure, that is dependent on which apply_func is used. This
+ *   structure is passed to the apply_func.
+ * - apply_func: Whenever the buffer is full, this function is called with as
+ *   parameters the context, the buffer, and the length of the buffer's
+ *   contents.
  *
  * Returns:
- * - 1 on success, and 0 on failure
+ * - 1 of the function succeeded, and 0 if it did not.
  */
-int qhi_hash_save_to_file(int fd, qhi *hash)
+int qhi_process_hash(qhi *hash, void *context, qhi_buffer_apply_func apply_func)
 {
 	uint32_t    idx;
 	uint32_t    elements_in_buffer = 0;
 	int32_t     key_buffer[1024];
 
-	// write keys and value-indices
 	for (idx = 0; idx < hash->bucket_count; idx++)	{
 		qhl *list = &(hash->bucket_list[idx]);
 		qhb *p = list->head;
@@ -711,8 +767,8 @@ int qhi_hash_save_to_file(int fd, qhi *hash)
 				key_buffer[elements_in_buffer + 1] = hash->values[p->value_idx];
 				elements_in_buffer += 2;
 
-				if (elements_in_buffer == 512) {
-					if (write(fd, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+				if (elements_in_buffer == 1024) {
+					if (!apply_func(context, key_buffer, elements_in_buffer)) {
 						return 0;
 					}
 					elements_in_buffer = 0;
@@ -724,10 +780,27 @@ int qhi_hash_save_to_file(int fd, qhi *hash)
 	}
 
 	if (elements_in_buffer > 0) {
-		if (write(fd, key_buffer, elements_in_buffer * 4) != (elements_in_buffer * 4)) {
+		if (!apply_func(context, key_buffer, elements_in_buffer)) {
 			return 0;
 		}
 	}
 
 	return 1;
+}
+
+/**
+ * Saves a hash to a file pointed to by the file descriptor
+ *
+ * Parameters:
+ * - hash: the set to write
+ * - fd: a file descriptor that is suitable for reading to
+ *
+ * Returns:
+ * - 1 on success, and 0 on failure
+ */
+int qhi_hash_save_to_file(int fd, qhi *hash)
+{
+	fd_write_apply_context ctxt;
+	ctxt.fd = fd;
+	return qhi_process_hash(hash, (void *) &ctxt, fd_write_apply_func);
 }

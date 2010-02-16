@@ -46,9 +46,21 @@
 #define QH_HASHER_JENKINS2        0x0400
 #define QH_HASHER_MASK            0xFF00
 
+typedef struct _php_qh_save_to_string_context {
+	char     *string;
+	uint32_t  string_len;
+} php_qh_save_to_string_context;
+
+typedef struct _php_qh_save_to_stream_context {
+	php_stream *stream;
+} php_qh_save_to_stream_context;
+
 zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC);
 void qh_add_constants(zend_class_entry *ce TSRMLS_DC);
 void qh_process_flags(qho *options, long flags);
 void qh_set_memory_functions(qho *options);
+
+int php_qh_save_to_string_func(void *context, int32_t *buffer, uint32_t elements);
+int php_qh_save_to_stream_func(void *context, int32_t *buffer, uint32_t elements);
 
 #endif
