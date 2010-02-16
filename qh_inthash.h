@@ -29,9 +29,7 @@ struct _php_qh_inthash_obj {
 	qhi          *hash;
 };
 
-PHP_METHOD(QuickHashIntHash, __construct);
 PHP_METHOD(QuickHashIntHash, add);
-PHP_METHOD(QuickHashIntHash, exists);
 PHP_METHOD(QuickHashIntHash, getValue);
 PHP_METHOD(QuickHashIntHash, loadFromFile);
 PHP_METHOD(QuickHashIntHash, saveToFile);
@@ -39,5 +37,6 @@ PHP_METHOD(QuickHashIntHash, loadFromString);
 PHP_METHOD(QuickHashIntHash, saveToString);
 
 void qh_register_class_inthash(TSRMLS_D);
+PHPAPI zend_class_entry *php_qh_get_inthash_ce(void);
 
 #endif

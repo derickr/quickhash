@@ -21,6 +21,7 @@
 #include "zend.h"
 #include "zend_API.h"
 #include "qh_inthash.h"
+#include "qh_intset.h"
 #include "quickhash.h"
 
 zend_class_entry *qh_ce_inthash;
@@ -41,7 +42,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_construct, 0, 0, 1)
 	ZEND_ARG_INFO(0, options)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_add, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_add, 0, 0, 1)
 	ZEND_ARG_INFO(0, key)
 	ZEND_ARG_INFO(0, value)
 ZEND_END_ARG_INFO()
@@ -73,9 +74,9 @@ ZEND_END_ARG_INFO()
 
 /* Class methods definition */
 zend_function_entry qh_funcs_inthash[] = {
-	PHP_ME(QuickHashIntHash, __construct,    arginfo_qh_inthash_construct,        ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet,  __construct,    arginfo_qh_inthash_construct,        ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, add,            arginfo_qh_inthash_add,              ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntHash, exists,         arginfo_qh_inthash_exists,           ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet,  exists,         arginfo_qh_inthash_exists,           ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, getValue,       arginfo_qh_inthash_get_value,        ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromFile,   arginfo_qh_inthash_load_from_file,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, saveToFile,     arginfo_qh_inthash_save_to_file,     ZEND_ACC_PUBLIC)
@@ -90,7 +91,7 @@ void qh_register_class_inthash(TSRMLS_D)
 
 	INIT_CLASS_ENTRY(ce_inthash, "QuickHashIntHash", qh_funcs_inthash);
 	ce_inthash.create_object = qh_object_new_inthash;
-	qh_ce_inthash = zend_register_internal_class_ex(&ce_inthash, NULL, NULL TSRMLS_CC);
+	qh_ce_inthash = zend_register_internal_class_ex(&ce_inthash, php_qh_get_intset_ce(), NULL TSRMLS_CC);
 	memcpy(&qh_object_handlers_inthash, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	qh_add_constants(qh_ce_inthash);
@@ -137,67 +138,19 @@ static void qh_object_free_storage_inthash(void *object TSRMLS_DC)
 	efree(object);
 }
 
-static int qh_inthash_initialize(php_qh_inthash_obj *obj, long size, long flags TSRMLS_DC)
-{
-	qho *options = qho_create();
-
-	options->size = size;
-	qh_process_flags(options, flags);
-
-	obj->hash = qhi_create(options);
-	if (obj->hash == NULL) {
-		qho_free(options);
-		return 0;
-	}
-	return 1;
-}
-
-/* {{{ proto QuickHashIntHash QuickHashIntHash::__construct( int size, [ int options] )
-   Creates a new QuickHashIntHash */
-PHP_METHOD(QuickHashIntHash, __construct)
-{
-	long size;
-	long options = 0;
-
-	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &size, &options) == SUCCESS) {
-		if (!qh_inthash_initialize(zend_object_store_get_object(getThis() TSRMLS_CC), size, options TSRMLS_CC)) {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not initialize hash.");
-		}
-	}
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
-}
-/* }}} */
-
-/* {{{ proto bool QuickHashIntHash::add( int key, int value )
+/* {{{ proto bool QuickHashIntHash::add( int key [ , int value ] )
    Adds an element with key key and value value to the hash */
 PHP_METHOD(QuickHashIntHash, add)
 {
 	zval              *object;
 	php_qh_inthash_obj *inthash_obj;
-	long               key, value;
+	long               key, value = 1;
 
-	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Oll", &object, qh_ce_inthash, &key, &value) == FAILURE) {
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol|l", &object, qh_ce_inthash, &key, &value) == FAILURE) {
 		RETURN_FALSE;
 	}
 	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
 	RETURN_BOOL(qhi_hash_add(inthash_obj->hash, key, value));
-}
-/* }}} */
-
-/* {{{ proto bool QuickHashIntHash::exists( int key )
-   Tests whether the element with key key is part of the hash */
-PHP_METHOD(QuickHashIntHash, exists)
-{
-	zval              *object;
-	php_qh_inthash_obj *inthash_obj;
-	long               key;
-
-	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_inthash, &key) == FAILURE) {
-		RETURN_FALSE;
-	}
-	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
-	RETURN_BOOL(qhi_set_exists(inthash_obj->hash, key));
 }
 /* }}} */
 

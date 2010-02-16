@@ -18,6 +18,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#ifndef QUICK_HASH_H
+#define QUICK_HASH_H
 /**
  * Hasher algorithm
  */
@@ -112,3 +114,5 @@ int qhi_hash_get_value(qhi *hash, int32_t position, uint32_t *value);
 
 qhi *qhi_hash_load_from_file(int fd, qho *options);
 int qhi_hash_save_to_file(int fd, qhi *hash);
+
+#endif

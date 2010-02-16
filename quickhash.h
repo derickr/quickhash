@@ -17,8 +17,8 @@
  */
 /* $Id: php_quickhash.h,v 1.9 2009-03-30 18:22:15 derick Exp $ */
 
-#ifndef QUICKHASH_H
-#define QUICKHASH_H
+#ifndef PHP_QUICKHASH_PRIV_H
+#define PHP_QUICKHASH_PRIV_H
 
 /* refcount macros */
 #ifndef Z_ADDREF_P
