@@ -198,48 +198,16 @@ PHP_METHOD(QuickHashIntSet, exists)
 
 static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_stream *stream, long flags TSRMLS_DC)
 {
-	php_stream_statbuf finfo;
-	uint32_t           nr_of_elements, elements_read = 0;
-	uint32_t           bytes_read;
-	int32_t            key_buffer[1024];
-	qho               *options = qho_create();
+	uint32_t   nr_of_elements, elements_read = 0;
+	uint32_t   bytes_read;
+	int32_t    key_buffer[1024];
+	qho       *options = qho_create();
 
-	// deal with options
-	qh_process_flags(options, flags);
-
-	// obtain the filesize
-	if (php_stream_stat(stream, &finfo) != 0) {
+	if (!php_qh_prepare_file(&obj->hash, options, stream, flags, 1, &nr_of_elements TSRMLS_CC)) {
 		qho_free(options);
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not obtain file information");
 		return 0;
 	}
-
-	// check whether we have a real file (and not a directory or something)
-	if (!S_ISREG(finfo.sb.st_mode)) {
-		qho_free(options);
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is not a normal file");
-		return 0;
-	}
-
-	// if the filesize is not an increment of 4, abort
-	if (finfo.sb.st_size % 4 != 0) {
-		qho_free(options);
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format (not a multiple of 4 bytes)");
-		return 0;
-	}
-	nr_of_elements = finfo.sb.st_size / 4;
-
-	// override the nr of bucket lists as we know better
-	options->size = nr_of_elements;
-
-	// create the hash
-	obj->hash = qhi_create(options);
-	if (obj->hash == NULL) {
-		qho_free(options);
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set");
-		return 0;
-	}
-
+	
 	// read the elements and add them to the set
 	do {
 		bytes_read = php_stream_read(stream, (char*)&key_buffer, sizeof(key_buffer));

@@ -161,6 +161,46 @@ int php_qh_save_to_stream_func(void *context, int32_t *buffer, uint32_t elements
 	return 1;
 }
 
+/**
+ * Does some tests on the stream to see whether we can use it for reading data from.
+ */
+int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long flags, int req_count, int *nr_of_elements TSRMLS_DC)
+{
+	php_stream_statbuf finfo;
+
+	// deal with options
+	qh_process_flags(options, flags);
+
+	// obtain the filesize
+	if (php_stream_stat(stream, &finfo) != 0) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not obtain file information");
+		return 0;
+	}
+
+	// check whether we have a real file (and not a directory or something)
+	if (!S_ISREG(finfo.sb.st_mode)) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is not a normal file");
+		return 0;
+	}
+
+	// if the filesize is not an increment of req_count & sizeof(int32_t), abort
+	if (finfo.sb.st_size % (req_count * sizeof(int32_t)) != 0) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format (not a multiple of %d bytes)", req_count * sizeof(int32_t));
+		return 0;
+	}
+	*nr_of_elements = finfo.sb.st_size / 4;
+
+	// override the nr of bucket lists as we know better
+	options->size = *nr_of_elements;
+
+	// create the hash
+	*hash = qhi_create(options);
+	if (*hash == NULL) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set/hash");
+		return 0;
+	}
+}
+
 
 PHP_MINIT_FUNCTION(quickhash)
 {
