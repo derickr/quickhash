@@ -183,7 +183,7 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long flags
 		return 0;
 	}
 
-	// if the filesize is not an increment of req_count & sizeof(int32_t), abort
+	// if the filesize is not an increment of req_count * sizeof(int32_t), abort
 	if (finfo.sb.st_size % (req_count * sizeof(int32_t)) != 0) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format (not a multiple of %d bytes)", req_count * sizeof(int32_t));
 		return 0;
@@ -209,8 +209,8 @@ int php_qh_prepare_string(qhi **hash, qho *options, long length, long flags, int
 	// deal with options
 	qh_process_flags(options, flags);
 
-	// if the size is not an increment of 4, abort
-	if (length % 4 != 0) {
+	// if the filesize is not an increment of req_count * sizeof(int32_t), abort
+	if (length % (sizeof(int32_t) * req_count) != 0) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "String is in the wrong format (not a multiple of %d bytes)", req_count * sizeof(int32_t));
 		return 0;
 	}
