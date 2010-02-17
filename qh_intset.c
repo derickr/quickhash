@@ -282,25 +282,8 @@ static uint32_t qh_intset_initialize_from_string(php_qh_intset_obj *obj, char *c
 	uint32_t  nr_of_elements;
 	qho      *options = qho_create();
 
-	// deal with options
-	qh_process_flags(options, flags);
-
-	// if the size is not an increment of 4, abort
-	if (length % 4 != 0) {
+	if (!php_qh_prepare_string(&obj->hash, options, length, flags, 1, &nr_of_elements TSRMLS_CC)) {
 		qho_free(options);
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "String is in the wrong format (not a multiple of 4 bytes)");
-		return 0;
-	}
-	nr_of_elements = length / 4;
-
-	// override the nr of bucket lists as we know better
-	options->size = nr_of_elements;
-
-	// create the hash
-	obj->hash = qhi_create(options);
-	if (obj->hash == NULL) {
-		qho_free(options);
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set");
 		return 0;
 	}
 

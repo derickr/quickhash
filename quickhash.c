@@ -201,6 +201,32 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long flags
 	}
 }
 
+/**
+ * Does some tests on the string to see whether we can use it for reading data from.
+ */
+int php_qh_prepare_string(qhi **hash, qho *options, long length, long flags, int req_count, int *nr_of_elements TSRMLS_DC)
+{
+	// deal with options
+	qh_process_flags(options, flags);
+
+	// if the size is not an increment of 4, abort
+	if (length % 4 != 0) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "String is in the wrong format (not a multiple of %d bytes)", req_count * sizeof(int32_t));
+		return 0;
+	}
+	*nr_of_elements = length / 4;
+
+	// override the nr of bucket lists as we know better
+	options->size = *nr_of_elements;
+
+	// create the hash
+	*hash = qhi_create(options);
+	if (*hash == NULL) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set/hash");
+		return 0;
+	}
+}
+
 
 PHP_MINIT_FUNCTION(quickhash)
 {
