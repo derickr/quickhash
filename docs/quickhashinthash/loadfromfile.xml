@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- $Revision: $ -->
 
-<refentry xml:id="quickhashintset.loadfromstring" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
+<refentry xml:id="quickhashinthash.loadfromfile" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
  <refnamediv>
-  <refname>QuickHashIntSet::loadFromString</refname>
-  <refpurpose>This factory method creates a set from a string</refpurpose>
+  <refname>QuickHashIntHash::loadFromFile</refname>
+  <refpurpose>This factory method creates a hash from a file</refpurpose>
  </refnamediv>
 
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
-   <modifier>public</modifier> <modifier>static</modifier> <type>QuickHashIntSet</type><methodname>QuickHashIntSet::loadFromString</methodname>
-   <methodparam><type>string</type><parameter>contents</parameter></methodparam>
+   <modifier>public</modifier> <modifier>static</modifier> <type>QuickHashIntHash</type><methodname>QuickHashIntHash::loadFromFile</methodname>
+   <methodparam><type>string</type><parameter>filename</parameter></methodparam>
    <methodparam choice="opt"><type>integer</type><parameter>options</parameter></methodparam>
   </methodsynopsis>
   <para>
-   This factory method creates a new set from a definition in a string. The
+   This factory method creates a new hash from a definition file on disk. The
    file format consists of 32 bit signed integers packed together in the
-   Endianness that the system that the code runs on uses.
+   Endianness that the system that the code runs on uses. For each element
+   there are two 32 bit signed integers stored. The first of each element is
+   the key, and the second is the value belonging to the key.
   </para>
  </refsect1>
 
@@ -26,10 +28,10 @@
   <para>
    <variablelist>
     <varlistentry>
-     <term><parameter>contents</parameter></term>
+     <term><parameter>filename</parameter></term>
      <listitem>
       <para>
-       The string containing a serialized format of the set.
+       The filename of the file to read the hash from.
       </para>
      </listitem>
     </varlistentry>
@@ -39,7 +41,7 @@
       <para>
        The same options that the class' contructor takes; except that the size
        option is ignored. It is automatically calculated to be the same as the
-       number of entries in the set, rounded up to the nearest power of two
+       number of entries in the hash, rounded up to the nearest power of two
        with a maximum limit of 4194304.
       </para>
      </listitem>
@@ -51,7 +53,7 @@
  <refsect1 role="returnvalues">
   &reftitle.returnvalues;
   <para>
-   Returns a new QuickHashIntSet.
+   Returns a new QuickHashIntHash.
   </para>
  </refsect1>
 
@@ -59,20 +61,20 @@
   &reftitle.examples;
   <para>
    <example>
-    <title><function>QuickHashIntSet::loadFromString</function> example</title>
+    <title><function>QuickHashIntHash::loadFromFile</function> example</title>
     <programlisting role="php">
 <![CDATA[
 <?php
-$contents = file_get_contents( dirname( __FILE__ ) . "/simple.set" );
-$set = QuickHashIntSet::loadFromString(
-    $contents,
-    QuickHashIntSet::DO_NOT_USE_ZEND_ALLOC
+$file = dirname( __FILE__ ) . "/simple.hash";
+$hash = QuickHashIntHash::loadFromFile(
+    $file,
+    QuickHashIntHash::DO_NOT_USE_ZEND_ALLOC
 );
 foreach( range( 0, 0x0f ) as $key )
 {
     printf( "Key %3d (%2x) is %s\n",
         $key, $key, 
-        $set->exists( $key ) ? 'set' : 'unset'
+        $hash->exists( $key ) ? 'set' : 'unset'
     );
 }
 ?>

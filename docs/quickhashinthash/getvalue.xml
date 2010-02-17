@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- $Revision: $ -->
 
-<refentry xml:id="quickhashintset.exists" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
+<refentry xml:id="quickhashinthash.getvalue" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
  <refnamediv>
-  <refname>QuickHashIntSet::exists</refname>
-  <refpurpose>This method checks whether a key is part of the set</refpurpose>
+  <refname>QuickHashIntHash::getValue</refname>
+  <refpurpose>This method retrieves a value from the hash by its key.</refpurpose>
  </refnamediv>
 
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
-   <modifier>public</modifier> <type>boolean</type><methodname>QuickHashIntSet::exists</methodname>
+   <modifier>public</modifier> <type>integer</type><methodname>QuickHashIntHash::getValue</methodname>
    <methodparam><type>integer</type><parameter>key</parameter></methodparam>
   </methodsynopsis>
   <para>
-   This method checks whether an entry with the provided key exists in the
-   set.
+   This method retrieves a value from the hash by its key.
   </para>
  </refsect1>
 
@@ -27,7 +26,7 @@
      <term><parameter>key</parameter></term>
      <listitem>
       <para>
-       The key of the entry to check for whether it exists in the set.
+       The key of the entry to add.
       </para>
      </listitem>
     </varlistentry>
@@ -38,8 +37,7 @@
  <refsect1 role="returnvalues">
   &reftitle.returnvalues;
   <para>
-   Returns &true; when the entry was found, or &false; when the entry is not
-   found.
+   The value if the key exists, or &null; if the key wasn't part of the hash.
   </para>
  </refsect1>
 
@@ -47,40 +45,29 @@
   &reftitle.examples;
   <para>
    <example>
-    <title><function>QuickHashIntSet::exists</function> example</title>
+    <title><function>QuickHashIntHash::getValue</function> example</title>
     <programlisting role="php">
 <![CDATA[
 <?php
-//generate 200000 elements
-$array = range( 0, 199999 );
-$existingEntries = array_rand( array_flip( $array ), 180000 );
-$testForEntries = array_rand( array_flip( $array ), 1000 );
-$foundCount = 0;
+$hash = new QuickHashIntHash( 8 );
+var_dump( $hash->getValue( 1 ) );
 
-echo "Creating set: ", microtime( true ), "\n";
-$set = new QuickHashIntSet( 100000 );
-echo "Adding elements: ", microtime( true ), "\n";
-foreach( $existingEntries as $key )
-{
-     $set->add( $key );
-}
+var_dump( $hash->add( 2 ) );
+var_dump( $hash->getValue( 2 ) );
 
-echo "Doing 1000 tests: ", microtime( true ), "\n";
-foreach( $testForEntries as $key )
-{
-     $foundCount += $set->exists( $key );
-}
-echo "Done, $foundCount found: ", microtime( true ), "\n";
+var_dump( $hash->add( 3, 5 ) );
+var_dump( $hash->getValue( 3 ) );
 ?>
 ]]>
     </programlisting>
     &example.outputs.similar;
     <screen>
 <![CDATA[
-Creating set: 1263588703.0748
-Adding elements: 1263588703.0757
-Doing 1000 tests: 1263588703.7851
-Done, 898 found: 1263588703.7897
+NULL
+bool(true)
+int(1)
+bool(true)
+int(5)
 ]]>
     </screen>
    </example>

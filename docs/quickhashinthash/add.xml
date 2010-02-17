@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- $Revision: $ -->
 
-<refentry xml:id="quickhashintset.add" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
+<refentry xml:id="quickhashinthash.add" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
  <refnamediv>
-  <refname>QuickHashIntSet::add</refname>
-  <refpurpose>This method adds a new entry to the set.</refpurpose>
+  <refname>QuickHashIntHash::add</refname>
+  <refpurpose>This method adds a new entry to the hash.</refpurpose>
  </refnamediv>
 
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
-   <modifier>public</modifier> <type>boolean</type><methodname>QuickHashIntSet::add</methodname>
+   <modifier>public</modifier> <type>boolean</type><methodname>QuickHashIntHash::add</methodname>
    <methodparam><type>integer</type><parameter>key</parameter></methodparam>
+   <methodparam choice="opt"><type>integer</type><parameter>value</parameter></methodparam>
   </methodsynopsis>
   <para>
-   This method adds a new entry to the set, and returns whether the entry was
+   This method adds a new entry to the hash, and returns whether the entry was
    added. Entries are by default always added unless
-   QuickHashIntSet::CHECK_FOR_DUPES has been passed when the set was created.
+   QuickHashIntHash::CHECK_FOR_DUPES has been passed when the hash was created.
   </para>
  </refsect1>
 
@@ -29,6 +30,15 @@
      <listitem>
       <para>
        The key of the entry to add.
+      </para>
+     </listitem>
+    </varlistentry>
+    <varlistentry>
+     <term><parameter>value</parameter></term>
+     <listitem>
+      <para>
+       The optional value of the entry to add. If no value is specified,
+       <literal>1</literal> will be used.
       </para>
      </listitem>
     </varlistentry>
@@ -47,23 +57,31 @@
   &reftitle.examples;
   <para>
    <example>
-    <title><function>QuickHashIntSet::add</function> example</title>
+    <title><function>QuickHashIntHash::add</function> example</title>
     <programlisting role="php">
 <![CDATA[
 <?php
 echo "without dupe checking\n";
-$set = new QuickHashIntSet( 1024 );
-var_dump( $set->exists( 4 ) );
-var_dump( $set->add( 4 ) );
-var_dump( $set->exists( 4 ) );
-var_dump( $set->add( 4 ) );
+$hash = new QuickHashIntHash( 1024 );
+var_dump( $hash->exists( 4 ) );
+var_dump( $hash->getValue( 4 ) );
+var_dump( $hash->add( 4, 22 ) );
+var_dump( $hash->exists( 4 ) );
+var_dump( $hash->getValue( 4 ) );
+var_dump( $hash->add( 4, 12 ) );
 
 echo "\nwith dupe checking\n";
-$set = new QuickHashIntSet( 1024, QuickHashIntSet::CHECK_FOR_DUPES );
-var_dump( $set->exists( 4 ) );
-var_dump( $set->add( 4 ) );
-var_dump( $set->exists( 4 ) );
-var_dump( $set->add( 4 ) );
+$hash = new QuickHashIntHash( 1024, QuickHashIntHash::CHECK_FOR_DUPES );
+var_dump( $hash->exists( 4 ) );
+var_dump( $hash->getValue( 4 ) );
+var_dump( $hash->add( 4, 78 ) );
+var_dump( $hash->exists( 4 ) );
+var_dump( $hash->getValue( 4 ) );
+var_dump( $hash->add( 4, 9 ) );
+
+echo "\ndefault value\n";
+var_dump( $hash->add( 5 ) );
+var_dump( $hash->getValue( 5 ) );
 ?>
 ]]>
     </programlisting>
@@ -72,15 +90,23 @@ var_dump( $set->add( 4 ) );
 <![CDATA[
 without dupe checking
 bool(false)
+NULL
 bool(true)
 bool(true)
+int(22)
 bool(true)
 
 with dupe checking
 bool(false)
+NULL
 bool(true)
 bool(true)
+int(78)
 bool(false)
+
+default value
+bool(true)
+int(1)
 ]]>
     </screen>
    </example>
