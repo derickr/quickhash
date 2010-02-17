@@ -38,7 +38,7 @@ static zend_object_value qh_object_new_intset(zend_class_entry *class_type TSRML
 /* Reflection Information Structs */
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_construct, 0, 0, 1)
 	ZEND_ARG_INFO(0, size)
-	ZEND_ARG_INFO(0, options)
+	ZEND_ARG_INFO(0, flags)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_add, 0, 0, 1)
@@ -51,7 +51,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_load_from_file, 0, 0, 1)
 	ZEND_ARG_INFO(0, filename)
-	ZEND_ARG_INFO(0, options)
+	ZEND_ARG_INFO(0, flags)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_save_to_file, 0, 0, 1)
@@ -60,7 +60,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_load_from_string, 0, 0, 1)
 	ZEND_ARG_INFO(0, contents)
-	ZEND_ARG_INFO(0, options)
+	ZEND_ARG_INFO(0, flags)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_save_to_string, 0, 0, 0)
@@ -147,16 +147,16 @@ static int qh_intset_initialize(php_qh_intset_obj *obj, long size, long flags TS
 	return 1;
 }
 
-/* {{{ proto QuickHashIntSet QuickHashIntSet::__construct( int size, [ int options] )
+/* {{{ proto QuickHashIntSet QuickHashIntSet::__construct( int size, [ int flags] )
    Creates a new QuickHashIntSet */
 PHP_METHOD(QuickHashIntSet, __construct)
 {
 	long size;
-	long options = 0;
+	long flags = 0;
 
 	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &size, &options) == SUCCESS) {
-		if (!qh_intset_initialize(zend_object_store_get_object(getThis() TSRMLS_CC), size, options TSRMLS_CC)) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &size, &flags) == SUCCESS) {
+		if (!qh_intset_initialize(zend_object_store_get_object(getThis() TSRMLS_CC), size, flags TSRMLS_CC)) {
 			php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not initialize set.");
 		}
 	}
@@ -217,24 +217,24 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 	return nr_of_elements;
 }
 
-/* {{{ proto QuickHashIntSet QuickHashIntSet::loadFromFile( string filename [, int options ] )
+/* {{{ proto QuickHashIntSet QuickHashIntSet::loadFromFile( string filename [, int flags ] )
    Creates a QuickHashIntSet from data in file filename */
 PHP_METHOD(QuickHashIntSet, loadFromFile)
 {
 	char *filename;
 	int   filename_len;
-	long  options = 0;
+	long  flags = 0;
 	php_stream *stream;
 
 	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &filename, &filename_len, &options) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &filename, &filename_len, &flags) == FAILURE) {
 		return;
 	}
 
 	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
 	stream = php_stream_open_wrapper(filename, "r", IGNORE_PATH | REPORT_ERRORS, NULL);
 	if (stream) {
-		qh_intset_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, options);
+		qh_intset_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, flags);
 		php_stream_close(stream);
 	}
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
@@ -309,21 +309,21 @@ static uint32_t qh_intset_initialize_from_string(php_qh_intset_obj *obj, char *c
 	return nr_of_elements;
 }
 
-/* {{{ proto QuickHashIntSet QuickHashIntSet::loadFromString( string contents [, int options ] )
+/* {{{ proto QuickHashIntSet QuickHashIntSet::loadFromString( string contents [, int flags ] )
    Creates a QuickHashIntSet from data in a string */
 PHP_METHOD(QuickHashIntSet, loadFromString)
 {
 	char    *contents;
 	int      contents_len;
-	long     options = 0;
+	long     flags = 0;
 
 	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &contents, &contents_len, &options) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &contents, &contents_len, &flags) == FAILURE) {
 		return;
 	}
 
 	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
-	qh_intset_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, options);
+	qh_intset_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, flags);
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
 /* }}} */
