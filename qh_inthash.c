@@ -188,8 +188,8 @@ static uint32_t qh_inthash_initialize_from_file(php_qh_inthash_obj *obj, php_str
 	// read the elements and add them to the hash
 	do {
 		bytes_read = php_stream_read(stream, (char*)&key_buffer, sizeof(key_buffer));
-		qhi_hash_add_elements_from_buffer(obj->hash, key_buffer, bytes_read / 4);
-		elements_read += (bytes_read / 4);
+		qhi_hash_add_elements_from_buffer(obj->hash, key_buffer, bytes_read / sizeof(int32_t));
+		elements_read += (bytes_read / sizeof(int32_t));
 	} while (elements_read < nr_of_elements);
 	return nr_of_elements;
 }

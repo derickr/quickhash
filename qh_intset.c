@@ -211,8 +211,8 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 	// read the elements and add them to the set
 	do {
 		bytes_read = php_stream_read(stream, (char*)&key_buffer, sizeof(key_buffer));
-		qhi_set_add_elements_from_buffer(obj->hash, key_buffer, bytes_read / 4);
-		elements_read += (bytes_read / 4);
+		qhi_set_add_elements_from_buffer(obj->hash, key_buffer, bytes_read / sizeof(int32_t));
+		elements_read += (bytes_read / sizeof(int32_t));
 	} while (elements_read < nr_of_elements);
 	return nr_of_elements;
 }

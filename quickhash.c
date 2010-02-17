@@ -188,7 +188,7 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long flags
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format (not a multiple of %d bytes)", req_count * sizeof(int32_t));
 		return 0;
 	}
-	*nr_of_elements = finfo.sb.st_size / 4;
+	*nr_of_elements = finfo.sb.st_size / sizeof(int32_t);
 
 	// override the nr of bucket lists as we know better
 	options->size = *nr_of_elements;
@@ -214,7 +214,7 @@ int php_qh_prepare_string(qhi **hash, qho *options, long length, long flags, int
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "String is in the wrong format (not a multiple of %d bytes)", req_count * sizeof(int32_t));
 		return 0;
 	}
-	*nr_of_elements = length / 4;
+	*nr_of_elements = length / sizeof(int32_t);
 
 	// override the nr of bucket lists as we know better
 	options->size = *nr_of_elements;
