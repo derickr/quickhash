@@ -25,6 +25,7 @@ catch ( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+?>
 --EXPECT--
 object(QuickHashIntSet)#1 (0) {
 }
