@@ -199,12 +199,12 @@ uint32_t qhi_normalize_size(uint32_t size)
 	if (size > 1<<22) {
 		return 1<<22;
 	}
-	for (i = 22; i > 2; i--) {
+	for (i = 22; i > 6; i--) {
 		if (size > (1<< (i - 1))) {
 			return 1<<i;
 		}
 	}
-	return 4;
+	return 64;
 }
 
 /**
