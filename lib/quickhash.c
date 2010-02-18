@@ -466,8 +466,8 @@ qhi *qhi_set_load_from_file(int fd, qho *options)
 	}
 	nr_of_elements = finfo.st_size / 4;
 
-	// override the nr of bucket lists as we know better
-	options->size = qhi_normalize_size(nr_of_elements);
+	// override the nr of bucket lists if the size is still 0.
+	options->size = qhi_normalize_size(options->size == 0 ? nr_of_elements : options->size);
 #if DEBUG
 	printf("Picking size: %u\n", options->size);
 #endif
@@ -712,8 +712,8 @@ qhi *qhi_hash_load_from_file(int fd, qho *options)
 	}
 	nr_of_elements = finfo.st_size / 8;
 
-	// override the nr of bucket lists as we know better
-	options->size = qhi_normalize_size(nr_of_elements);
+	// override the nr of bucket lists if the size is still 0.
+	options->size = qhi_normalize_size(options->size == 0 ? nr_of_elements : options->size);
 #if DEBUG
 	printf("Picking size: %u\n", options->size);
 #endif

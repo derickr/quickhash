@@ -173,14 +173,14 @@ PHP_METHOD(QuickHashIntHash, getValue)
 }
 /* }}} */
 
-static uint32_t qh_inthash_initialize_from_file(php_qh_inthash_obj *obj, php_stream *stream, long flags TSRMLS_DC)
+static uint32_t qh_inthash_initialize_from_file(php_qh_inthash_obj *obj, php_stream *stream, long size, long flags TSRMLS_DC)
 {
 	uint32_t  nr_of_elements, elements_read = 0;
 	uint32_t  bytes_read;
 	int32_t   key_buffer[1024];
 	qho      *options = qho_create();
 
-	if (!php_qh_prepare_file(&obj->hash, options, stream, flags, 2, &nr_of_elements TSRMLS_CC)) {
+	if (!php_qh_prepare_file(&obj->hash, options, stream, size, flags, 2, &nr_of_elements TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}
@@ -194,24 +194,24 @@ static uint32_t qh_inthash_initialize_from_file(php_qh_inthash_obj *obj, php_str
 	return nr_of_elements;
 }
 
-/* {{{ proto QuickHashIntHash QuickHashIntHash::loadFromFile( string filename [, int flags ] )
+/* {{{ proto QuickHashIntHash QuickHashIntHash::loadFromFile( string filename [, int size [, int flags ]] )
    Creates a QuickHashIntHash from data in file filename */
 PHP_METHOD(QuickHashIntHash, loadFromFile)
 {
 	char *filename;
 	int   filename_len;
-	long  flags = 0;
+	long  size = 0, flags = 0;
 	php_stream *stream;
 
 	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &filename, &filename_len, &flags) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &filename, &filename_len, &size, &flags) == FAILURE) {
 		return;
 	}
 
 	qh_instantiate(qh_ce_inthash, return_value TSRMLS_CC);
 	stream = php_stream_open_wrapper(filename, "r", IGNORE_PATH | REPORT_ERRORS, NULL);
 	if (stream) {
-		qh_inthash_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, flags);
+		qh_inthash_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, size, flags);
 		php_stream_close(stream);
 	}
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
@@ -254,12 +254,12 @@ PHP_METHOD(QuickHashIntHash, saveToFile)
 }
 /* }}} */
 
-static uint32_t qh_inthash_initialize_from_string(php_qh_inthash_obj *obj, char *contents, long length, long flags TSRMLS_DC)
+static uint32_t qh_inthash_initialize_from_string(php_qh_inthash_obj *obj, char *contents, long length, long size, long flags TSRMLS_DC)
 {
 	uint32_t  nr_of_elements;
 	qho      *options = qho_create();
 
-	if (!php_qh_prepare_string(&obj->hash, options, length, flags, 2, &nr_of_elements TSRMLS_CC)) {
+	if (!php_qh_prepare_string(&obj->hash, options, length, size, flags, 2, &nr_of_elements TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}
@@ -269,21 +269,21 @@ static uint32_t qh_inthash_initialize_from_string(php_qh_inthash_obj *obj, char 
 	return nr_of_elements;
 }
 
-/* {{{ proto QuickHashIntHash QuickHashIntHash::loadFromString( string contents [, int flags ] )
+/* {{{ proto QuickHashIntHash QuickHashIntHash::loadFromString( string contents [, int size [, int flags ]] )
    Creates a QuickHashIntHash from data in a string */
 PHP_METHOD(QuickHashIntHash, loadFromString)
 {
 	char    *contents;
 	int      contents_len;
-	long     flags = 0;
+	long     size = 0, flags = 0;
 
 	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|l", &contents, &contents_len, &flags) == FAILURE) {
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &contents, &contents_len, &size, &flags) == FAILURE) {
 		return;
 	}
 
 	qh_instantiate(qh_ce_inthash, return_value TSRMLS_CC);
-	qh_inthash_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, flags);
+	qh_inthash_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, size, flags);
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
 /* }}} */

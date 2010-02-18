@@ -5,7 +5,7 @@ xdebug.default_enable=0
 --FILE--
 <?php
 $file = dirname( __FILE__ ) . "/simple.hash";
-$hash = QuickHashIntHash::loadFromFile( $file, QuickHashIntHash::DO_NOT_USE_ZEND_ALLOC );
+$hash = QuickHashIntHash::loadFromFile( $file, 0, QuickHashIntHash::DO_NOT_USE_ZEND_ALLOC );
 foreach( range( 0, 0x1f ) as $key )
 {
 	printf( "Key %3d (%2x) is ", $key, $key );

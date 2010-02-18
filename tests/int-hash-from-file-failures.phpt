@@ -16,6 +16,15 @@ catch( Exception $e )
 
 try
 {
+	$hash = QuickHashIntHash::loadFromFile( 1024, 1024, 2, 'stuff' );
+}
+catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+
+try
+{
 	$hash = QuickHashIntHash::loadFromFile( 1024, 2, 'stuff' );
 }
 catch( Exception $e )
@@ -98,7 +107,8 @@ catch( Exception $e )
 
 Wrong params: 
 QuickHashIntHash::loadFromFile() expects at least 1 parameter, 0 given
-QuickHashIntHash::loadFromFile() expects at most 2 parameters, 3 given
+QuickHashIntHash::loadFromFile() expects at most 3 parameters, 4 given
+QuickHashIntHash::loadFromFile() expects parameter 3 to be long, string given
 QuickHashIntHash::loadFromFile() expects parameter 2 to be long, string given
 QuickHashIntHash::loadFromFile() expects parameter 1 to be string, object given
 

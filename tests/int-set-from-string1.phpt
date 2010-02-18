@@ -6,7 +6,7 @@ xdebug.default_enable=0
 <?php
 $file = dirname( __FILE__ ) . "/simple.set";
 $contents = file_get_contents( $file );
-$hash = QuickHashIntSet::loadFromString( $contents, QuickHashIntSet::DO_NOT_USE_ZEND_ALLOC );
+$hash = QuickHashIntSet::loadFromString( $contents, 0, QuickHashIntSet::DO_NOT_USE_ZEND_ALLOC );
 foreach( range( 0, 0x1f ) as $key )
 {
 	printf( "Key %3d (%2x) is %s\n", $key, $key, $hash->exists( $key ) ? 'set' : 'unset' );

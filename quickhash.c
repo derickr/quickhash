@@ -164,7 +164,7 @@ int php_qh_save_to_stream_func(void *context, int32_t *buffer, uint32_t elements
 /**
  * Does some tests on the stream to see whether we can use it for reading data from.
  */
-int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long flags, int req_count, int *nr_of_elements TSRMLS_DC)
+int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size, long flags, int req_count, int *nr_of_elements TSRMLS_DC)
 {
 	php_stream_statbuf finfo;
 
@@ -190,8 +190,8 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long flags
 	}
 	*nr_of_elements = finfo.sb.st_size / sizeof(int32_t);
 
-	// override the nr of bucket lists as we know better
-	options->size = *nr_of_elements;
+	// automatically set the size if the size is still 0.
+	options->size = size == 0 ? *nr_of_elements : size;
 
 	// create the hash
 	*hash = qhi_create(options);
@@ -204,7 +204,7 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long flags
 /**
  * Does some tests on the string to see whether we can use it for reading data from.
  */
-int php_qh_prepare_string(qhi **hash, qho *options, long length, long flags, int req_count, int *nr_of_elements TSRMLS_DC)
+int php_qh_prepare_string(qhi **hash, qho *options, long length, long size, long flags, int req_count, int *nr_of_elements TSRMLS_DC)
 {
 	// deal with options
 	qh_process_flags(options, flags);
@@ -216,8 +216,8 @@ int php_qh_prepare_string(qhi **hash, qho *options, long length, long flags, int
 	}
 	*nr_of_elements = length / sizeof(int32_t);
 
-	// override the nr of bucket lists as we know better
-	options->size = *nr_of_elements;
+	// automatically set the size if the size is still 0.
+	options->size = size == 0 ? *nr_of_elements : size;
 
 	// create the hash
 	*hash = qhi_create(options);

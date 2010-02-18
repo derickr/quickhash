@@ -21,7 +21,7 @@ unset( $hash );
 echo memory_get_usage(), "\n";
 
 $found = 0; $value = 0;
-$hash = QuickHashIntHash::loadFromFile( $file, QuickHashIntHash::DO_NOT_USE_ZEND_ALLOC );
+$hash = QuickHashIntHash::loadFromFile( $file, 0, QuickHashIntHash::DO_NOT_USE_ZEND_ALLOC );
 for ( $i = 3; $i < 1299828; $i += 2 )
 {
 	$found += $hash->exists( $i );

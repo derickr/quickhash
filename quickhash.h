@@ -60,8 +60,8 @@ void qh_add_constants(zend_class_entry *ce TSRMLS_DC);
 void qh_process_flags(qho *options, long flags);
 void qh_set_memory_functions(qho *options);
 
-int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long flags, int req_count, int *nr_of_elements TSRMLS_DC);
-int php_qh_prepare_string(qhi **hash, qho *options, long length, long flags, int req_count, int *nr_of_elements TSRMLS_DC);
+int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size, long flags, int req_count, int *nr_of_elements TSRMLS_DC);
+int php_qh_prepare_string(qhi **hash, qho *options, long length, long size, long flags, int req_count, int *nr_of_elements TSRMLS_DC);
 int php_qh_save_to_string_func(void *context, int32_t *buffer, uint32_t elements);
 int php_qh_save_to_stream_func(void *context, int32_t *buffer, uint32_t elements);
 
