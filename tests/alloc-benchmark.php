@@ -8,7 +8,7 @@ $second = microtime( true );
 unset( $hash );
 
 $third = microtime( true );
-$hash = QuickHashIntHash::loadFromFile( $file, QuickHashIntHash::DO_NOT_USE_ZEND_ALLOC );
+$hash = QuickHashIntHash::loadFromFile( $file, 0, QuickHashIntHash::DO_NOT_USE_ZEND_ALLOC );
 $fourth = microtime( true );
 
 echo $second - $first, "\n";
