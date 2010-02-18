@@ -154,6 +154,7 @@ int php_qh_save_to_string_func(void *context, int32_t *buffer, uint32_t elements
 int php_qh_save_to_stream_func(void *context, int32_t *buffer, uint32_t elements)
 {
 	php_qh_save_to_stream_context *ctxt = (php_qh_save_to_stream_context*) context;
+	TSRMLS_FETCH();
 
 	if (php_stream_write(ctxt->stream, (char*)buffer, elements * sizeof(int32_t)) != (elements * sizeof(int32_t))) {
 		return 0;

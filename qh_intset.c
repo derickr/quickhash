@@ -87,7 +87,7 @@ void qh_register_class_intset(TSRMLS_D)
 	qh_ce_intset = zend_register_internal_class_ex(&ce_intset, NULL, NULL TSRMLS_CC);
 	memcpy(&qh_object_handlers_intset, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
-	qh_add_constants(qh_ce_intset);
+	qh_add_constants(qh_ce_intset TSRMLS_CC);
 }
 
 static inline zend_object_value qh_object_new_intset_ex(zend_class_entry *class_type, php_qh_intset_obj **ptr TSRMLS_DC)
@@ -234,7 +234,7 @@ PHP_METHOD(QuickHashIntSet, loadFromFile)
 	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
 	stream = php_stream_open_wrapper(filename, "r", IGNORE_PATH | REPORT_ERRORS, NULL);
 	if (stream) {
-		qh_intset_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, size, flags);
+		qh_intset_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, size, flags TSRMLS_CC);
 		php_stream_close(stream);
 	}
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
@@ -306,7 +306,7 @@ PHP_METHOD(QuickHashIntSet, loadFromString)
 	}
 
 	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
-	qh_intset_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, size, flags);
+	qh_intset_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, size, flags TSRMLS_CC);
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
 }
 /* }}} */
