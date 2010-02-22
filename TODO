@@ -1,5 +1,4 @@
 Phase II:
-- Rename getValue to get in QuickHashIntHash.
 - To QuickHashIntHash add: update.
 - To QuickHashIntHash add: set (which is update | add).
 

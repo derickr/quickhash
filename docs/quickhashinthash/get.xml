@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- $Revision: $ -->
 
-<refentry xml:id="quickhashinthash.getvalue" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
+<refentry xml:id="quickhashinthash.get" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
  <refnamediv>
-  <refname>QuickHashIntHash::getValue</refname>
+  <refname>QuickHashIntHash::get</refname>
   <refpurpose>This method retrieves a value from the hash by its key.</refpurpose>
  </refnamediv>
 
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
-   <modifier>public</modifier> <type>integer</type><methodname>QuickHashIntHash::getValue</methodname>
+   <modifier>public</modifier> <type>integer</type><methodname>QuickHashIntHash::get</methodname>
    <methodparam><type>integer</type><parameter>key</parameter></methodparam>
   </methodsynopsis>
   <para>
@@ -45,18 +45,18 @@
   &reftitle.examples;
   <para>
    <example>
-    <title><function>QuickHashIntHash::getValue</function> example</title>
+    <title><function>QuickHashIntHash::get</function> example</title>
     <programlisting role="php">
 <![CDATA[
 <?php
 $hash = new QuickHashIntHash( 8 );
-var_dump( $hash->getValue( 1 ) );
+var_dump( $hash->get( 1 ) );
 
 var_dump( $hash->add( 2 ) );
-var_dump( $hash->getValue( 2 ) );
+var_dump( $hash->get( 2 ) );
 
 var_dump( $hash->add( 3, 5 ) );
-var_dump( $hash->getValue( 3 ) );
+var_dump( $hash->get( 3 ) );
 ?>
 ]]>
     </programlisting>

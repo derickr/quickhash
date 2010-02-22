@@ -22,7 +22,7 @@ foreach( $array as $key ) {
 	$foundCount += $hash->exists( $key );
 }
 foreach( $array as $key ) {
-	if ( NULL !== ( $value = $hash->getValue( $key ) ) ) {
+	if ( NULL !== ( $value = $hash->get( $key ) ) ) {
 		$keyValueCount += $key;
 		$valueCount += $value;
 	}
@@ -53,7 +53,7 @@ foreach( $array as $key ) {
 	$foundCount += $hash->exists( $key );
 }
 foreach( $array as $key ) {
-	if ( NULL !== ( $value = $hash->getValue( $key ) ) ) {
+	if ( NULL !== ( $value = $hash->get( $key ) ) ) {
 		$keyValueCount += $key;
 		$valueCount += $value;
 	}

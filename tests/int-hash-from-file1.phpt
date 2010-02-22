@@ -9,7 +9,7 @@ $hash = QuickHashIntHash::loadFromFile( $file, 0, QuickHashIntHash::DO_NOT_USE_Z
 foreach( range( 0, 0x1f ) as $key )
 {
 	printf( "Key %3d (%2x) is ", $key, $key );
-	$value = $hash->getValue( $key );
+	$value = $hash->get( $key );
 	print $value === NULL ? 'unset' : $value;
 	print "\n";
 }

@@ -34,7 +34,7 @@ int main(void)
 	}
 
 	for (i= 0; i < 1048576; i++) {
-		if (qhi_hash_get_value(h, i, &value)) {
+		if (qhi_hash_get(h, i, &value)) {
 //			printf("value: %d = %d\n", i, value);
 		} else {
 //			printf("value: %d = ?\n", i);

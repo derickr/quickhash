@@ -639,7 +639,7 @@ int qhi_hash_add(qhi *hash, int32_t key, uint32_t value)
  * - 1 if the element is part of the set or 0 if the element is not part of the
  *   set
  */
-int qhi_hash_get_value(qhi *hash, int32_t key, uint32_t *value)
+int qhi_hash_get(qhi *hash, int32_t key, uint32_t *value)
 {
 	uint32_t idx;
 	qhl     *list;

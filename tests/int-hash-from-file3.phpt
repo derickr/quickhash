@@ -12,7 +12,7 @@ for ( $i = 0; $i < 10; $i++ )
 {
 	if ( $found += $hash->exists( $i ) )
 	{
-		$values += $hash->getValue( $i );
+		$values += $hash->get( $i );
 	}
 }
 printf( "Found: %d (%d)\n", $found, $values );

@@ -39,7 +39,7 @@ int main(void)
 		qhi_hash_add(h, i, i*3 + i % 7);
 	}
 	for (i= 0; i < 131072; i++) {
-		if (qhi_hash_get_value(h, i, &value)) {
+		if (qhi_hash_get(h, i, &value)) {
 			total += value;
 		}
 	}
@@ -57,7 +57,7 @@ int main(void)
 	close(fd);
 
 	for (i= 0; i < 131072; i++) {
-		if (qhi_hash_get_value(h, i, &value)) {
+		if (qhi_hash_get(h, i, &value)) {
 			total += value;
 		}
 	}

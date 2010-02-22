@@ -11,7 +11,7 @@ for ( $i = 3; $i < 1299828; $i += 2 )
 {
 	$found += $hash->exists( $i );
 	if ( $found ) {
-		$value += $hash->getValue( $i );
+		$value += $hash->get( $i );
 	}
 }
 printf( "Found: %d (%d)\n", $found, $value );
@@ -26,7 +26,7 @@ for ( $i = 3; $i < 1299828; $i += 2 )
 {
 	$found += $hash->exists( $i );
 	if ( $found ) {
-		$value += $hash->getValue( $i );
+		$value += $hash->get( $i );
 	}
 }
 printf( "Found: %d (%d)\n", $found, $value );

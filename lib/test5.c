@@ -40,13 +40,13 @@ int main(void)
 	printf("exists: %d\n", (int32_t) qhi_set_exists(h, 53));
 
 	// values
-	if (qhi_hash_get_value(h, 7, &value)) {
+	if (qhi_hash_get(h, 7, &value)) {
 		printf("value: %d = %d\n", 7, value);
 	}
-	if (qhi_hash_get_value(h, 17, &value)) {
+	if (qhi_hash_get(h, 17, &value)) {
 		printf("value: %d = %d\n", 17, value);
 	}
-	if (qhi_hash_get_value(h, 53, &value)) {
+	if (qhi_hash_get(h, 53, &value)) {
 		printf("value: %d = %d\n", 53, value);
 	}
 

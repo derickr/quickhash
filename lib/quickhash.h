@@ -116,7 +116,7 @@ int qhi_set_save_to_file(int fd, qhi *hash);
 
 /* hash */
 int qhi_hash_add(qhi *hash, int32_t position, uint32_t value);
-int qhi_hash_get_value(qhi *hash, int32_t position, uint32_t *value);
+int qhi_hash_get(qhi *hash, int32_t position, uint32_t *value);
 
 qhi *qhi_hash_load_from_file(int fd, qho *options);
 int qhi_hash_save_to_file(int fd, qhi *hash);

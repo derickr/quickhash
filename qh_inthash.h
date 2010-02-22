@@ -30,7 +30,7 @@ struct _php_qh_inthash_obj {
 };
 
 PHP_METHOD(QuickHashIntHash, add);
-PHP_METHOD(QuickHashIntHash, getValue);
+PHP_METHOD(QuickHashIntHash, get);
 PHP_METHOD(QuickHashIntHash, loadFromFile);
 PHP_METHOD(QuickHashIntHash, saveToFile);
 PHP_METHOD(QuickHashIntHash, loadFromString);

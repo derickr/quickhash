@@ -51,7 +51,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_exists, 0, 0, 1)
 	ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_get_value, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_get, 0, 0, 1)
 	ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
@@ -77,7 +77,7 @@ zend_function_entry qh_funcs_inthash[] = {
 	PHP_ME(QuickHashIntSet,  __construct,    arginfo_qh_inthash_construct,        ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, add,            arginfo_qh_inthash_add,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet,  exists,         arginfo_qh_inthash_exists,           ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntHash, getValue,       arginfo_qh_inthash_get_value,        ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntHash, get,            arginfo_qh_inthash_get,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromFile,   arginfo_qh_inthash_load_from_file,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, saveToFile,     arginfo_qh_inthash_save_to_file,     ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromString, arginfo_qh_inthash_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
@@ -154,9 +154,9 @@ PHP_METHOD(QuickHashIntHash, add)
 }
 /* }}} */
 
-/* {{{ proto int QuickHashIntHash::getValue( int key )
+/* {{{ proto int QuickHashIntHash::get( int key )
    Returns the value of they key if it exists, or NULL otherwise */
-PHP_METHOD(QuickHashIntHash, getValue)
+PHP_METHOD(QuickHashIntHash, get)
 {
 	zval               *object;
 	php_qh_inthash_obj *inthash_obj;
@@ -167,7 +167,7 @@ PHP_METHOD(QuickHashIntHash, getValue)
 		RETURN_FALSE;
 	}
 	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
-	if (qhi_hash_get_value(inthash_obj->hash, key, &value)) {
+	if (qhi_hash_get(inthash_obj->hash, key, &value)) {
 		RETURN_LONG(value);
 	}
 }
