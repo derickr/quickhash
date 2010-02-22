@@ -182,6 +182,7 @@ PHP_METHOD(QuickHashIntHash, get)
 	if (qhi_hash_get(inthash_obj->hash, key, &value)) {
 		RETURN_LONG(value);
 	}
+	RETURN_FALSE;
 }
 /* }}} */
 

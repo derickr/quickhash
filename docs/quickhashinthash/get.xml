@@ -63,7 +63,7 @@ var_dump( $hash->get( 3 ) );
     &example.outputs.similar;
     <screen>
 <![CDATA[
-NULL
+bool(false)
 bool(true)
 int(1)
 bool(true)

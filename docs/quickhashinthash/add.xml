@@ -90,7 +90,7 @@ var_dump( $hash->get( 5 ) );
 <![CDATA[
 without dupe checking
 bool(false)
-NULL
+bool(false)
 bool(true)
 bool(true)
 int(22)
@@ -98,7 +98,7 @@ bool(true)
 
 with dupe checking
 bool(false)
-NULL
+bool(false)
 bool(true)
 bool(true)
 int(78)

@@ -29,7 +29,7 @@ without dupe checking
 object(QuickHashIntHash)#1 (0) {
 }
 bool(false)
-NULL
+bool(false)
 bool(true)
 bool(true)
 int(22)
@@ -39,7 +39,7 @@ with dupe checking
 object(QuickHashIntHash)#2 (0) {
 }
 bool(false)
-NULL
+bool(false)
 bool(true)
 bool(true)
 int(78)

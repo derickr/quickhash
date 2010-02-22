@@ -10,7 +10,7 @@ foreach( range( 0, 0x1f ) as $key )
 {
 	printf( "Key %3d (%2x) is ", $key, $key );
 	$value = $hash->get( $key );
-	print $value === NULL ? 'unset' : $value;
+	print $value === false ? 'unset' : $value;
 	print "\n";
 }
 ?>

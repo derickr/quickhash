@@ -8,28 +8,28 @@ $file = dirname( __FILE__ ) . "/simple.hash";
 $hash = QuickHashIntHash::loadFromFile( $file );
 for ( $i = 0; $i < 0x1f; $i++ )
 {
-	printf( "%3s ", NULL !== ( $value = $hash->get( $i ) ) ? $value : ' xx ' );
+	printf( "%3s ", false !== ( $value = $hash->get( $i ) ) ? $value : ' xx ' );
 }
 echo "\n";
 
 $hash = QuickHashIntHash::loadFromFile( $file, QuickHashIntHash::HASHER_NO_HASH );
 for ( $i = 0; $i < 0x1f; $i++ )
 {
-	printf( "%3s ", NULL !== ( $value = $hash->get( $i ) ) ? $value : ' xx ' );
+	printf( "%3s ", false !== ( $value = $hash->get( $i ) ) ? $value : ' xx ' );
 }
 echo "\n";
 
 $hash = QuickHashIntHash::loadFromFile( $file, QuickHashIntHash::HASHER_JENKINS1 );
 for ( $i = 0; $i < 0x1f; $i++ )
 {
-	printf( "%3s ", NULL !== ( $value = $hash->get( $i ) ) ? $value : ' xx ' );
+	printf( "%3s ", false !== ( $value = $hash->get( $i ) ) ? $value : ' xx ' );
 }
 echo "\n";
 
 $hash = QuickHashIntHash::loadFromFile( $file, QuickHashIntHash::HASHER_JENKINS2);
 for ( $i = 0; $i < 0x1f; $i++ )
 {
-	printf( "%3s ", NULL !== ( $value = $hash->get( $i ) ) ? $value : ' xx ' );
+	printf( "%3s ", false !== ( $value = $hash->get( $i ) ) ? $value : ' xx ' );
 }
 echo "\n";
 
