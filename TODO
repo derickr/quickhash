@@ -1,4 +1,10 @@
-- Strip out writing/collecting just like I did with loading so that other
-  writers (like PHP streams) can be used.
-- Add a parameter to configure the amount of buckets when reading 
-  from a file or string.
+Phase II:
+- Rename getValue to get in QuickHashIntHash.
+- To QuickHashIntHash add: update.
+- To QuickHashIntHash add: set (which is update | add).
+
+Phase IIb:
+
+- To QuickHashIntSet and QuickHashIntHash add: delete.
+- Add ArrayAccess to QuickHashIntHash.
+- Add Iterator to QuickHashIntHash and QuickHashIntSet.
