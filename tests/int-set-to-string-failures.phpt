@@ -1,5 +1,5 @@
 --TEST--
-Test for failure conditions for saveToFile.
+Test for failure conditions for saveToString.
 --INI--
 xdebug.default_enable=0
 --FILE--
