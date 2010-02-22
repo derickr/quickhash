@@ -578,30 +578,20 @@ static uint32_t hash_add_value(qhi *hash, uint32_t value)
 }
 
 /**
- * Adds a new element to the hash
+ * Adds a new bucket with key and value to the list
  *
  * Parameters:
  * - hash: A valid quickhash
- * - key: The key
- * - value: A pointer to a value, or a value itself
+ * - list: The list that corresponds to the hashed version of the key
+ * - key: The entry's key
+ * - value: The value belonging to the entry
  *
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-int qhi_hash_add(qhi *hash, int32_t key, uint32_t value)
+static int qhi_add_entry_to_list(qhi *hash, qhl *list, int32_t key, uint32_t value)
 {
-	uint32_t idx;
-	qhl     *list;
-	qhb     *bucket;
-
-	// obtain the hashed key, and the bucket list for the hashed key
-	idx = qhi_set_hash(hash, key);
-	list = &(hash->bucket_list[idx]);
-
-	// check if we already have the key in the list if requested
-	if (hash->options->check_for_dupes && find_entry_in_list(list, key, NULL)) {
-		return 0;
-	}
+	qhb *bucket;
 
 	// create new bucket
 	bucket = qhb_create(hash);
@@ -629,6 +619,34 @@ int qhi_hash_add(qhi *hash, int32_t key, uint32_t value)
 }
 
 /**
+ * Adds a new element to the hash
+ *
+ * Parameters:
+ * - hash: A valid quickhash
+ * - key: The key
+ * - value: A pointer to a value, or a value itself
+ *
+ * Returns:
+ * - 1 if the element was added or 0 if the element couldn't be added
+ */
+int qhi_hash_add(qhi *hash, int32_t key, uint32_t value)
+{
+	uint32_t idx;
+	qhl     *list;
+
+	// obtain the hashed key, and the bucket list for the hashed key
+	idx = qhi_set_hash(hash, key);
+	list = &(hash->bucket_list[idx]);
+
+	// check if we already have the key in the list if requested
+	if (hash->options->check_for_dupes && find_entry_in_list(list, key, NULL)) {
+		return 0;
+	}
+
+	return qhi_add_entry_to_list(hash, list, key, value);
+}
+
+/**
  * Updates a value for a key in the hash
  *
  * If there are duplicate keys in the hash, only the value of the first one
@@ -637,6 +655,7 @@ int qhi_hash_add(qhi *hash, int32_t key, uint32_t value)
  * Parameters:
  * - hash: A valid quickhash
  * - key: The key
+ * - value: The value
  *
  * Returns:
  * - 1 if the element is part of the hash and was updated or 0 if the element
@@ -658,6 +677,40 @@ int qhi_hash_update(qhi *hash, int32_t key, uint32_t value)
 	} else {
 		return 0;
 	}
+}
+
+/**
+ * Adds a new element, or updates the value if the key already is part of the hash
+ *
+ * Parameters:
+ * - hash: A valid quickhash
+ * - key: The key
+ * - value: The value
+ *
+ * Returns:
+ * - 1 if the element is part of the hash and was updated, 2 if the element was
+ *   added or 0 if an error occurred.
+ */
+int qhi_hash_set(qhi *hash, int32_t key, uint32_t value)
+{
+	uint32_t idx;
+	qhl     *list;
+	uint32_t value_idx;
+
+	// obtain the hashed key, and the bucket list for the hashed key
+	idx = qhi_set_hash(hash, key);
+	list = &(hash->bucket_list[idx]);
+
+	// check if we already have the key in the list if requested
+	if (find_entry_in_list(list, key, &value_idx)) {
+		// update
+		hash->values[value_idx] = value;
+		return 1;
+	} else {
+		// add
+		return qhi_add_entry_to_list(hash, list, key, value) ? 2 : 0;
+	}
+	return 0;
 }
 
 /**

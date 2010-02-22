@@ -15,30 +15,31 @@
    | Authors: Derick Rethans <derick@derickrethans.nl>                    |
    +----------------------------------------------------------------------+
  */
-/* $Id: qh_inthash.h 532 2010-01-25 10:49:13Z derick $ */
+#include "quickhash.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-#ifndef PHP_QUICKHASH_INTHASH_H
-#define PHP_QUICKHASH_INTHASH_H
+int main(void)
+{
+	qhi *h;
+	qho *options = qho_create();
+	uint32_t value;
+	
+	options->size = 500000;
+	options->check_for_dupes = 1;
+	h = qhi_create(options);
 
-#include "lib/quickhash.h"
+	printf("%d\n", qhi_hash_set(h, 1, 1));
+	printf("%d\n", qhi_hash_get(h, 1, &value));
+	printf("value %d\n", value);
+	printf("%d\n", qhi_hash_set(h, 1, 2));
+	printf("%d\n", qhi_hash_get(h, 1, &value));
+	printf("value %d\n", value);
 
-typedef struct _php_qh_inthash_obj php_qh_inthash_obj;
-
-struct _php_qh_inthash_obj {
-	zend_object   std;
-	qhi          *hash;
-};
-
-PHP_METHOD(QuickHashIntHash, add);
-PHP_METHOD(QuickHashIntHash, get);
-PHP_METHOD(QuickHashIntHash, set);
-PHP_METHOD(QuickHashIntHash, update);
-PHP_METHOD(QuickHashIntHash, loadFromFile);
-PHP_METHOD(QuickHashIntHash, saveToFile);
-PHP_METHOD(QuickHashIntHash, loadFromString);
-PHP_METHOD(QuickHashIntHash, saveToString);
-
-void qh_register_class_inthash(TSRMLS_D);
-PHPAPI zend_class_entry *php_qh_get_inthash_ce(void);
-
-#endif
+	qhi_free(h);
+	qho_free(options);
+	return 0;
+}

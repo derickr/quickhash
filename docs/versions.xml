@@ -17,6 +17,7 @@
  <function name='quickhashinthash::add' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::exists' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::get' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashinthash::set' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::update' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::loadfromfile' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::loadfromstring' from='PECL quickhash &gt;= Unknown'/>
