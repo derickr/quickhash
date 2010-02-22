@@ -173,7 +173,7 @@ PHP_METHOD(QuickHashIntHash, get)
 	zval               *object;
 	php_qh_inthash_obj *inthash_obj;
 	long                key;
-	uint32_t            value;
+	int32_t             value;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_inthash, &key) == FAILURE) {
 		RETURN_FALSE;

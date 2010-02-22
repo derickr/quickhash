@@ -22,7 +22,7 @@ int main(void)
 {
 	qhi *h;
 	qho *options = qho_create();
-	uint32_t value;
+	int32_t value;
 	
 	options->size = 2000;
 	options->check_for_dupes = 1;

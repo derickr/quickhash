@@ -566,10 +566,10 @@ int qhi_set_save_to_file(int fd, qhi *hash)
  * Returns:
  * - The index under which the value was added (which is stored in the hash)
  */
-static uint32_t hash_add_value(qhi *hash, uint32_t value)
+static uint32_t hash_add_value(qhi *hash, int32_t value)
 {
 	if (hash->values_count == hash->values_size) {
-		hash->values = hash->options->memory.realloc(hash->values, (hash->values_size + QHB_BUFFER_PREALLOC_INC) * sizeof(uint32_t));
+		hash->values = hash->options->memory.realloc(hash->values, (hash->values_size + QHB_BUFFER_PREALLOC_INC) * sizeof(int32_t));
 		hash->values_size += QHB_BUFFER_PREALLOC_INC;
 	}
 	hash->values[hash->values_count] = value;
@@ -589,7 +589,7 @@ static uint32_t hash_add_value(qhi *hash, uint32_t value)
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-static int qhi_add_entry_to_list(qhi *hash, qhl *list, int32_t key, uint32_t value)
+static int qhi_add_entry_to_list(qhi *hash, qhl *list, int32_t key, int32_t value)
 {
 	qhb *bucket;
 
@@ -624,12 +624,12 @@ static int qhi_add_entry_to_list(qhi *hash, qhl *list, int32_t key, uint32_t val
  * Parameters:
  * - hash: A valid quickhash
  * - key: The key
- * - value: A pointer to a value, or a value itself
+ * - value: The value
  *
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-int qhi_hash_add(qhi *hash, int32_t key, uint32_t value)
+int qhi_hash_add(qhi *hash, int32_t key, int32_t value)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -661,7 +661,7 @@ int qhi_hash_add(qhi *hash, int32_t key, uint32_t value)
  * - 1 if the element is part of the hash and was updated or 0 if the element
  *   was not part of the hash
  */
-int qhi_hash_update(qhi *hash, int32_t key, uint32_t value)
+int qhi_hash_update(qhi *hash, int32_t key, int32_t value)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -691,7 +691,7 @@ int qhi_hash_update(qhi *hash, int32_t key, uint32_t value)
  * - 1 if the element is part of the hash and was updated, 2 if the element was
  *   added or 0 if an error occurred.
  */
-int qhi_hash_set(qhi *hash, int32_t key, uint32_t value)
+int qhi_hash_set(qhi *hash, int32_t key, int32_t value)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -724,7 +724,7 @@ int qhi_hash_set(qhi *hash, int32_t key, uint32_t value)
  * - 1 if the element is part of the set or 0 if the element is not part of the
  *   set
  */
-int qhi_hash_get(qhi *hash, int32_t key, uint32_t *value)
+int qhi_hash_get(qhi *hash, int32_t key, int32_t *value)
 {
 	uint32_t idx;
 	qhl     *list;

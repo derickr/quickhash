@@ -6,22 +6,22 @@ xdebug.default_enable=0
 <?php
 $hash = new QuickHashIntHash( 1024 );
 
-$hash->add( 1618033988 );
-$hash->add( 3141592654, 2718281828 );
+$hash->add( 161803398 );
+$hash->add( 314159265, 271828182 );
 
-echo $hash->get( 1618033988 ), "\n";
-echo $hash->get( 3141592654 ), "\n";
+echo $hash->get( 161803398 ), "\n";
+echo $hash->get( 314159265 ), "\n";
 
-var_dump( $hash->update( 3141592654, 2718281829 ) );
-var_dump( $hash->update( 314159265, 2718281829 ) );
+var_dump( $hash->update( 314159265, 271828183 ) );
+var_dump( $hash->update( 314159999, 271828183 ) );
 
-echo $hash->get( 1618033988 ), "\n";
-echo $hash->get( 3141592654 ), "\n";
+echo $hash->get( 161803398 ), "\n";
+echo $hash->get( 314159265 ), "\n";
 ?>
 --EXPECTF--
 1
-2718281828
+271828182
 bool(true)
 bool(false)
 1
-2718281829
+271828183

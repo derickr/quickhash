@@ -6,12 +6,12 @@ xdebug.default_enable=0
 <?php
 $hash = new QuickHashIntHash( 1024 );
 
-$hash->add( 1618033988 );
-$hash->add( 3141592654, 2718281828 );
+$hash->add( 161803398 );
+$hash->add( 314159265, 271828182 );
 
-echo $hash->get( 1618033988 ), "\n";
-echo $hash->get( 3141592654 ), "\n";
+echo $hash->get( 161803398 ), "\n";
+echo $hash->get( 314159265 ), "\n";
 ?>
 --EXPECTF--
 1
-2718281828
+271828182

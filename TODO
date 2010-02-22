@@ -1,6 +1,3 @@
-Phase II:
-- Add test for negative values all around.
-
 Phase IIb:
 
 - To QuickHashIntSet and QuickHashIntHash add: delete.

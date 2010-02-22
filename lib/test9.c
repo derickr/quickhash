@@ -27,8 +27,8 @@ int main(void)
 	qhi *h;
 	qho *options = qho_create();
 	uint32_t i;
-	uint32_t value;
-	uint32_t total = 0;
+	int32_t value;
+	int32_t total = 0;
 	
 	options->size = 500000;
 	options->check_for_dupes = 1;
