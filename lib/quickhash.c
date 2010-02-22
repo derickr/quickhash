@@ -629,6 +629,38 @@ int qhi_hash_add(qhi *hash, int32_t key, uint32_t value)
 }
 
 /**
+ * Updates a value for a key in the hash
+ *
+ * If there are duplicate keys in the hash, only the value of the first one
+ * found will be updated.
+ *
+ * Parameters:
+ * - hash: A valid quickhash
+ * - key: The key
+ *
+ * Returns:
+ * - 1 if the element is part of the hash and was updated or 0 if the element
+ *   was not part of the hash
+ */
+int qhi_hash_update(qhi *hash, int32_t key, uint32_t value)
+{
+	uint32_t idx;
+	qhl     *list;
+	uint32_t value_idx;
+
+	// obtain the hashed key, and the bucket list for the hashed key
+	idx = qhi_set_hash(hash, key);
+	list = &(hash->bucket_list[idx]);
+
+	if (find_entry_in_list(list, key, &value_idx)) {
+		hash->values[value_idx] = value;
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+/**
  * Tests whether the key exists in the hash
  *
  * Parameters:

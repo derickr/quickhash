@@ -55,6 +55,11 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_get, 0, 0, 1)
 	ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_update, 0, 0, 2)
+	ZEND_ARG_INFO(0, key)
+	ZEND_ARG_INFO(0, value)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_load_from_file, 0, 0, 1)
 	ZEND_ARG_INFO(0, filename)
 	ZEND_ARG_INFO(0, flags)
@@ -78,6 +83,7 @@ zend_function_entry qh_funcs_inthash[] = {
 	PHP_ME(QuickHashIntHash, add,            arginfo_qh_inthash_add,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet,  exists,         arginfo_qh_inthash_exists,           ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, get,            arginfo_qh_inthash_get,              ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntHash, update,         arginfo_qh_inthash_update,           ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromFile,   arginfo_qh_inthash_load_from_file,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, saveToFile,     arginfo_qh_inthash_save_to_file,     ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromString, arginfo_qh_inthash_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
@@ -170,6 +176,22 @@ PHP_METHOD(QuickHashIntHash, get)
 	if (qhi_hash_get(inthash_obj->hash, key, &value)) {
 		RETURN_LONG(value);
 	}
+}
+/* }}} */
+
+/* {{{ proto bool QuickHashIntHash::update( int key , int value )
+   Updates the value of an element for key key */
+PHP_METHOD(QuickHashIntHash, update)
+{
+	zval              *object;
+	php_qh_inthash_obj *inthash_obj;
+	long               key, value;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Oll", &object, qh_ce_inthash, &key, &value) == FAILURE) {
+		RETURN_FALSE;
+	}
+	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	RETURN_BOOL(qhi_hash_update(inthash_obj->hash, key, value));
 }
 /* }}} */
 
