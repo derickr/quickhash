@@ -13,7 +13,8 @@
    &reftitle.intro;
    <para>
     This class wraps around a hash containing integer numbers, where the
-    values are also integer numbers.
+    values are also integer numbers. Hashes are also available as
+    implementation of the ArrayAccess interface.
    </para>
   </section>
 <!-- }}} -->

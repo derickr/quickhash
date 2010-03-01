@@ -36,6 +36,37 @@ bool(false)
 ]]>
   </screen>
  </example>
+ <example>
+  <title>Quickhash ArrayAccess Example</title>
+  <programlisting role="php">
+<![CDATA[
+<?php
+$hash = new QuickHashIntHash( 64 );
+
+// Adding and updating hash entries.
+$hash[3] = 145926;
+$hash[3] = 1415926;
+$hash[2] = 72;
+
+// Checking if keys exist
+var_dump( isset( $hash[3] ) );
+
+// Removing hash entries
+unset( $hash[2] );
+
+// Retrieving the value stored for a hash
+echo $hash[3], "\n";
+?>
+]]>
+  </programlisting>
+  &example.outputs.similar;
+  <screen>
+<![CDATA[
+bool(true)
+1415926
+]]>
+  </screen>
+ </example>
 </chapter>
 
 <!-- Keep this comment at the end of the file

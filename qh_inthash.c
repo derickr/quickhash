@@ -23,6 +23,7 @@
 #include "qh_inthash.h"
 #include "qh_intset.h"
 #include "quickhash.h"
+#include "zend_interfaces.h"
 
 zend_class_entry *qh_ce_inthash;
 
@@ -99,6 +100,13 @@ zend_function_entry qh_funcs_inthash[] = {
 	PHP_ME(QuickHashIntHash, saveToFile,     arginfo_qh_inthash_save_to_file,     ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromString, arginfo_qh_inthash_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, saveToString,   arginfo_qh_inthash_save_to_string,   ZEND_ACC_PUBLIC)
+
+	/* ArrayAccess methods */
+	PHP_MALIAS(QuickHashIntSet,  offsetExists, exists, arginfo_qh_inthash_exists, ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntHash, offsetGet,    get,    arginfo_qh_inthash_get,    ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntHash, offsetSet,    set,    arginfo_qh_inthash_set,    ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntSet,  offsetUnset,  delete, arginfo_qh_inthash_delete, ZEND_ACC_PUBLIC)
+
 	{NULL, NULL, NULL}
 };
 
@@ -112,6 +120,8 @@ void qh_register_class_inthash(TSRMLS_D)
 	memcpy(&qh_object_handlers_inthash, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	qh_add_constants(qh_ce_inthash TSRMLS_CC);
+
+	zend_class_implements(qh_ce_inthash TSRMLS_CC, 1, zend_ce_arrayaccess);
 }
 
 static inline zend_object_value qh_object_new_inthash_ex(zend_class_entry *class_type, php_qh_inthash_obj **ptr TSRMLS_DC)
