@@ -390,6 +390,67 @@ int qhi_set_add(qhi *hash, int32_t key)
 	return 1;
 }
 
+
+/**
+ * Internal: deletes an entry with the specified key from the list
+ *
+ * Parameters:
+ * - list: the list belonging to the index of the hashed key
+ * - key: the element's key
+ *
+ * Returns:
+ * - 1 if the entry was deleted, or 0 if not
+ */
+static int delete_entry_from_list(qhl *list, int32_t key)
+{
+	if (!list->head) {
+		// there is no bucket list for this hashed key
+		return 0;
+	} else {
+		qhb *previous = NULL;
+		qhb *current = list->head;
+
+		// loop over the elements in this bucket list to see if the key exists,
+		// also keep track of the previous one
+		do {
+			if (current->key == key) {
+				// if previous is not set, it's the first element in the list, so we just adjust head.
+				if (!previous) {
+					list->head = current->next;
+				} else {
+					previous->next = current->next;
+				}
+				return 1;
+			}
+			previous = current;
+			current = current->next;
+		} while(current);
+	}
+	return 0;
+}
+
+/**
+ * Deletes an element from the hash
+ *
+ * Parameters:
+ * - hash: A valid quickhash
+ * - key: The key
+ *
+ * Returns:
+ * - 1 if the element was delete or 0 if the element couldn't be found
+ */
+int qhi_set_delete(qhi *hash, int32_t key)
+{
+	uint32_t idx;
+	qhl     *list;
+
+	// obtain the hashed key, and the bucket list for the hashed key
+	idx = qhi_set_hash(hash, key);
+	list = &(hash->bucket_list[idx]);
+
+	return delete_entry_from_list(list, key);
+}
+
 /**
  * Tests whether the key exists in the set
  *

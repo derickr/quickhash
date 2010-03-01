@@ -49,6 +49,10 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_exists, 0, 0, 1)
 	ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_delete, 0, 0, 1)
+	ZEND_ARG_INFO(0, key)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_load_from_file, 0, 0, 1)
 	ZEND_ARG_INFO(0, filename)
 	ZEND_ARG_INFO(0, flags)
@@ -71,6 +75,7 @@ zend_function_entry qh_funcs_intset[] = {
 	PHP_ME(QuickHashIntSet, __construct,    arginfo_qh_intset_construct,        ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, add,            arginfo_qh_intset_add,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, exists,         arginfo_qh_intset_exists,           ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, delete,         arginfo_qh_intset_exists,           ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, loadFromFile,   arginfo_qh_intset_load_from_file,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, saveToFile,     arginfo_qh_intset_save_to_file,     ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, loadFromString, arginfo_qh_intset_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
@@ -193,6 +198,22 @@ PHP_METHOD(QuickHashIntSet, exists)
 	}
 	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
 	RETURN_BOOL(qhi_set_exists(intset_obj->hash, key));
+}
+/* }}} */
+
+/* {{{ proto bool QuickHashIntSet::delete( int key )
+   Deletes an entry with the key from the set */
+PHP_METHOD(QuickHashIntSet, delete)
+{
+	zval              *object;
+	php_qh_intset_obj *intset_obj;
+	long               key;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_intset, &key) == FAILURE) {
+		RETURN_FALSE;
+	}
+	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	RETURN_BOOL(qhi_set_delete(intset_obj->hash, key));
 }
 /* }}} */
 

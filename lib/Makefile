@@ -1,6 +1,6 @@
 CFLAGS=-Wall -O0 -ggdb3 -DDEBUG=1
 
-all: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10
+all: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12
 
 test1: test1.c quickhash.c
 	gcc $(CFLAGS) -o test1-64 test1.c quickhash.c
@@ -41,3 +41,11 @@ test9: test9.c quickhash.c
 test10: test10.c quickhash.c
 	gcc $(CFLAGS) -o test10-64 test10.c quickhash.c
 	gcc -m32 $(CFLAGS) -o test10-32 test10.c quickhash.c
+
+test11: test11.c quickhash.c
+	gcc $(CFLAGS) -o test11-64 test11.c quickhash.c
+	gcc -m32 $(CFLAGS) -o test11-32 test11.c quickhash.c
+
+test12: test12.c quickhash.c
+	gcc $(CFLAGS) -o test12-64 test12.c quickhash.c
+	gcc -m32 $(CFLAGS) -o test12-32 test12.c quickhash.c

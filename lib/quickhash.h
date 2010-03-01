@@ -109,6 +109,7 @@ void qhi_free(qhi *hash);
 /* sets */
 int qhi_set_add(qhi *hash, int32_t position);
 int qhi_set_exists(qhi *hash, int32_t position);
+int qhi_set_delete(qhi *hash, int32_t position);
 
 uint32_t qhi_set_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t nr_of_elements);
 qhi *qhi_set_load_from_file(int fd, qho *options);

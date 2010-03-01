@@ -32,6 +32,7 @@ struct _php_qh_intset_obj {
 PHP_METHOD(QuickHashIntSet, __construct);
 PHP_METHOD(QuickHashIntSet, add);
 PHP_METHOD(QuickHashIntSet, exists);
+PHP_METHOD(QuickHashIntSet, delete);
 PHP_METHOD(QuickHashIntSet, loadFromFile);
 PHP_METHOD(QuickHashIntSet, saveToFile);
 PHP_METHOD(QuickHashIntSet, loadFromString);

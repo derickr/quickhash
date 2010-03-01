@@ -65,6 +65,10 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_update, 0, 0, 2)
 	ZEND_ARG_INFO(0, value)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_delete, 0, 0, 1)
+	ZEND_ARG_INFO(0, key)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_load_from_file, 0, 0, 1)
 	ZEND_ARG_INFO(0, filename)
 	ZEND_ARG_INFO(0, flags)
@@ -90,6 +94,7 @@ zend_function_entry qh_funcs_inthash[] = {
 	PHP_ME(QuickHashIntHash, get,            arginfo_qh_inthash_get,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, set,            arginfo_qh_inthash_set,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, update,         arginfo_qh_inthash_update,           ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet,  delete,         arginfo_qh_inthash_exists,           ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromFile,   arginfo_qh_inthash_load_from_file,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, saveToFile,     arginfo_qh_inthash_save_to_file,     ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromString, arginfo_qh_inthash_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)

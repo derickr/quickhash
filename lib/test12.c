@@ -15,31 +15,53 @@
    | Authors: Derick Rethans <derick@derickrethans.nl>                    |
    +----------------------------------------------------------------------+
  */
-/* $Id: qh_inthash.h 532 2010-01-25 10:49:13Z derick $ */
+#include "quickhash.h"
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-#ifndef PHP_QUICKHASH_INTHASH_H
-#define PHP_QUICKHASH_INTHASH_H
+int main(void)
+{
+	qhi *h;
+	qho *options = qho_create();
+	int32_t value = 0;
+	int32_t i;
+	
+	options->size = 4;
+	options->check_for_dupes = 1;
+	h = qhi_create(options);
 
-#include "lib/quickhash.h"
+	for (i = 0; i < 2048; i++) {
+		qhi_set_add(h, i);
+	}
 
-typedef struct _php_qh_inthash_obj php_qh_inthash_obj;
+	// delete first in list
+	qhi_set_delete(h, 6);
+	for (i = 0; i < 2048; i++) {
+		value += qhi_set_exists(h, i);
+	}
+	printf("total: %d\n", value);
+	value = 0;
 
-struct _php_qh_inthash_obj {
-	zend_object   std;
-	qhi          *hash;
-};
+	// delete middle
+	qhi_set_delete(h, 123);
+	for (i = 0; i < 2048; i++) {
+		value += qhi_set_exists(h, i);
+	}
+	printf("total: %d\n", value);
+	value = 0;
 
-PHP_METHOD(QuickHashIntHash, add);
-PHP_METHOD(QuickHashIntHash, get);
-PHP_METHOD(QuickHashIntHash, set);
-PHP_METHOD(QuickHashIntHash, update);
-PHP_METHOD(QuickHashIntHash, delete);
-PHP_METHOD(QuickHashIntHash, loadFromFile);
-PHP_METHOD(QuickHashIntHash, saveToFile);
-PHP_METHOD(QuickHashIntHash, loadFromString);
-PHP_METHOD(QuickHashIntHash, saveToString);
+	// delete last of list
+	qhi_set_delete(h, 2015);
+	for (i = 0; i < 2048; i++) {
+		value += qhi_set_exists(h, i);
+	}
+	printf("total: %d\n", value);
+	value = 0;
 
-void qh_register_class_inthash(TSRMLS_D);
-PHPAPI zend_class_entry *php_qh_get_inthash_ce(void);
-
-#endif
+	qhi_free(h);
+	qho_free(options);
+	return 0;
+}
