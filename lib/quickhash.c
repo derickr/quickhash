@@ -257,6 +257,7 @@ qhi *qhi_create(qho *options)
 
 	tmp->options = options;
 
+	tmp->element_count = 0;
 #if DEBUG
 	tmp->collisions = 0;
 #endif
@@ -275,6 +276,7 @@ void qhi_free(qhi *hash)
 	int32_t idx;
 
 #if DEBUG
+	printf("Elements:   %u\n", hash->element_count);
 	printf("Collisions: %u\n", hash->collisions);
 #endif
 	for (idx = 0; idx <= hash->bucket_buffer_nr; idx++) {
@@ -387,6 +389,7 @@ int qhi_set_add(qhi *hash, int32_t key)
 		hash->collisions++;
 #endif
 	}
+	hash->element_count++;
 	return 1;
 }
 
@@ -420,6 +423,7 @@ static int delete_entry_from_list(qhl *list, int32_t key)
 				} else {
 					previous->next = current->next;
 				}
+				hash->element_count--;
 				return 1;
 			}
 			previous = current;
@@ -676,6 +680,7 @@ static int qhi_add_entry_to_list(qhi *hash, qhl *list, int32_t key, int32_t valu
 		hash->collisions++;
 #endif
 	}
+	hash->element_count++;
 	return 1;
 }
 

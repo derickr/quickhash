@@ -69,7 +69,11 @@ typedef struct _qho {
  * Integer hash type
  */
 typedef struct _qhi {
-	qha_t     hasher; // hash algorithm
+	// hash related
+	qha_t     hasher;
+	qho      *options;
+
+	// bucket lists
 	uint32_t  bucket_count;
 	qhl      *bucket_list;
 
@@ -83,7 +87,8 @@ typedef struct _qhi {
 	uint32_t  values_size;
 	int32_t  *values;
 
-	qho      *options;
+	// statistics
+	uint32_t  element_count;
 #if DEBUG
 	uint32_t  collisions;
 #endif
