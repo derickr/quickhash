@@ -15,13 +15,14 @@
    | Authors: Derick Rethans <derick@derickrethans.nl>                    |
    +----------------------------------------------------------------------+
  */
-/* $Id: qh_inthash.c 533 2010-01-25 11:06:51Z derick $ */
+/* $Id$ */
 
 #include "php.h"
 #include "zend.h"
 #include "zend_API.h"
 #include "qh_inthash.h"
 #include "qh_intset.h"
+#include "qh_iterator.h"
 #include "quickhash.h"
 #include "zend_interfaces.h"
 
@@ -117,6 +118,10 @@ void qh_register_class_inthash(TSRMLS_D)
 	INIT_CLASS_ENTRY(ce_inthash, "QuickHashIntHash", qh_funcs_inthash);
 	ce_inthash.create_object = qh_object_new_inthash;
 	qh_ce_inthash = zend_register_internal_class_ex(&ce_inthash, php_qh_get_intset_ce(), NULL TSRMLS_CC);
+
+	qh_ce_inthash->get_iterator = qh_inthash_get_iterator;
+	qh_ce_inthash->iterator_funcs.funcs = &qh_inthash_it_funcs;
+
 	memcpy(&qh_object_handlers_inthash, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	qh_add_constants(qh_ce_inthash TSRMLS_CC);

@@ -89,10 +89,25 @@ typedef struct _qhi {
 
 	// statistics
 	uint32_t  element_count;
+	uint32_t  iterator_count;
 #if DEBUG
 	uint32_t  collisions;
 #endif
 } qhi;
+
+/**
+ * Iterator type
+ */
+typedef struct _qhit {
+	qhi      *hash;
+
+	uint32_t  bucket_list_idx;
+	qhl      *bucket_list;
+	qhb      *current_bucket;
+
+	int32_t   key;
+	int32_t   value;
+} qhit;
 
 /**
  * Function type to be used as an utility function with qhi_process_set
@@ -128,5 +143,10 @@ int qhi_hash_set(qhi *hash, int32_t position, int32_t value);
 
 qhi *qhi_hash_load_from_file(int fd, qho *options);
 int qhi_hash_save_to_file(int fd, qhi *hash);
+
+/* iterators (from iterator.c) */
+void qhi_iterator_init(qhit *iter, qhi *hash);
+int qhi_iterator_forward(qhit *iter);
+void qhi_iterator_deinit(qhit *iter);
 
 #endif

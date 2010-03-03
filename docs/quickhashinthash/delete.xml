@@ -18,6 +18,11 @@
    deleted or not. Associated memory structures will not be freed immediately,
    but rather when the hash itself is freed.
   </para>
+  <para>
+   Elements can not be deleted when the hash is used in an iterator. The
+   method will not throw an exception, but simply return &false; like would
+   happen with any other deletion failure.
+  </para>
  </refsect1>
 
  <refsect1 role="parameters">

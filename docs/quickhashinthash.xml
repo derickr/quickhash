@@ -16,6 +16,11 @@
     values are also integer numbers. Hashes are also available as
     implementation of the ArrayAccess interface.
    </para>
+   <para>
+    Hashes can also be iterated over with foreach as the Iterator interface is
+    implemented as well. The order of which elements are returned in is not
+    guaranteed.
+   </para>
   </section>
 <!-- }}} -->
 

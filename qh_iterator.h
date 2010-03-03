@@ -17,29 +17,10 @@
  */
 /* $Id$ */
 
-#ifndef PHP_QUICKHASH_INTHASH_H
-#define PHP_QUICKHASH_INTHASH_H
+#ifndef PHP_QUICKHASH_ITERATOR_H
+#define PHP_QUICKHASH_ITERATOR_H
 
-#include "lib/quickhash.h"
-
-typedef struct _php_qh_inthash_obj php_qh_inthash_obj;
-
-struct _php_qh_inthash_obj {
-	zend_object   std;
-	qhi          *hash;
-};
-
-PHP_METHOD(QuickHashIntHash, add);
-PHP_METHOD(QuickHashIntHash, get);
-PHP_METHOD(QuickHashIntHash, set);
-PHP_METHOD(QuickHashIntHash, update);
-PHP_METHOD(QuickHashIntHash, delete);
-PHP_METHOD(QuickHashIntHash, loadFromFile);
-PHP_METHOD(QuickHashIntHash, saveToFile);
-PHP_METHOD(QuickHashIntHash, loadFromString);
-PHP_METHOD(QuickHashIntHash, saveToString);
-
-void qh_register_class_inthash(TSRMLS_D);
-PHPAPI zend_class_entry *php_qh_get_inthash_ce(void);
+extern zend_object_iterator_funcs qh_inthash_it_funcs;
+zend_object_iterator *qh_inthash_get_iterator(zend_class_entry *ce, zval *object, int by_ref TSRMLS_DC);
 
 #endif

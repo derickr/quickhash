@@ -1,5 +1,7 @@
 Phase IIb:
 
-- To QuickHashIntSet and QuickHashIntHash add: delete.
-- Add ArrayAccess to QuickHashIntHash.
-- Add Iterator to QuickHashIntHash and QuickHashIntSet.
+- Refactor: Make qhi_set_add also use add_entry_to_list, fold
+  hash->element_count++/--.
+- Refactor: Rename test files.
+- Add "getSize".
+- Look at segfault.

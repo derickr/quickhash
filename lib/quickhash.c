@@ -258,6 +258,7 @@ qhi *qhi_create(qho *options)
 	tmp->options = options;
 
 	tmp->element_count = 0;
+	tmp->iterator_count = 0;
 #if DEBUG
 	tmp->collisions = 0;
 #endif
@@ -423,7 +424,6 @@ static int delete_entry_from_list(qhl *list, int32_t key)
 				} else {
 					previous->next = current->next;
 				}
-				hash->element_count--;
 				return 1;
 			}
 			previous = current;
@@ -448,10 +448,15 @@ int qhi_set_delete(qhi *hash, int32_t key)
 	uint32_t idx;
 	qhl     *list;
 
+	// if we're in iteration mode, we can't delete.
+	if (hash->iterator_count > 0) {
+		return 0;
+	}
 	// obtain the hashed key, and the bucket list for the hashed key
 	idx = qhi_set_hash(hash, key);
 	list = &(hash->bucket_list[idx]);
 
+	hash->element_count--;
 	return delete_entry_from_list(list, key);
 }
 

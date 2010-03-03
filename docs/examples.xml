@@ -67,6 +67,38 @@ bool(true)
 ]]>
   </screen>
  </example>
+ <example>
+  <title>Quickhash Iterator Example</title>
+  <programlisting role="php">
+<![CDATA[
+<?php
+$hash = new QuickHashIntHash( 64 );
+
+// Adding hash entries.
+$hash[1] = 145926;
+$hash[2] = 1415926;
+$hash[3] = 72;
+$hash[4] = 712314;
+$hash[5] = -4234;
+
+foreach( $hash as $key => $value )
+{
+    echo $key, ' => ', $value, "\n";
+}
+?>
+]]>
+  </programlisting>
+  &example.outputs.similar;
+  <screen>
+<![CDATA[
+5 => -4234
+4 => 712314
+1 => 145926
+2 => 1415926
+3 => 72
+]]>
+  </screen>
+ </example>
 </chapter>
 
 <!-- Keep this comment at the end of the file
