@@ -10,6 +10,7 @@
  <function name='quickhashintset::add' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashintset::exists' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashintset::delete' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintset::getsize' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashintset::loadfromfile' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashintset::loadfromstring' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashintset::savetofile' from='PECL quickhash &gt;= Unknown'/>
@@ -21,6 +22,7 @@
  <function name='quickhashinthash::set' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::update' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::delete' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashinthash::getsize' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::loadfromfile' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::loadfromstring' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::savetofile' from='PECL quickhash &gt;= Unknown'/>

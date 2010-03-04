@@ -42,6 +42,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_construct, 0, 0, 1)
 	ZEND_ARG_INFO(0, flags)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_get_size, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_add, 0, 0, 1)
 	ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
@@ -74,6 +77,7 @@ ZEND_END_ARG_INFO()
 /* Class methods definition */
 zend_function_entry qh_funcs_intset[] = {
 	PHP_ME(QuickHashIntSet, __construct,    arginfo_qh_intset_construct,        ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, getSize,        arginfo_qh_intset_get_size,         ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, add,            arginfo_qh_intset_add,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, exists,         arginfo_qh_intset_exists,           ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, delete,         arginfo_qh_intset_exists,           ZEND_ACC_PUBLIC)
@@ -171,6 +175,21 @@ PHP_METHOD(QuickHashIntSet, __construct)
 		}
 	}
 	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+}
+/* }}} */
+
+/* {{{ proto int QuickHashIntSet::getSize()
+   Returns the size of the set */
+PHP_METHOD(QuickHashIntSet, getSize)
+{
+	zval              *object;
+	php_qh_intset_obj *intset_obj;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &object, qh_ce_intset) == FAILURE) {
+		RETURN_FALSE;
+	}
+	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	RETURN_LONG(intset_obj->hash->element_count);
 }
 /* }}} */
 

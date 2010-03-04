@@ -456,8 +456,11 @@ int qhi_set_delete(qhi *hash, int32_t key)
 	idx = qhi_set_hash(hash, key);
 	list = &(hash->bucket_list[idx]);
 
+	if (!delete_entry_from_list(list, key)) {
+		return 0;
+	}
 	hash->element_count--;
-	return delete_entry_from_list(list, key);
+	return 1;
 }
 
 /**

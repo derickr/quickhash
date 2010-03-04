@@ -3,5 +3,4 @@ Phase IIb:
 - Refactor: Make qhi_set_add also use add_entry_to_list, fold
   hash->element_count++/--.
 - Refactor: Rename test files.
-- Add "getSize".
 - Look at segfault.
