@@ -83,7 +83,6 @@ static int qh_intset_it_current_key(zend_object_iterator *iter, char **str_key, 
 
 static void qh_intset_it_move_forward(zend_object_iterator *iter TSRMLS_DC)
 {
-	qh_intset_it   *iterator = (qh_intset_it *)iter;
 }
 
 static void qh_intset_it_rewind(zend_object_iterator *iter TSRMLS_DC)

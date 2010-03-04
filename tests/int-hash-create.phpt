@@ -33,5 +33,5 @@ object(QuickHashIntHash)#1 (0) {
 }
 object(QuickHashIntHash)#1 (0) {
 }
-QuickHashIntHash::__construct() expects at least 1 parameter, 0 given
-QuickHashIntHash::__construct() expects at most 2 parameters, 3 given
+QuickHashIntSet::__construct() expects at least 1 parameter, 0 given
+QuickHashIntSet::__construct() expects at most 2 parameters, 3 given

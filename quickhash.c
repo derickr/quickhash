@@ -30,6 +30,8 @@
 
 #include "lib/quickhash.h"
 #include "quickhash.h"
+#include "qh_intset.h"
+#include "qh_inthash.h"
 
 function_entry quickhash_functions[] = {
 	{NULL, NULL, NULL}
@@ -165,7 +167,7 @@ int php_qh_save_to_stream_func(void *context, int32_t *buffer, uint32_t elements
 /**
  * Does some tests on the stream to see whether we can use it for reading data from.
  */
-int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size, long flags, int req_count, int *nr_of_elements TSRMLS_DC)
+int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size, long flags, int req_count, uint32_t *nr_of_elements TSRMLS_DC)
 {
 	php_stream_statbuf finfo;
 
@@ -186,7 +188,7 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size,
 
 	// if the filesize is not an increment of req_count * sizeof(int32_t), abort
 	if (finfo.sb.st_size % (req_count * sizeof(int32_t)) != 0) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format (not a multiple of %d bytes)", req_count * sizeof(int32_t));
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format (not a multiple of %ld bytes)", req_count * sizeof(int32_t));
 		return 0;
 	}
 	*nr_of_elements = finfo.sb.st_size / sizeof(int32_t);
@@ -200,19 +202,20 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size,
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set/hash");
 		return 0;
 	}
+	return 1;
 }
 
 /**
  * Does some tests on the string to see whether we can use it for reading data from.
  */
-int php_qh_prepare_string(qhi **hash, qho *options, long length, long size, long flags, int req_count, int *nr_of_elements TSRMLS_DC)
+int php_qh_prepare_string(qhi **hash, qho *options, long length, long size, long flags, int req_count, uint32_t *nr_of_elements TSRMLS_DC)
 {
 	// deal with options
 	qh_process_flags(options, flags);
 
 	// if the filesize is not an increment of req_count * sizeof(int32_t), abort
 	if (length % (sizeof(int32_t) * req_count) != 0) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "String is in the wrong format (not a multiple of %d bytes)", req_count * sizeof(int32_t));
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "String is in the wrong format (not a multiple of %ld bytes)", req_count * sizeof(int32_t));
 		return 0;
 	}
 	*nr_of_elements = length / sizeof(int32_t);
@@ -226,6 +229,7 @@ int php_qh_prepare_string(qhi **hash, qho *options, long length, long size, long
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set/hash");
 		return 0;
 	}
+	return 1;
 }
 
 
