@@ -80,7 +80,9 @@ int qhi_iterator_forward(qhit *iter)
 		if (forward_to_bucket_list(iter)) {
 			iter->current_bucket = iter->hash->bucket_list[iter->bucket_list_idx].head;
 			iter->key = iter->current_bucket->key;
-			iter->value = iter->hash->values[iter->current_bucket->value_idx];
+			if (iter->hash->values) {
+				iter->value = iter->hash->values[iter->current_bucket->value_idx];
+			}
 			return 1;
 		}
 	} else {
@@ -88,7 +90,9 @@ int qhi_iterator_forward(qhit *iter)
 		if (iter->current_bucket->next) {
 			iter->current_bucket = iter->current_bucket->next;
 			iter->key = iter->current_bucket->key;
-			iter->value = iter->hash->values[iter->current_bucket->value_idx];
+			if (iter->hash->values) {
+				iter->value = iter->hash->values[iter->current_bucket->value_idx];
+			}
 			return 1;
 		}
 
@@ -96,7 +100,9 @@ int qhi_iterator_forward(qhit *iter)
 		iter->bucket_list_idx++;
 		if (forward_to_bucket_list(iter)) {
 			iter->key = iter->hash->bucket_list[iter->bucket_list_idx].head->key;
-			iter->value = iter->hash->values[iter->hash->bucket_list[iter->bucket_list_idx].head->value_idx];
+			if (iter->hash->values) {
+				iter->value = iter->hash->values[iter->hash->bucket_list[iter->bucket_list_idx].head->value_idx];
+			}
 			iter->current_bucket = iter->hash->bucket_list[iter->bucket_list_idx].head;
 			return 1;
 		}

@@ -14,6 +14,11 @@
    <para>
     This class wraps around a set containing integer numbers.
    </para>
+   <para>
+    Sets can also be iterated over with foreach as the Iterator interface is
+    implemented as well. The order of which elements are returned in is not
+    guaranteed.
+   </para>
   </section>
 <!-- }}} -->
 

@@ -21,6 +21,7 @@
 #include "zend.h"
 #include "zend_API.h"
 #include "qh_intset.h"
+#include "qh_iterator.h"
 #include "quickhash.h"
 
 zend_class_entry *qh_ce_intset;
@@ -90,6 +91,10 @@ void qh_register_class_intset(TSRMLS_D)
 	INIT_CLASS_ENTRY(ce_intset, "QuickHashIntSet", qh_funcs_intset);
 	ce_intset.create_object = qh_object_new_intset;
 	qh_ce_intset = zend_register_internal_class_ex(&ce_intset, NULL, NULL TSRMLS_CC);
+
+	qh_ce_intset->get_iterator = qh_intset_get_iterator;
+	qh_ce_intset->iterator_funcs.funcs = &qh_intset_it_funcs;
+
 	memcpy(&qh_object_handlers_intset, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	qh_add_constants(qh_ce_intset TSRMLS_CC);

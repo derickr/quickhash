@@ -20,6 +20,9 @@
 #ifndef PHP_QUICKHASH_ITERATOR_H
 #define PHP_QUICKHASH_ITERATOR_H
 
+extern zend_object_iterator_funcs qh_intset_it_funcs;
+zend_object_iterator *qh_intset_get_iterator(zend_class_entry *ce, zval *object, int by_ref TSRMLS_DC);
+
 extern zend_object_iterator_funcs qh_inthash_it_funcs;
 zend_object_iterator *qh_inthash_get_iterator(zend_class_entry *ce, zval *object, int by_ref TSRMLS_DC);
 
