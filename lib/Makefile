@@ -1,52 +1,55 @@
 CFLAGS=-Wall -O0 -ggdb3 -DDEBUG=1
 LIBFILES=quickhash.c iterator.c
 
-all: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12
+all: test-hash-add test-hash-delete test-hash-delete-extensive test-hash-get \
+	test-hash-save-to-file2 test-hash-save-to-file test-hash-set test-hash-update \
+	test-normalize-size test-set-add test-set-load-from-file test-set-save-to-file
 
-test1: test1.c $(LIBFILES)
-	gcc $(CFLAGS) -o test1-64 test1.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test1-32 test1.c $(LIBFILES)
+test-hash-add:
+	gcc $(CFLAGS) -o test-hash-add-64 test-hash-add.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-hash-add-32 test-hash-add.c $(LIBFILES) 
 
-test2: test2.c $(LIBFILES)
-	gcc $(CFLAGS) -o test2-64 test2.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test2-32 test2.c $(LIBFILES)
+test-hash-delete:
+	gcc $(CFLAGS) -o test-hash-delete-64 test-hash-delete.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-hash-delete-32 test-hash-delete.c $(LIBFILES) 
 
-test3: test3.c $(LIBFILES)
-	gcc $(CFLAGS) -o test3-64 test3.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test3-32 test3.c $(LIBFILES)
+test-hash-delete-extensive:
+	gcc $(CFLAGS) -o test-hash-delete-extensive-64 test-hash-delete-extensive.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-hash-delete-extensive-32 test-hash-delete-extensive.c $(LIBFILES) 
 
-test4: test4.c $(LIBFILES)
-	gcc $(CFLAGS) -o test4-64 test4.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test4-32 test4.c $(LIBFILES)
+test-hash-get:
+	gcc $(CFLAGS) -o test-hash-get-64 test-hash-get.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-hash-get-32 test-hash-get.c $(LIBFILES) 
 
-test5: test5.c $(LIBFILES)
-	gcc $(CFLAGS) -o test5-64 test5.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test5-32 test5.c $(LIBFILES)
+test-hash-save-to-file2:
+	gcc $(CFLAGS) -o test-hash-save-to-file2-64 test-hash-save-to-file2.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-hash-save-to-file2-32 test-hash-save-to-file2.c $(LIBFILES) 
 
-test6: test6.c $(LIBFILES)
-	gcc $(CFLAGS) -o test6-64 test6.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test6-32 test6.c $(LIBFILES)
+test-hash-save-to-file:
+	gcc $(CFLAGS) -o test-hash-save-to-file-64 test-hash-save-to-file.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-hash-save-to-file-32 test-hash-save-to-file.c $(LIBFILES) 
 
-test7: test7.c $(LIBFILES)
-	gcc $(CFLAGS) -o test7-64 test7.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test7-32 test7.c $(LIBFILES)
+test-hash-set:
+	gcc $(CFLAGS) -o test-hash-set-64 test-hash-set.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-hash-set-32 test-hash-set.c $(LIBFILES) 
 
-test8: test8.c $(LIBFILES)
-	gcc $(CFLAGS) -o test8-64 test8.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test8-32 test8.c $(LIBFILES)
+test-hash-update:
+	gcc $(CFLAGS) -o test-hash-update-64 test-hash-update.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-hash-update-32 test-hash-update.c $(LIBFILES) 
 
-test9: test9.c $(LIBFILES)
-	gcc $(CFLAGS) -o test9-64 test9.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test9-32 test9.c $(LIBFILES)
+test-normalize-size:
+	gcc $(CFLAGS) -o test-normalize-size-64 test-normalize-size.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-normalize-size-32 test-normalize-size.c $(LIBFILES) 
 
-test10: test10.c $(LIBFILES)
-	gcc $(CFLAGS) -o test10-64 test10.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test10-32 test10.c $(LIBFILES)
+test-set-add:
+	gcc $(CFLAGS) -o test-set-add-64 test-set-add.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-set-add-32 test-set-add.c $(LIBFILES) 
 
-test11: test11.c $(LIBFILES)
-	gcc $(CFLAGS) -o test11-64 test11.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test11-32 test11.c $(LIBFILES)
+test-set-load-from-file:
+	gcc $(CFLAGS) -o test-set-load-from-file-64 test-set-load-from-file.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-set-load-from-file-32 test-set-load-from-file.c $(LIBFILES) 
 
-test12: test12.c $(LIBFILES)
-	gcc $(CFLAGS) -o test12-64 test12.c $(LIBFILES)
-	gcc -m32 $(CFLAGS) -o test12-32 test12.c $(LIBFILES)
+test-set-save-to-file:
+	gcc $(CFLAGS) -o test-set-save-to-file-64 test-set-save-to-file.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-set-save-to-file-32 test-set-save-to-file.c $(LIBFILES) 
+
