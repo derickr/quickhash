@@ -1,7 +1,7 @@
 CFLAGS=-Wall -O0 -ggdb3 -DDEBUG=1
 LIBFILES=quickhash.c iterator.c
 
-all: test-hash-add test-hash-delete test-hash-delete-extensive test-hash-get \
+all: test-hash-add test-hash-delete test-set-delete-extensive test-hash-get \
 	test-hash-save-to-file2 test-hash-save-to-file test-hash-set test-hash-update \
 	test-normalize-size test-set-add test-set-load-from-file test-set-save-to-file
 
@@ -13,9 +13,9 @@ test-hash-delete:
 	gcc $(CFLAGS) -o test-hash-delete-64 test-hash-delete.c $(LIBFILES) 
 	gcc -m32 $(CFLAGS) -o test-hash-delete-32 test-hash-delete.c $(LIBFILES) 
 
-test-hash-delete-extensive:
-	gcc $(CFLAGS) -o test-hash-delete-extensive-64 test-hash-delete-extensive.c $(LIBFILES) 
-	gcc -m32 $(CFLAGS) -o test-hash-delete-extensive-32 test-hash-delete-extensive.c $(LIBFILES) 
+test-set-delete-extensive:
+	gcc $(CFLAGS) -o test-set-delete-extensive-64 test-set-delete-extensive.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-set-delete-extensive-32 test-set-delete-extensive.c $(LIBFILES) 
 
 test-hash-get:
 	gcc $(CFLAGS) -o test-hash-get-64 test-hash-get.c $(LIBFILES) 

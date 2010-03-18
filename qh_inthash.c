@@ -186,7 +186,7 @@ PHP_METHOD(QuickHashIntHash, add)
 		RETURN_FALSE;
 	}
 	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
-	RETURN_BOOL(qhi_hash_add(inthash_obj->hash, key, value));
+	RETURN_BOOL(qhi_hash_add(inthash_obj->hash, key, (qhv) (int32_t) value));
 }
 /* }}} */
 
@@ -203,7 +203,7 @@ PHP_METHOD(QuickHashIntHash, get)
 		RETURN_FALSE;
 	}
 	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
-	if (qhi_hash_get(inthash_obj->hash, key, &value)) {
+	if (qhi_hash_get(inthash_obj->hash, key, (qhv*) &value)) {
 		RETURN_LONG(value);
 	}
 	RETURN_FALSE;
@@ -223,7 +223,7 @@ PHP_METHOD(QuickHashIntHash, set)
 		RETURN_FALSE;
 	}
 	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
-	RETURN_LONG(qhi_hash_set(inthash_obj->hash, key, value));
+	RETURN_LONG(qhi_hash_set(inthash_obj->hash, key, (qhv) (int32_t) value));
 }
 /* }}} */
 
@@ -239,7 +239,7 @@ PHP_METHOD(QuickHashIntHash, update)
 		RETURN_FALSE;
 	}
 	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
-	RETURN_BOOL(qhi_hash_update(inthash_obj->hash, key, value));
+	RETURN_BOOL(qhi_hash_update(inthash_obj->hash, key, (qhv) (int32_t) value));
 }
 /* }}} */
 

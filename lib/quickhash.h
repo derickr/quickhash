@@ -29,18 +29,40 @@ typedef uint32_t (*qha_t)(uint32_t key);
 /**
  * Hash buckets
  */
-typedef struct _qhb {
-	uint32_t     key;
-	struct _qhb *next;
-	uint32_t     value_idx;
-} qhb;
+
+/**
+ * Base, used for general casts
+ */
+typedef struct _qhbase {
+	struct _qhbase *next;
+	uint32_t        key;
+} qhbase;
+
+/**
+ * For int keys; int values or no values
+ */
+typedef struct _qhbii {
+	struct _qhbii *next;
+	uint32_t       key;
+	uint32_t       value_idx;
+} qhbii;
+
+/**
+ * For int keys; string values
+ */
+typedef struct _qhbis {
+	struct _qhbis *next;
+	uint32_t       key;
+	uint32_t       value_idx;
+	uint32_t       str_len;
+} qhbis;
 
 /**
  * List of hash buckets
  */
 typedef struct _qhl {
-	qhb      *head;
-	qhb      *tail;
+	qhbase *head;
+	qhbase *tail;
 } qhl;
 
 /**
@@ -59,6 +81,7 @@ typedef struct _qhm {
  * - check_for_dupes: whether insertions should be checked for duplicates
  */
 typedef struct _qho {
+	char     value_type; // either int or string
 	uint32_t size;
 	char     check_for_dupes;
 	qha_t    hasher;
@@ -66,9 +89,28 @@ typedef struct _qho {
 } qho;
 
 /**
+ * Contains a string list
+ */
+typedef struct _qhsl {
+	uint32_t  count;
+	uint32_t  size;
+	char     *data;
+} qhsl;
+
+/**
+ * Union value type used for hash values.
+ */
+typedef union _qhv {
+	int32_t  i;
+	char    *s;
+} qhv;
+
+/**
  * Integer hash type
  */
 typedef struct _qhi {
+	char      value_type; // either int or string
+
 	// hash related
 	qha_t     hasher;
 	qho      *options;
@@ -80,12 +122,20 @@ typedef struct _qhi {
 	// for pre-allocating buckets
 	int32_t   bucket_buffer_nr;
 	uint32_t  bucket_buffer_pos;
-	qhb     **bucket_buffer;
+	void    **bucket_buffer;
 
-	// for values
-	uint32_t  values_count;
-	uint32_t  values_size;
-	int32_t  *values;
+	// for int values
+	struct {
+		uint32_t  count;
+		uint32_t  size;
+		int32_t  *values;
+	} i;
+
+	// for string values
+	struct {
+		uint32_t   list_count;
+		qhsl     **lists;
+	} s;
 
 	// statistics
 	uint32_t  element_count;
@@ -102,12 +152,17 @@ typedef struct _qhit {
 	qhi      *hash;
 
 	uint32_t  bucket_list_idx;
-	qhl      *bucket_list;
-	qhb      *current_bucket;
+	qhbase   *current_bucket;
 
 	int32_t   key;
 	int32_t   value;
 } qhit;
+
+/**
+ * Constants
+ */
+#define QHI_VALUE_TYPE_INT    1
+#define QHI_VALUE_TYPE_STRING 2
 
 /**
  * Function type to be used as an utility function with qhi_process_set
@@ -137,10 +192,10 @@ qhi *qhi_set_load_from_file(int fd, qho *options);
 int qhi_set_save_to_file(int fd, qhi *hash);
 
 /* hash */
-int qhi_hash_add(qhi *hash, int32_t position, int32_t value);
-int qhi_hash_get(qhi *hash, int32_t position, int32_t *value);
-int qhi_hash_update(qhi *hash, int32_t position, int32_t value);
-int qhi_hash_set(qhi *hash, int32_t position, int32_t value);
+int qhi_hash_add(qhi *hash, int32_t position, qhv value);
+int qhi_hash_get(qhi *hash, int32_t position, qhv *value);
+int qhi_hash_update(qhi *hash, int32_t position, qhv value);
+int qhi_hash_set(qhi *hash, int32_t position, qhv value);
 
 int qhi_process_hash(qhi *hash, void *context, qhi_buffer_apply_func apply_func);
 uint32_t qhi_hash_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t nr_of_elements);

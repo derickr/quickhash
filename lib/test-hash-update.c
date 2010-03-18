@@ -35,10 +35,10 @@ int main(void)
 	h = qhi_create(options);
 
 	for (i= 0; i < 131072; i += 2) {
-		qhi_hash_add(h, i, 1);
+		qhi_hash_add(h, i, (qhv) 1);
 	}
 	for (i= 0; i < 131072; i++) {
-		if (qhi_hash_get(h, i, &value)) {
+		if (qhi_hash_get(h, i, (qhv*) &value)) {
 			total += value;
 		}
 	}
@@ -46,10 +46,10 @@ int main(void)
 	total = 0;
 
 	for (i= 0; i < 131072; i += 2) {
-		qhi_hash_update(h, i, 2);
+		qhi_hash_update(h, i, (qhv) 2);
 	}
 	for (i= 0; i < 131072; i++) {
-		if (qhi_hash_get(h, i, &value)) {
+		if (qhi_hash_get(h, i, (qhv*) &value)) {
 			total += value;
 		}
 	}

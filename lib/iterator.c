@@ -35,7 +35,6 @@ void qhi_iterator_init(qhit *iter, qhi *hash)
 	iter->key = 0;
 	iter->value = 0;
 	iter->bucket_list_idx = 0;
-	iter->bucket_list = NULL;
 	iter->current_bucket = NULL;
 
 	iter->hash->iterator_count++;
@@ -63,6 +62,23 @@ static int forward_to_bucket_list(qhit *iter)
 	return 1;
 }
 
+static void read_values(qhit **iter)
+{
+	switch ((*iter)->hash->value_type) {
+		case QHI_VALUE_TYPE_INT:
+			if ((*iter)->hash->i.values) {
+				(*iter)->value = (*iter)->hash->i.values[((qhbii*) (*iter)->current_bucket)->value_idx];
+			}
+			break;
+
+		case QHI_VALUE_TYPE_STRING:
+			break;
+
+		default:
+			break;
+	}
+}
+
 /**
  * Iterates to the next bucket and sets the value and key elements of the
  * iterator to ones belonging to that bucket.
@@ -80,9 +96,7 @@ int qhi_iterator_forward(qhit *iter)
 		if (forward_to_bucket_list(iter)) {
 			iter->current_bucket = iter->hash->bucket_list[iter->bucket_list_idx].head;
 			iter->key = iter->current_bucket->key;
-			if (iter->hash->values) {
-				iter->value = iter->hash->values[iter->current_bucket->value_idx];
-			}
+			read_values((qhit**) &iter);
 			return 1;
 		}
 	} else {
@@ -90,20 +104,16 @@ int qhi_iterator_forward(qhit *iter)
 		if (iter->current_bucket->next) {
 			iter->current_bucket = iter->current_bucket->next;
 			iter->key = iter->current_bucket->key;
-			if (iter->hash->values) {
-				iter->value = iter->hash->values[iter->current_bucket->value_idx];
-			}
+			read_values((qhit**) &iter);
 			return 1;
 		}
 
 		/* If not, go to the next bucket if it exists */
 		iter->bucket_list_idx++;
 		if (forward_to_bucket_list(iter)) {
-			iter->key = iter->hash->bucket_list[iter->bucket_list_idx].head->key;
-			if (iter->hash->values) {
-				iter->value = iter->hash->values[iter->hash->bucket_list[iter->bucket_list_idx].head->value_idx];
-			}
 			iter->current_bucket = iter->hash->bucket_list[iter->bucket_list_idx].head;
+			iter->key = iter->hash->bucket_list[iter->bucket_list_idx].head->key;
+			read_values((qhit**) &iter);
 			return 1;
 		}
 	}
