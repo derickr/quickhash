@@ -33,36 +33,18 @@ typedef uint32_t (*qha_t)(uint32_t key);
 /**
  * Base, used for general casts
  */
-typedef struct _qhbase {
-	struct _qhbase *next;
-	uint32_t        key;
-} qhbase;
-
-/**
- * For int keys; int values or no values
- */
-typedef struct _qhbii {
-	struct _qhbii *next;
-	uint32_t       key;
-	uint32_t       value_idx;
-} qhbii;
-
-/**
- * For int keys; string values
- */
-typedef struct _qhbis {
-	struct _qhbis *next;
-	uint32_t       key;
-	uint32_t       value_idx;
-	uint32_t       str_len;
-} qhbis;
+typedef struct _qhb {
+	struct _qhb *next;
+	uint32_t     key;
+	uint32_t     value_idx;
+} qhb;
 
 /**
  * List of hash buckets
  */
 typedef struct _qhl {
-	qhbase *head;
-	qhbase *tail;
+	qhb *head;
+	qhb *tail;
 } qhl;
 
 /**
@@ -122,7 +104,7 @@ typedef struct _qhi {
 	// for pre-allocating buckets
 	int32_t   bucket_buffer_nr;
 	uint32_t  bucket_buffer_pos;
-	void    **bucket_buffer;
+	qhb     **bucket_buffer;
 
 	// for int values
 	struct {
@@ -133,8 +115,9 @@ typedef struct _qhi {
 
 	// for string values
 	struct {
-		uint32_t   list_count;
-		qhsl     **lists;
+		uint32_t  count;
+		uint32_t  size;
+		char     *values;
 	} s;
 
 	// statistics
@@ -152,7 +135,7 @@ typedef struct _qhit {
 	qhi      *hash;
 
 	uint32_t  bucket_list_idx;
-	qhbase   *current_bucket;
+	qhb      *current_bucket;
 
 	int32_t   key;
 	int32_t   value;

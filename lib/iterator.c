@@ -67,7 +67,7 @@ static void read_values(qhit **iter)
 	switch ((*iter)->hash->value_type) {
 		case QHI_VALUE_TYPE_INT:
 			if ((*iter)->hash->i.values) {
-				(*iter)->value = (*iter)->hash->i.values[((qhbii*) (*iter)->current_bucket)->value_idx];
+				(*iter)->value = (*iter)->hash->i.values[((qhb*) (*iter)->current_bucket)->value_idx];
 			}
 			break;
 
