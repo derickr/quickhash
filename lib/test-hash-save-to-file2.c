@@ -48,7 +48,7 @@ int main(void)
 
 	total = 0;
 
-	fd = open("/tmp/test-save", O_WRONLY | O_CREAT);
+	fd = open("/tmp/test-save", O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	qhi_hash_save_to_file(fd, h);
 	close(fd);
 	qhi_free(h);

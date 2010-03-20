@@ -141,7 +141,7 @@ void qh_set_memory_functions(qho *options)
 	options->memory.free = qh_free;
 }
 
-int php_qh_save_to_string_func(void *context, int32_t *buffer, uint32_t elements)
+int php_qh_save_int32t_to_string_func(void *context, int32_t *buffer, uint32_t elements)
 {
 	php_qh_save_to_string_context *ctxt = (php_qh_save_to_string_context*) context;
 
@@ -153,12 +153,35 @@ int php_qh_save_to_string_func(void *context, int32_t *buffer, uint32_t elements
 	return 1;
 }
 
-int php_qh_save_to_stream_func(void *context, int32_t *buffer, uint32_t elements)
+int php_qh_save_chars_to_string_func(void *context, char *buffer, uint32_t elements)
+{
+	php_qh_save_to_string_context *ctxt = (php_qh_save_to_string_context*) context;
+
+	ctxt->string = erealloc(ctxt->string, ctxt->string_len + elements + 1);
+	memcpy(ctxt->string + ctxt->string_len, buffer, elements);
+	ctxt->string_len += elements;
+	ctxt->string[ctxt->string_len] = '\0';
+
+	return 1;
+}
+
+int php_qh_save_int32t_to_stream_func(void *context, int32_t *buffer, uint32_t elements)
 {
 	php_qh_save_to_stream_context *ctxt = (php_qh_save_to_stream_context*) context;
 	TSRMLS_FETCH();
 
 	if (php_stream_write(ctxt->stream, (char*)buffer, elements * sizeof(int32_t)) != (elements * sizeof(int32_t))) {
+		return 0;
+	}
+	return 1;
+}
+
+int php_qh_save_chars_to_stream_func(void *context, char *buffer, uint32_t elements)
+{
+	php_qh_save_to_stream_context *ctxt = (php_qh_save_to_stream_context*) context;
+	TSRMLS_FETCH();
+
+	if (php_stream_write(ctxt->stream, buffer, elements)) {
 		return 0;
 	}
 	return 1;

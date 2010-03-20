@@ -26,31 +26,21 @@ int main(void)
 {
 	qhi *h;
 	qho *options = qho_create();
-	uint32_t i;
 	int  fd;
 	
-	options->size = 500000;
+	options->size = 2000;
 	options->check_for_dupes = 1;
+	options->value_type = QHI_VALUE_TYPE_STRING;
 	h = qhi_create(options);
 
-	for (i= 0; i < 1048576; i += 2) {
-		int32_t value = i*3 + i % 7;
-		qhi_hash_add(h, i, (qhv) value);
-	}
+	qhi_hash_add(h, 1, (qhv) "één");
+	qhi_hash_add(h, 2, (qhv) "twee");
+	qhi_hash_add(h, 3, (qhv) "drie");
+	qhi_hash_add(h, 4, (qhv) "vier");
 
-	fd = open("/tmp/test-save", O_WRONLY | O_TRUNC | O_CREAT, 0666);
+	fd = open("/tmp/test-save", O_RDWR | O_TRUNC | O_CREAT, 0666);
 	qhi_hash_save_to_file(fd, h);
 	close(fd);
-
-/*
-	for (i= 0; i < 1048576; i++) {
-		if (qhi_hash_get(h, i, &value)) {
-//			printf("value: %d = %d\n", i, value);
-		} else {
-//			printf("value: %d = ?\n", i);
-		}
-	}
-*/
 
 	qhi_free(h);
 	qho_free(options);

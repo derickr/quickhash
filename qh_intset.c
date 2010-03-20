@@ -293,7 +293,7 @@ int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
 
 	ctxt.stream = stream;
 
-	return qhi_process_set(hash, (void *) &ctxt, php_qh_save_to_stream_func);
+	return qhi_process_set(hash, (void *) &ctxt, php_qh_save_int32t_to_stream_func);
 }
 
 /* {{{ proto void QuickHashIntSet::saveToFile( string filename )
@@ -364,7 +364,7 @@ char *qh_intset_save_to_string(uint32_t *string_len, php_qh_intset_obj *obj)
 	ctxt.string = NULL;
 	ctxt.string_len = 0;
 
-	qhi_process_set(hash, (void *) &ctxt, php_qh_save_to_string_func);
+	qhi_process_set(hash, (void *) &ctxt, php_qh_save_int32t_to_string_func);
 	*string_len = ctxt.string_len;
 	return ctxt.string;
 }

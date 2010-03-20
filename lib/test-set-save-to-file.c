@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	printf("exists: %d\n", qhi_set_exists(h, 0x5453494c));
 	printf("done checking\n");
 
-	fd = open("/tmp/test-save", O_WRONLY | O_CREAT);
+	fd = open("/tmp/test-save", O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	qhi_set_save_to_file(fd, h);
 
 	qhi_free(h);
