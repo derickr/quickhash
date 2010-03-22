@@ -680,8 +680,9 @@ int qhi_set_save_to_file(int fd, qhi *hash)
  * Returns:
  * - The index under which the value was added (which is stored in the hash)
  */
-static void hash_add_value(qhi *hash, qhb *bucket, qhv value)
+static uint32_t hash_add_value(qhi *hash, qhv value)
 {
+	uint32_t retval = 0;
 	switch (hash->value_type) {
 		case QHI_VALUE_TYPE_INT:
 			if (hash->i.count == hash->i.size) {
@@ -689,7 +690,7 @@ static void hash_add_value(qhi *hash, qhb *bucket, qhv value)
 				hash->i.size += QHB_BUFFER_PREALLOC_INC;
 			}
 			hash->i.values[hash->i.count] = value.i;
-			bucket->value_idx = hash->i.count;
+			retval = hash->i.count;
 			hash->i.count++;
 			break;
 
@@ -700,7 +701,7 @@ static void hash_add_value(qhi *hash, qhb *bucket, qhv value)
 				hash->s.size += QHB_BUFFER_PREALLOC_INC;
 			}
 			memcpy(hash->s.values + hash->s.count, value.s, str_len + 1);
-			bucket->value_idx = hash->s.count;
+			retval = hash->s.count;
 			hash->s.count = hash->s.count + str_len + 1;
 		} break;
 
@@ -708,6 +709,7 @@ static void hash_add_value(qhi *hash, qhb *bucket, qhv value)
 			/* FAIL */
 			break;
 	}
+	return retval;
 }
 
 /**
@@ -722,7 +724,7 @@ static void hash_add_value(qhi *hash, qhb *bucket, qhv value)
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-static int qhi_add_value_to_list(qhi *hash, qhl *list, int32_t key, qhv value)
+static int qhi_add_entry_to_list(qhi *hash, qhl *list, int32_t key, uint32_t value_idx)
 {
 	qhb *bucket;
 
@@ -733,7 +735,7 @@ static int qhi_add_value_to_list(qhi *hash, qhl *list, int32_t key, qhv value)
 	}
 	bucket->key = key;
 	bucket->next = NULL;
-	hash_add_value(hash, bucket, value);
+	bucket->value_idx = value_idx;
 
 	// add bucket to list
 	if (list->head == NULL) {
@@ -760,7 +762,7 @@ static int qhi_update_value_in_bucket(qhi *hash, qhb *bucket, qhv value)
 			return 1;
 
 		case QHI_VALUE_TYPE_STRING:
-			hash_add_value(hash, bucket, value);
+			bucket->value_idx = hash_add_value(hash, value);
 			break;
 
 		default:
@@ -791,7 +793,7 @@ static int qhi_get_value_from_bucket(qhi *hash, qhb *bucket, qhv* value)
 }
 
 /**
- * Adds a new element to the hash
+ * Adds a new element to the hash with a value
  *
  * Parameters:
  * - hash: A valid quickhash
@@ -815,7 +817,35 @@ int qhi_hash_add(qhi *hash, int32_t key, qhv value)
 		return 0;
 	}
 
-	return qhi_add_value_to_list(hash, list, key, value);
+	return qhi_add_entry_to_list(hash, list, key, hash_add_value(hash, value));
+}
+
+/**
+ * Adds a new element to the hash with a value index
+ *
+ * Parameters:
+ * - hash: A valid quickhash
+ * - key: The key
+ * - value_idx: The index for the associated value into the value store.
+ *
+ * Returns:
+ * - 1 if the element was added or 0 if the element couldn't be added
+ */
+int qhi_hash_add_with_index(qhi *hash, int32_t key, uint32_t value_index)
+{
+	uint32_t idx;
+	qhl     *list;
+
+	// obtain the hashed key, and the bucket list for the hashed key
+	idx = qhi_set_hash(hash, key);
+	list = &(hash->bucket_list[idx]);
+
+	// check if we already have the key in the list if requested
+	if (hash->options->check_for_dupes && find_bucket_from_list(list, key, NULL)) {
+		return 0;
+	}
+
+	return qhi_add_entry_to_list(hash, list, key, value_index);
 }
 
 /**
@@ -878,7 +908,7 @@ int qhi_hash_set(qhi *hash, int32_t key, qhv value)
 		return qhi_update_value_in_bucket(hash, bucket, value);
 	} else {
 		// add
-		return qhi_add_value_to_list(hash, list, key, value) ? 2 : 0;
+		return qhi_add_entry_to_list(hash, list, key, hash_add_value(hash, value)) ? 2 : 0;
 	}
 	return 0;
 }
@@ -932,7 +962,14 @@ uint32_t qhi_hash_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t 
 	uint32_t added = 0;
 
 	for (i = 0; i < nr_of_elements; i += 2) {
-		added += qhi_hash_add(hash, buffer[i], (qhv) buffer[i + 1]);
+		switch (hash->value_type) {
+			case QHI_VALUE_TYPE_INT:
+				added += qhi_hash_add(hash, buffer[i], (qhv) buffer[i + 1]);
+				break;
+			case QHI_VALUE_TYPE_STRING:
+				added += qhi_hash_add_with_index(hash, buffer[i], buffer[i + 1]);
+				break;
+		}
 	}
 	return added;
 }
@@ -967,8 +1004,10 @@ qhi *qhi_hash_load_from_file(int fd, qho *options)
 	}
 	if (key_buffer[0] == -QHI_VALUE_TYPE_STRING) {
 		// position 1 contains the string length now
-		finfo.st_size = finfo.st_size - 2 - key_buffer[1];
+		finfo.st_size = finfo.st_size - (2 * sizeof(int32_t)) - key_buffer[1];
 		options->value_type = QHI_VALUE_TYPE_STRING;
+	} else {
+		lseek(fd, 0, SEEK_SET);
 	}
 
 	// if the filesize is not an increment of 8 (4*key+value), abort

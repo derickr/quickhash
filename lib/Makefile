@@ -5,7 +5,8 @@ all: test-hash-add test-hash-delete test-set-delete-extensive test-hash-get \
 	test-hash-save-to-file2 test-hash-save-to-file test-hash-set test-hash-update \
 	test-normalize-size test-set-add test-set-load-from-file test-set-save-to-file \
 	test-hash-string-add test-hash-string-update test-hash-string-delete \
-	test-hash-string-set test-hash-string-save-to-file
+	test-hash-string-set test-hash-string-save-to-file \
+	test-hash-string-save-to-file2
 
 test-hash-add:
 	gcc $(CFLAGS) -o test-hash-add-64 test-hash-add.c $(LIBFILES) 
@@ -75,3 +76,6 @@ test-hash-string-save-to-file:
 	gcc $(CFLAGS) -o test-hash-string-save-to-file-64 test-hash-string-save-to-file.c $(LIBFILES) 
 	gcc -m32 $(CFLAGS) -o test-hash-string-save-to-file-32 test-hash-string-save-to-file.c $(LIBFILES) 
 
+test-hash-string-save-to-file2:
+	gcc $(CFLAGS) -o test-hash-string-save-to-file2-64 test-hash-string-save-to-file2.c $(LIBFILES) 
+	gcc -m32 $(CFLAGS) -o test-hash-string-save-to-file2-32 test-hash-string-save-to-file2.c $(LIBFILES) 
