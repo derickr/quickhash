@@ -763,6 +763,7 @@ static int qhi_update_value_in_bucket(qhi *hash, qhb *bucket, qhv value)
 
 		case QHI_VALUE_TYPE_STRING:
 			bucket->value_idx = hash_add_value(hash, value);
+			return 1;
 			break;
 
 		default:

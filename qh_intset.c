@@ -241,6 +241,17 @@ PHP_METHOD(QuickHashIntSet, delete)
 }
 /* }}} */
 
+/* Validates whether the stream is in the correct format */
+static int qh_intset_stream_validator(php_stream_statbuf finfo, php_stream *stream, uint32_t *nr_of_elements, uint32_t *value_array_length)
+{
+	// if the filesize is not an increment of req_count * sizeof(int32_t), abort
+	if (finfo.sb.st_size % sizeof(int32_t) != 0) {
+		return 0;
+	}
+	*nr_of_elements = finfo.sb.st_size / sizeof(int32_t);
+	return 1;
+}
+
 static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_stream *stream, long size, long flags TSRMLS_DC)
 {
 	uint32_t   nr_of_elements, elements_read = 0;
@@ -248,7 +259,7 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 	int32_t    key_buffer[1024];
 	qho       *options = qho_create();
 
-	if (!php_qh_prepare_file(&obj->hash, options, stream, size, flags, 1, &nr_of_elements TSRMLS_CC)) {
+	if (!php_qh_prepare_file(&obj->hash, options, stream, size, flags, qh_intset_stream_validator, &nr_of_elements, NULL TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}
@@ -322,12 +333,23 @@ PHP_METHOD(QuickHashIntSet, saveToFile)
 }
 /* }}} */
 
+/* Validates whether the string is in the correct format */
+static int qh_intset_string_validator(char *string, long length, uint32_t *nr_of_elements, uint32_t *value_array_length)
+{
+	// if the length is not an increment of req_count * sizeof(int32_t), abort
+	if (length % sizeof(int32_t) != 0) {
+		return 0;
+	}
+	*nr_of_elements = length / sizeof(int32_t);
+	return 1;
+}
+
 static uint32_t qh_intset_initialize_from_string(php_qh_intset_obj *obj, char *contents, long length, long size, long flags TSRMLS_DC)
 {
 	uint32_t  nr_of_elements;
 	qho      *options = qho_create();
 
-	if (!php_qh_prepare_string(&obj->hash, options, length, size, flags, 1, &nr_of_elements TSRMLS_CC)) {
+	if (!php_qh_prepare_string(&obj->hash, options, contents, length, size, flags, qh_intset_string_validator, &nr_of_elements, NULL TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}

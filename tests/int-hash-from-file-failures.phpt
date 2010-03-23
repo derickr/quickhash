@@ -122,7 +122,7 @@ Non existing:
 QuickHashIntHash::loadFromFile(/home/derick/dev/quickhash/tests/does-not-exist.set): failed to open stream: No such file or directory
 
 Wrong size: 
-QuickHashIntHash::loadFromFile(): File is in the wrong format (not a multiple of 8 bytes)
+QuickHashIntHash::loadFromFile(): File is in the wrong format
 
 URL: 
 QuickHashIntHash::loadFromFile(): Could not obtain file information

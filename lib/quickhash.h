@@ -138,7 +138,7 @@ typedef struct _qhit {
 	qhb      *current_bucket;
 
 	int32_t   key;
-	int32_t   value;
+	qhv       value;
 } qhit;
 
 /**

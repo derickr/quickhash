@@ -71,4 +71,4 @@ QuickHashIntSet::loadFromString() expects parameter 2 to be long, string given
 QuickHashIntSet::loadFromString() expects parameter 1 to be string, object given
 
 Wrong size: 
-QuickHashIntSet::loadFromString(): String is in the wrong format (not a multiple of 4 bytes)
+QuickHashIntSet::loadFromString(): String is in the wrong format

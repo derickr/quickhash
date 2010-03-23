@@ -190,21 +190,25 @@ PHP_METHOD(QuickHashIntHash, add)
 }
 /* }}} */
 
-/* {{{ proto int QuickHashIntHash::get( int key )
+/* {{{ proto mixed QuickHashIntHash::get( int key )
    Returns the value of they key if it exists, or NULL otherwise */
 PHP_METHOD(QuickHashIntHash, get)
 {
 	zval               *object;
 	php_qh_inthash_obj *inthash_obj;
 	long                key;
-	int32_t             value;
+	qhv                 value;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_inthash, &key) == FAILURE) {
 		RETURN_FALSE;
 	}
 	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
-	if (qhi_hash_get(inthash_obj->hash, key, (qhv*) &value)) {
-		RETURN_LONG(value);
+	if (qhi_hash_get(inthash_obj->hash, key, &value)) {
+		if (inthash_obj->hash->value_type == QHI_VALUE_TYPE_INT) {
+			RETURN_LONG(value.i);
+		} else if (inthash_obj->hash->value_type == QHI_VALUE_TYPE_STRING) {
+			RETURN_STRING(value.s, 1);
+		}
 	}
 	RETURN_FALSE;
 }
@@ -243,6 +247,17 @@ PHP_METHOD(QuickHashIntHash, update)
 }
 /* }}} */
 
+/* Validates whether the stream is in the correct format */
+static int qh_inthash_stream_validator(php_stream_statbuf finfo, php_stream *stream, uint32_t *nr_of_elements, uint32_t *value_array_length)
+{
+	// if the filesize is not an increment of req_count * sizeof(int32_t), abort
+	if (finfo.sb.st_size % (2 * sizeof(int32_t)) != 0) {
+		return 0;
+	}
+	*nr_of_elements = finfo.sb.st_size / sizeof(int32_t);
+	return 1;
+}
+
 static uint32_t qh_inthash_initialize_from_file(php_qh_inthash_obj *obj, php_stream *stream, long size, long flags TSRMLS_DC)
 {
 	uint32_t  nr_of_elements, elements_read = 0;
@@ -250,7 +265,7 @@ static uint32_t qh_inthash_initialize_from_file(php_qh_inthash_obj *obj, php_str
 	int32_t   key_buffer[1024];
 	qho      *options = qho_create();
 
-	if (!php_qh_prepare_file(&obj->hash, options, stream, size, flags, 2, &nr_of_elements TSRMLS_CC)) {
+	if (!php_qh_prepare_file(&obj->hash, options, stream, size, flags, qh_inthash_stream_validator, &nr_of_elements, NULL TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}
@@ -324,12 +339,23 @@ PHP_METHOD(QuickHashIntHash, saveToFile)
 }
 /* }}} */
 
+/* Validates whether the string is in the correct format */
+static int qh_inthash_string_validator(char *string, long length, uint32_t *nr_of_elements, uint32_t *value_array_length)
+{
+	// if the length is not an increment of req_count * sizeof(int32_t), abort
+	if (length % (2 * sizeof(int32_t)) != 0) {
+		return 0;
+	}
+	*nr_of_elements = length / sizeof(int32_t);
+	return 1;
+}
+
 static uint32_t qh_inthash_initialize_from_string(php_qh_inthash_obj *obj, char *contents, long length, long size, long flags TSRMLS_DC)
 {
 	uint32_t  nr_of_elements;
 	qho      *options = qho_create();
 
-	if (!php_qh_prepare_string(&obj->hash, options, length, size, flags, 2, &nr_of_elements TSRMLS_CC)) {
+	if (!php_qh_prepare_string(&obj->hash, options, contents, length, size, flags, qh_inthash_string_validator, &nr_of_elements, NULL TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}

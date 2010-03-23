@@ -33,7 +33,7 @@ void qhi_iterator_init(qhit *iter, qhi *hash)
 {
 	iter->hash = hash;
 	iter->key = 0;
-	iter->value = 0;
+	iter->value = (qhv) 0;
 	iter->bucket_list_idx = 0;
 	iter->current_bucket = NULL;
 
@@ -67,11 +67,12 @@ static void read_values(qhit **iter)
 	switch ((*iter)->hash->value_type) {
 		case QHI_VALUE_TYPE_INT:
 			if ((*iter)->hash->i.values) {
-				(*iter)->value = (*iter)->hash->i.values[((qhb*) (*iter)->current_bucket)->value_idx];
+				(*iter)->value = (qhv) (*iter)->hash->i.values[((qhb*) (*iter)->current_bucket)->value_idx];
 			}
 			break;
 
 		case QHI_VALUE_TYPE_STRING:
+			(*iter)->value = (qhv) &(*iter)->hash->s.values[((qhb*) (*iter)->current_bucket)->value_idx];
 			break;
 
 		default:

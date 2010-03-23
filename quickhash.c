@@ -32,6 +32,7 @@
 #include "quickhash.h"
 #include "qh_intset.h"
 #include "qh_inthash.h"
+#include "qh_intstringhash.h"
 
 function_entry quickhash_functions[] = {
 	{NULL, NULL, NULL}
@@ -181,7 +182,7 @@ int php_qh_save_chars_to_stream_func(void *context, char *buffer, uint32_t eleme
 	php_qh_save_to_stream_context *ctxt = (php_qh_save_to_stream_context*) context;
 	TSRMLS_FETCH();
 
-	if (php_stream_write(ctxt->stream, buffer, elements)) {
+	if (php_stream_write(ctxt->stream, buffer, elements) != elements) {
 		return 0;
 	}
 	return 1;
@@ -190,7 +191,7 @@ int php_qh_save_chars_to_stream_func(void *context, char *buffer, uint32_t eleme
 /**
  * Does some tests on the stream to see whether we can use it for reading data from.
  */
-int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size, long flags, int req_count, uint32_t *nr_of_elements TSRMLS_DC)
+int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size, long flags, php_qh_stream_validator validator, uint32_t *nr_of_elements, uint32_t *value_array_length TSRMLS_DC)
 {
 	php_stream_statbuf finfo;
 
@@ -209,12 +210,11 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size,
 		return 0;
 	}
 
-	// if the filesize is not an increment of req_count * sizeof(int32_t), abort
-	if (finfo.sb.st_size % (req_count * sizeof(int32_t)) != 0) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format (not a multiple of %ld bytes)", req_count * sizeof(int32_t));
+	// run the validator
+	if (!validator(finfo, stream, nr_of_elements, value_array_length)) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "File is in the wrong format");
 		return 0;
 	}
-	*nr_of_elements = finfo.sb.st_size / sizeof(int32_t);
 
 	// automatically set the size if the size is still 0.
 	options->size = size == 0 ? *nr_of_elements : size;
@@ -231,17 +231,16 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size,
 /**
  * Does some tests on the string to see whether we can use it for reading data from.
  */
-int php_qh_prepare_string(qhi **hash, qho *options, long length, long size, long flags, int req_count, uint32_t *nr_of_elements TSRMLS_DC)
+int php_qh_prepare_string(qhi **hash, qho *options, char *string, long length, long size, long flags, php_qh_string_validator validator, uint32_t *nr_of_elements, uint32_t *value_array_length TSRMLS_DC)
 {
 	// deal with options
 	qh_process_flags(options, flags);
 
-	// if the filesize is not an increment of req_count * sizeof(int32_t), abort
-	if (length % (sizeof(int32_t) * req_count) != 0) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "String is in the wrong format (not a multiple of %ld bytes)", req_count * sizeof(int32_t));
+	// run the validator
+	if (!validator(string, length, nr_of_elements, value_array_length)) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "String is in the wrong format");
 		return 0;
 	}
-	*nr_of_elements = length / sizeof(int32_t);
 
 	// automatically set the size if the size is still 0.
 	options->size = size == 0 ? *nr_of_elements : size;
@@ -262,6 +261,7 @@ PHP_MINIT_FUNCTION(quickhash)
 
 	qh_register_class_intset(TSRMLS_C);
 	qh_register_class_inthash(TSRMLS_C);
+	qh_register_class_intstringhash(TSRMLS_C);
 
 	return SUCCESS;
 }

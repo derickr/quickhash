@@ -59,9 +59,20 @@ static int qh_inthash_it_has_more(zend_object_iterator *iter TSRMLS_DC)
 {
 	qh_intset_it *iterator = (qh_intset_it *)iter;
 	int            ret;
+	qhi           *hash = (qhi* ) iterator->intern.data;
 
 	ret = qhi_iterator_forward(&iterator->iterator) ? SUCCESS : FAILURE;
-	ZVAL_LONG(iterator->current_value, iterator->iterator.value);
+	switch (hash->value_type) {
+		case QHI_VALUE_TYPE_INT:
+			ZVAL_LONG(iterator->current_value, iterator->iterator.value.i);
+			break;
+		case QHI_VALUE_TYPE_STRING:
+			if (Z_TYPE_P(iterator->current_value) == IS_STRING) {
+				zval_dtor(iterator->current_value);
+			}
+			ZVAL_STRING(iterator->current_value, iterator->iterator.value.s, 1);
+			break;
+	}
 
 	return ret;
 }
