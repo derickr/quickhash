@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- $Revision: $ -->
 
-<refentry xml:id="quickhashinthash.update" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
+<refentry xml:id="quickhashintstringhash.update" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
  <refnamediv>
-  <refname>QuickHashIntHash::update</refname>
+  <refname>QuickHashIntStringHash::update</refname>
   <refpurpose>This method updates an entry in the hash with a new value.</refpurpose>
  </refnamediv>
 
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
-   <modifier>public</modifier> <type>boolean</type><methodname>QuickHashIntHash::update</methodname>
+   <modifier>public</modifier> <type>boolean</type><methodname>QuickHashIntStringHash::update</methodname>
    <methodparam><type>integer</type><parameter>key</parameter></methodparam>
-   <methodparam><type>integer</type><parameter>value</parameter></methodparam>
+   <methodparam><type>string</type><parameter>value</parameter></methodparam>
   </methodsynopsis>
   <para>
    This method updates an entry with a new value, and returns whether the entry was
    update. If there are duplicate keys, only the first found element will get
-   an updated value. Use QuickHashIntHash::CHECK_FOR_DUPES during hash
+   an updated value. Use QuickHashIntStringHash::CHECK_FOR_DUPES during hash
    creation to prevent duplicate keys from being part of the hash.
   </para>
  </refsect1>
@@ -38,7 +38,8 @@
      <term><parameter>value</parameter></term>
      <listitem>
       <para>
-       The new value to update the entry with.
+       The new value for the entry. If a non-string is passed, it will be
+       converted to a string automatically if possible.
       </para>
      </listitem>
     </varlistentry>
@@ -58,24 +59,33 @@
   &reftitle.examples;
   <para>
    <example>
-    <title><function>QuickHashIntHash::update</function> example</title>
+    <title><function>QuickHashIntStringHash::update</function> example</title>
     <programlisting role="php">
 <![CDATA[
 <?php
-$hash = new QuickHashIntHash( 1024 );
+$hash->add( 161803398, "--" );
+$hash->add( 314159265, "a lot" );
 
-var_dump( $hash->add( 141421, 173205 ) );
-var_dump( $hash->update( 141421, 223606 ) );
-var_dump( $hash->get( 141421 ) );
+echo $hash->get( 161803398 ), "\n";
+echo $hash->get( 314159265 ), "\n";
+
+var_dump( $hash->update( 314159265, "a lot plus one" ) );
+var_dump( $hash->update( 314159999, "a lot plus one" ) );
+
+echo $hash->get( 161803398 ), "\n";
+echo $hash->get( 314159265 ), "\n";
 ?>
 ]]>
     </programlisting>
     &example.outputs.similar;
     <screen>
 <![CDATA[
+--
+a lot
 bool(true)
-bool(true)
-int(223606)
+bool(false)
+--
+a lot plus one
 ]]>
     </screen>
    </example>

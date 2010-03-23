@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- $Revision: $ -->
 
-<refentry xml:id="quickhashinthash.update" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
+<refentry xml:id="quickhashintstringhash.delete" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
  <refnamediv>
-  <refname>QuickHashIntHash::update</refname>
-  <refpurpose>This method updates an entry in the hash with a new value.</refpurpose>
+  <refname>QuickHashIntStringHash::delete</refname>
+  <refpurpose>This method deletes am entry from the hash.</refpurpose>
  </refnamediv>
 
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
-   <modifier>public</modifier> <type>boolean</type><methodname>QuickHashIntHash::update</methodname>
+   <modifier>public</modifier> <type>boolean</type><methodname>QuickHashIntStringHash::delete</methodname>
    <methodparam><type>integer</type><parameter>key</parameter></methodparam>
-   <methodparam><type>integer</type><parameter>value</parameter></methodparam>
   </methodsynopsis>
   <para>
-   This method updates an entry with a new value, and returns whether the entry was
-   update. If there are duplicate keys, only the first found element will get
-   an updated value. Use QuickHashIntHash::CHECK_FOR_DUPES during hash
-   creation to prevent duplicate keys from being part of the hash.
+   This method deletes an entry from the hash, and returns whether the entry was
+   deleted or not. Associated memory structures will not be freed immediately,
+   but rather when the hash itself is freed.
+  </para>
+  <para>
+   Elements can not be deleted when the hash is used in an iterator. The
+   method will not throw an exception, but simply return &false; like would
+   happen with any other deletion failure.
   </para>
  </refsect1>
 
@@ -30,15 +33,7 @@
      <term><parameter>key</parameter></term>
      <listitem>
       <para>
-       The key of the entry to add.
-      </para>
-     </listitem>
-    </varlistentry>
-    <varlistentry>
-     <term><parameter>value</parameter></term>
-     <listitem>
-      <para>
-       The new value to update the entry with.
+       The key of the entry to delete.
       </para>
      </listitem>
     </varlistentry>
@@ -49,8 +44,7 @@
  <refsect1 role="returnvalues">
   &reftitle.returnvalues;
   <para>
-   &true; when the entry was found and updated, and &false; if the entry was
-   not part of the hash already.
+   &true; when the entry was deleted, and &false; if the entry was not deleted.
   </para>
  </refsect1>
 
@@ -58,24 +52,25 @@
   &reftitle.examples;
   <para>
    <example>
-    <title><function>QuickHashIntHash::update</function> example</title>
+    <title><function>QuickHashIntStringHash::delete</function> example</title>
     <programlisting role="php">
-<![CDATA[
-<?php
-$hash = new QuickHashIntHash( 1024 );
-
-var_dump( $hash->add( 141421, 173205 ) );
-var_dump( $hash->update( 141421, 223606 ) );
-var_dump( $hash->get( 141421 ) );
-?>
-]]>
+<![CDATA[<?php
+$hash = new QuickHashIntStringHash( 1024 );
+var_dump( $hash->exists( 4 ) );
+var_dump( $hash->add( 4, "five" ) );
+var_dump( $hash->delete( 4 ) );
+var_dump( $hash->exists( 4 ) );
+var_dump( $hash->delete( 4 ) );
+?>]]>
     </programlisting>
     &example.outputs.similar;
     <screen>
 <![CDATA[
+bool(false)
 bool(true)
 bool(true)
-int(223606)
+bool(false)
+bool(false)
 ]]>
     </screen>
    </example>

@@ -99,6 +99,32 @@ foreach( $hash as $key => $value )
 ]]>
   </screen>
  </example>
+ <example>
+  <title>Quickhash String Values Example</title>
+  <programlisting role="php">
+<![CDATA[
+<?php
+$hash = new QuickHashIntStringHash( 64 );
+
+// Adding hash entries.
+$hash[1] = "one million four hundred fifteen thousand nine hundred twenty six";
+$hash->add( 2, "one more" );1415926;
+
+foreach( $hash as $key => $value )
+{
+    echo $key, ' => ', $value, "\n";
+}
+?>
+]]>
+  </programlisting>
+  &example.outputs.similar;
+  <screen>
+<![CDATA[
+1 => one million four hundred fifteen thousand nine hundred twenty six
+2 => one more
+]]>
+  </screen>
+ </example>
 </chapter>
 
 <!-- Keep this comment at the end of the file

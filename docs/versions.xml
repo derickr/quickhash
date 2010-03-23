@@ -27,6 +27,18 @@
  <function name='quickhashinthash::loadfromstring' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::savetofile' from='PECL quickhash &gt;= Unknown'/>
  <function name='quickhashinthash::savetostring' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::__construct' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::add' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::exists' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::get' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::set' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::update' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::delete' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::getsize' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::loadfromfile' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::loadfromstring' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::savetofile' from='PECL quickhash &gt;= Unknown'/>
+ <function name='quickhashintstringhash::savetostring' from='PECL quickhash &gt;= Unknown'/>
 </versions>
 
 <!-- Keep this comment at the end of the file

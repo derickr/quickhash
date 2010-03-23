@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- $Revision: $ -->
 
-<refentry xml:id="quickhashinthash.update" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
+<refentry xml:id="quickhashintstringhash.getsize" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
  <refnamediv>
-  <refname>QuickHashIntHash::update</refname>
-  <refpurpose>This method updates an entry in the hash with a new value.</refpurpose>
+  <refname>QuickHashIntStringHash::getSize</refname>
+  <refpurpose>Returns the number of elements in the hash</refpurpose>
  </refnamediv>
 
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
-   <modifier>public</modifier> <type>boolean</type><methodname>QuickHashIntHash::update</methodname>
-   <methodparam><type>integer</type><parameter>key</parameter></methodparam>
-   <methodparam><type>integer</type><parameter>value</parameter></methodparam>
+   <modifier>public</modifier> <type>integer</type><methodname>QuickHashIntStringHash::getSize</methodname>
   </methodsynopsis>
   <para>
-   This method updates an entry with a new value, and returns whether the entry was
-   update. If there are duplicate keys, only the first found element will get
-   an updated value. Use QuickHashIntHash::CHECK_FOR_DUPES during hash
-   creation to prevent duplicate keys from being part of the hash.
+   Returns the number of elements in the hash.
   </para>
  </refsect1>
 
@@ -34,14 +29,6 @@
       </para>
      </listitem>
     </varlistentry>
-    <varlistentry>
-     <term><parameter>value</parameter></term>
-     <listitem>
-      <para>
-       The new value to update the entry with.
-      </para>
-     </listitem>
-    </varlistentry>
    </variablelist>
   </para>
  </refsect1>
@@ -49,8 +36,7 @@
  <refsect1 role="returnvalues">
   &reftitle.returnvalues;
   <para>
-   &true; when the entry was found and updated, and &false; if the entry was
-   not part of the hash already.
+   The number of elements in the hash.
   </para>
  </refsect1>
 
@@ -58,15 +44,14 @@
   &reftitle.examples;
   <para>
    <example>
-    <title><function>QuickHashIntHash::update</function> example</title>
+    <title><function>QuickHashIntStringHash::getSize</function> example</title>
     <programlisting role="php">
 <![CDATA[
 <?php
-$hash = new QuickHashIntHash( 1024 );
-
-var_dump( $hash->add( 141421, 173205 ) );
-var_dump( $hash->update( 141421, 223606 ) );
-var_dump( $hash->get( 141421 ) );
+$hash = new QuickHashIntStringHash( 8 );
+var_dump( $hash->add( 2, "two" ) );
+var_dump( $hash->add( 3, 5 ) );
+var_dump( $hash->getSize() );
 ?>
 ]]>
     </programlisting>
@@ -75,7 +60,7 @@ var_dump( $hash->get( 141421 ) );
 <![CDATA[
 bool(true)
 bool(true)
-int(223606)
+int(2)
 ]]>
     </screen>
    </example>

@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- $Revision: $ -->
 
-<refentry xml:id="quickhashintset.loadfromstring" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
+<refentry xml:id="quickhashintstringhash.loadfromstring" xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink">
  <refnamediv>
-  <refname>QuickHashIntSet::loadFromString</refname>
-  <refpurpose>This factory method creates a set from a string</refpurpose>
+  <refname>QuickHashIntStringHash::loadFromString</refname>
+  <refpurpose>This factory method creates a hash from a string</refpurpose>
  </refnamediv>
 
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
-   <modifier>public</modifier> <modifier>static</modifier> <type>QuickHashIntSet</type><methodname>QuickHashIntSet::loadFromString</methodname>
+   <modifier>public</modifier> <modifier>static</modifier> <type>QuickHashIntStringHash</type><methodname>QuickHashIntStringHash::loadFromString</methodname>
    <methodparam><type>string</type><parameter>contents</parameter></methodparam>
    <methodparam choice="opt"><type>integer</type><parameter>options</parameter></methodparam>
   </methodsynopsis>
   <para>
-   This factory method creates a new set from a definition in a string. The
-   file format consists of 32 bit signed integers packed together in the
-   Endianness that the system that the code runs on uses.
+   This factory method creates a new hash from a definition in a string. The
+   format is the same as the one used in "loadFromFile".
   </para>
  </refsect1>
 
@@ -29,7 +28,7 @@
      <term><parameter>contents</parameter></term>
      <listitem>
       <para>
-       The string containing a serialized format of the set.
+       The string containing a serialized format of the hash.
       </para>
      </listitem>
     </varlistentry>
@@ -39,8 +38,8 @@
       <para>
        The same options that the class' contructor takes; except that the size
        option is ignored. It is automatically calculated to be the same as the
-       number of entries in the set, rounded up to the nearest power of two
-       automatically limited from 64 to 4194304.
+       number of entries in the hash, rounded up to the nearest power of two
+       with a maximum limit of 4194304.
       </para>
      </listitem>
     </varlistentry>
@@ -51,7 +50,7 @@
  <refsect1 role="returnvalues">
   &reftitle.returnvalues;
   <para>
-   Returns a new QuickHashIntSet.
+   Returns a new QuickHashIntStringHash.
   </para>
  </refsect1>
 
@@ -59,20 +58,20 @@
   &reftitle.examples;
   <para>
    <example>
-    <title><function>QuickHashIntSet::loadFromString</function> example</title>
+    <title><function>QuickHashIntStringHash::loadFromString</function> example</title>
     <programlisting role="php">
 <![CDATA[
 <?php
-$contents = file_get_contents( dirname( __FILE__ ) . "/simple.set" );
-$set = QuickHashIntSet::loadFromString(
+$contents = file_get_contents( dirname( __FILE__ ) . "/simple.hash" );
+$hash = QuickHashIntStringHash::loadFromString(
     $contents,
-    QuickHashIntSet::DO_NOT_USE_ZEND_ALLOC
+    QuickHashIntStringHash::DO_NOT_USE_ZEND_ALLOC
 );
 foreach( range( 0, 0x0f ) as $key )
 {
     printf( "Key %3d (%2x) is %s\n",
         $key, $key, 
-        $set->exists( $key ) ? 'set' : 'unset'
+        $hash->exists( $key ) ? 'set' : 'unset'
     );
 }
 ?>
