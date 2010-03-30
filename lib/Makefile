@@ -1,5 +1,5 @@
 CFLAGS=-Wall -O0 -ggdb3 -DDEBUG=1
-LIBFILES=quickhash.c iterator.c
+LIBFILES=quickhash.c iterator.c hash-algorithms.c
 
 all: test-hash-add test-hash-delete test-set-delete-extensive test-hash-get \
 	test-hash-save-to-file2 test-hash-save-to-file test-hash-set test-hash-update \

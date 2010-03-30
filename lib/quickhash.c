@@ -22,63 +22,7 @@
 #include <string.h>
 
 #include "quickhash.h"
-
-/**
- * Hashes the key
- *
- * The algorithm is from: http://burtleburtle.net/bob/hash/integer.html
- *
- * Parameters:
- * - key, the key to be hashsed
- *
- * Returns:
- * - the hash key
- */
-uint32_t qha_jenkins1(uint32_t key)
-{
-	key = (key ^ 61) ^ (key >> 16);
-	key = key + (key << 3);
-	key = key ^ (key >> 4);
-	key = key * 0x27d4eb2d;
-	key = key ^ (key >> 15);
-	return key;
-}
-
-/**
- * Hashes the key
- *
- * The algorithm is from: http://www.concentric.net/~Ttwang/tech/inthash.htm
- *
- * Parameters:
- * - key, the key to be hashsed
- *
- * Returns:
- * - the hash key
- */
-uint32_t qha_jenkins2(uint32_t key)
-{
-	key = (key+0x7ed55d16) + (key<<12);
-	key = (key^0xc761c23c) ^ (key>>19);
-	key = (key+0x165667b1) + (key<<5);
-	key = (key+0xd3a2646c) ^ (key<<9);
-	key = (key+0xfd7046c5) + (key<<3);
-	key = (key^0xb55a4f09) ^ (key>>16);
-	return key;
-}
-
-/**
- * 'Hashes' the key by passing it straight through
- *
- * Parameters:
- * - key, the key to be hashsed
- *
- * Returns:
- * - the hash key
- */
-uint32_t qha_no_hash(uint32_t key)
-{
-	return key;
-}
+#include "hash-algorithms.h"
 
 /**
  * Helper struct that contains the file descriptor for use with
