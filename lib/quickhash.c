@@ -270,6 +270,7 @@ qhi *qhi_create(qho *options)
 		return NULL;
 	}
 
+	tmp->key_type = QHI_VALUE_TYPE_INT;
 	tmp->value_type = options->value_type;
 
 	tmp->hasher = options->hasher;
@@ -346,9 +347,13 @@ void qhi_free(qhi *hash)
  * Returns:
  * - The hashed key
  */
-inline uint32_t qhi_set_hash(qhi *hash, uint32_t key)
+inline uint32_t qhi_set_hash(qhi *hash, qhv key)
 {
-	uint32_t idx = hash->hasher(key);
+	uint32_t idx;
+	
+	idx = hash->key_type == QHI_VALUE_TYPE_INT ?
+		hash->hasher(key.i) :
+		hash->shasher(key.s);
 	return idx & (hash->bucket_count - 1);
 }
 
@@ -363,7 +368,7 @@ inline uint32_t qhi_set_hash(qhi *hash, uint32_t key)
  * Returns:
  * - 1 if the key exists in the list, 0 if not
  */
-static int find_bucket_from_list(qhl *list, int32_t key, qhb **bucket)
+static int find_bucket_from_list(qhl *list, qhv key, qhb **bucket)
 {
 	if (!list->head) {
 		// there is no bucket list for this hashed key
@@ -373,7 +378,7 @@ static int find_bucket_from_list(qhl *list, int32_t key, qhb **bucket)
 
 		// loop over the elements in this bucket list to see if the key exists
 		do {
-			if (p->key == key) {
+			if (p->key.i == key.i) {
 				if (bucket) {
 					*bucket = p;
 				}
@@ -395,7 +400,7 @@ static int find_bucket_from_list(qhl *list, int32_t key, qhb **bucket)
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-int qhi_set_add(qhi *hash, int32_t key)
+int qhi_set_add(qhi *hash, qhv key)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -446,7 +451,7 @@ int qhi_set_add(qhi *hash, int32_t key)
  * Returns:
  * - 1 if the entry was deleted, or 0 if not
  */
-static int delete_entry_from_list(qhl *list, int32_t key)
+static int delete_entry_from_list(qhl *list, qhv key)
 {
 	if (!list->head) {
 		// there is no bucket list for this hashed key
@@ -458,7 +463,7 @@ static int delete_entry_from_list(qhl *list, int32_t key)
 		// loop over the elements in this bucket list to see if the key exists,
 		// also keep track of the previous one
 		do {
-			if (current->key == key) {
+			if (current->key.i == key.i) {
 				// if previous is not set, it's the first element in the list, so we just adjust head.
 				if (!previous) {
 					list->head = current->next;
@@ -484,7 +489,7 @@ static int delete_entry_from_list(qhl *list, int32_t key)
  * Returns:
  * - 1 if the element was delete or 0 if the element couldn't be found
  */
-int qhi_set_delete(qhi *hash, int32_t key)
+int qhi_set_delete(qhi *hash, qhv key)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -515,7 +520,7 @@ int qhi_set_delete(qhi *hash, int32_t key)
  * - 1 if the element is part of the set or 0 if the element is not part of the
  *   set
  */
-int qhi_set_exists(qhi *hash, int32_t key)
+int qhi_set_exists(qhi *hash, qhv key)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -545,7 +550,7 @@ uint32_t qhi_set_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t n
 	uint32_t added = 0;
 
 	for (i = 0; i < nr_of_elements; i++) {
-		added += qhi_set_add(hash, buffer[i]);
+		added += qhi_set_add(hash, (qhv) buffer[i]);
 	}
 	return added;
 }
@@ -630,7 +635,7 @@ int qhi_process_set(qhi *hash, void *context, qhi_int32t_buffer_apply_func int32
 			while(p) {
 				n = p->next;
 
-				key_buffer[elements_in_buffer] = p->key;
+				key_buffer[elements_in_buffer] = p->key.i;
 				elements_in_buffer++;
 
 				if (elements_in_buffer == 1024) {
@@ -724,7 +729,7 @@ static uint32_t hash_add_value(qhi *hash, qhv value)
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-static int qhi_add_entry_to_list(qhi *hash, qhl *list, int32_t key, uint32_t value_idx)
+static int qhi_add_entry_to_list(qhi *hash, qhl *list, qhv key, uint32_t value_idx)
 {
 	qhb *bucket;
 
@@ -804,7 +809,7 @@ static int qhi_get_value_from_bucket(qhi *hash, qhb *bucket, qhv* value)
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-int qhi_hash_add(qhi *hash, int32_t key, qhv value)
+int qhi_hash_add(qhi *hash, qhv key, qhv value)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -832,7 +837,7 @@ int qhi_hash_add(qhi *hash, int32_t key, qhv value)
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-int qhi_hash_add_with_index(qhi *hash, int32_t key, uint32_t value_index)
+int qhi_hash_add_with_index(qhi *hash, qhv key, uint32_t value_index)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -864,7 +869,7 @@ int qhi_hash_add_with_index(qhi *hash, int32_t key, uint32_t value_index)
  * - 1 if the element is part of the hash and was updated or 0 if the element
  *   was not part of the hash
  */
-int qhi_hash_update(qhi *hash, int32_t key, qhv value)
+int qhi_hash_update(qhi *hash, qhv key, qhv value)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -893,7 +898,7 @@ int qhi_hash_update(qhi *hash, int32_t key, qhv value)
  * - 1 if the element is part of the hash and was updated, 2 if the element was
  *   added or 0 if an error occurred.
  */
-int qhi_hash_set(qhi *hash, int32_t key, qhv value)
+int qhi_hash_set(qhi *hash, qhv key, qhv value)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -925,7 +930,7 @@ int qhi_hash_set(qhi *hash, int32_t key, qhv value)
  * - 1 if the element is part of the set or 0 if the element is not part of the
  *   set
  */
-int qhi_hash_get(qhi *hash, int32_t key, qhv *value)
+int qhi_hash_get(qhi *hash, qhv key, qhv *value)
 {
 	uint32_t idx;
 	qhl     *list;
@@ -965,10 +970,10 @@ uint32_t qhi_hash_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t 
 	for (i = 0; i < nr_of_elements; i += 2) {
 		switch (hash->value_type) {
 			case QHI_VALUE_TYPE_INT:
-				added += qhi_hash_add(hash, buffer[i], (qhv) buffer[i + 1]);
+				added += qhi_hash_add(hash, (qhv) buffer[i], (qhv) buffer[i + 1]);
 				break;
 			case QHI_VALUE_TYPE_STRING:
-				added += qhi_hash_add_with_index(hash, buffer[i], buffer[i + 1]);
+				added += qhi_hash_add_with_index(hash, (qhv) buffer[i], buffer[i + 1]);
 				break;
 		}
 	}
@@ -1050,13 +1055,13 @@ static void add_to_buffer(qhi *hash, int32_t *key_buffer, uint32_t *elements_in_
 {
 	switch (hash->value_type) {
 		case QHI_VALUE_TYPE_INT:
-			key_buffer[*elements_in_buffer] = p->key;
+			key_buffer[*elements_in_buffer] = p->key.i;
 			key_buffer[*elements_in_buffer + 1] = hash->i.values[p->value_idx];
 			*elements_in_buffer += 2;
 			break;
 
 		case QHI_VALUE_TYPE_STRING:
-			key_buffer[*elements_in_buffer] = p->key;
+			key_buffer[*elements_in_buffer] = p->key.i;
 			key_buffer[*elements_in_buffer + 1] = p->value_idx;
 			*elements_in_buffer += 2;
 			break;

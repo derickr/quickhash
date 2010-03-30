@@ -26,7 +26,7 @@ int main(void)
 {
 	qhi *h;
 	qho *options = qho_create();
-	uint32_t i;
+	int32_t i;
 	int  fd;
 	char* value;
 	
@@ -35,10 +35,10 @@ int main(void)
 	options->value_type = QHI_VALUE_TYPE_STRING;
 	h = qhi_create(options);
 
-	qhi_hash_add(h, 1, (qhv) "één");
-	qhi_hash_add(h, 2, (qhv) "twee");
-	qhi_hash_add(h, 3, (qhv) "drie");
-	qhi_hash_add(h, 4, (qhv) "vier");
+	qhi_hash_add(h, (qhv) 1, (qhv) "één");
+	qhi_hash_add(h, (qhv) 2, (qhv) "twee");
+	qhi_hash_add(h, (qhv) 3, (qhv) "drie");
+	qhi_hash_add(h, (qhv) 4, (qhv) "vier");
 
 	fd = open("/tmp/test-save", O_WRONLY | O_TRUNC | O_CREAT, 0666);
 	qhi_hash_save_to_file(fd, h);
@@ -50,7 +50,7 @@ int main(void)
 	close(fd);
 
 	for (i = 1; i < 5; i++) {
-		if (qhi_hash_get(h, i, (qhv*) &value)) {
+		if (qhi_hash_get(h, (qhv) i, (qhv*) &value)) {
 			printf("%d: %s\n", i, value);
 		}
 	}

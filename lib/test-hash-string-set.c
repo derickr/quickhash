@@ -29,37 +29,37 @@ int main(void)
 	options->value_type = QHI_VALUE_TYPE_STRING;
 	h = qhi_create(options);
 
-	qhi_hash_add(h, 1, (qhv) "één");
-	qhi_hash_add(h, 2, (qhv) "twee");
+	qhi_hash_add(h, (qhv) 1, (qhv) "één");
+	qhi_hash_add(h, (qhv) 2, (qhv) "twee");
 
-	if (qhi_hash_get(h, 1, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 1, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 2, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 2, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 3, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 3, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 4, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 4, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
 
-	qhi_hash_set(h, 1, (qhv) "en");
-	qhi_hash_set(h, 2, (qhv) "zwei");
-	qhi_hash_set(h, 3, (qhv) "three");
-	qhi_hash_set(h, 4, (qhv) "quatre");
+	qhi_hash_set(h, (qhv) 1, (qhv) "en");
+	qhi_hash_set(h, (qhv) 2, (qhv) "zwei");
+	qhi_hash_set(h, (qhv) 3, (qhv) "three");
+	qhi_hash_set(h, (qhv) 4, (qhv) "quatre");
 
-	if (qhi_hash_get(h, 1, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 1, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 2, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 2, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 3, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 3, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 4, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 4, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
 

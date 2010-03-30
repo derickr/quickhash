@@ -32,15 +32,15 @@ int main(void)
 	options->check_for_dupes = 1;
 	h = qhi_create(options);
 
-	printf("%d\n", qhi_set_exists(h, 876));
-	printf("%d\n", qhi_hash_add(h, 876, (qhv) 899));
-	printf("%d\n", qhi_set_exists(h, 876));
-	printf("%d\n", qhi_hash_get(h, 876, (qhv*) &value));
+	printf("%d\n", qhi_set_exists(h, (qhv) 876));
+	printf("%d\n", qhi_hash_add(h, (qhv) 876, (qhv) 899));
+	printf("%d\n", qhi_set_exists(h, (qhv) 876));
+	printf("%d\n", qhi_hash_get(h, (qhv) 876, (qhv*) &value));
 	printf("value %d\n", value);
 	value = 0;
-	printf("%d\n", qhi_set_delete(h, 876));
-	printf("%d\n", qhi_set_exists(h, 876));
-	printf("%d\n", qhi_hash_get(h, 876, (qhv*) &value));
+	printf("%d\n", qhi_set_delete(h, (qhv) 876));
+	printf("%d\n", qhi_set_exists(h, (qhv) 876));
+	printf("%d\n", qhi_hash_get(h, (qhv) 876, (qhv*) &value));
 	printf("value %d\n", value);
 
 	qhi_free(h);

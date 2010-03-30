@@ -29,12 +29,12 @@ int main(void)
 	options->value_type = QHI_VALUE_TYPE_STRING;
 	h = qhi_create(options);
 
-	qhi_hash_add(h, 1, (qhv) "één");
-	qhi_hash_add(h, 2, (qhv) "twee");
-	qhi_hash_add(h, 3, (qhv) "drie");
-	qhi_hash_add(h, 4, (qhv) "vier");
+	qhi_hash_add(h, (qhv) 1, (qhv) "één");
+	qhi_hash_add(h, (qhv) 2, (qhv) "twee");
+	qhi_hash_add(h, (qhv) 3, (qhv) "drie");
+	qhi_hash_add(h, (qhv) 4, (qhv) "vier");
 
-	if (qhi_hash_get(h, 3, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 3, (qhv*) &value)) {
 		printf("value: %d = %s\n", 3, value);
 	}
 

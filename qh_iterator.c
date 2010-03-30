@@ -50,7 +50,7 @@ static int qh_intset_it_has_more(zend_object_iterator *iter TSRMLS_DC)
 	int            ret;
 
 	ret = qhi_iterator_forward(&iterator->iterator) ? SUCCESS : FAILURE;
-	ZVAL_LONG(iterator->current_value, iterator->iterator.key);
+	ZVAL_LONG(iterator->current_value, iterator->iterator.key.i);
 
 	return ret;
 }
@@ -88,7 +88,7 @@ static int qh_intset_it_current_key(zend_object_iterator *iter, char **str_key, 
 {
 	qh_intset_it   *iterator = (qh_intset_it *)iter;
 
-	*int_key = iterator->iterator.key;
+	*int_key = iterator->iterator.key.i;
 	return HASH_KEY_IS_LONG;
 }
 

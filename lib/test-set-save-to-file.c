@@ -36,13 +36,13 @@ int main(int argc, char *argv[])
 	close(fd);
 
 	printf("done loading\n");
-	printf("exists: %d\n", qhi_set_exists(h, 1623693378));
-	printf("exists: %d\n", qhi_set_exists(h, -418599962));
-	printf("exists: %d\n", qhi_set_exists(h, -966693999));
-	printf("exists: %d\n", qhi_set_exists(h, 113552487));
-	printf("exists: %d\n", qhi_set_exists(h, 0xE0878B35));
-	printf("exists: %d\n", qhi_set_exists(h, 0));
-	printf("exists: %d\n", qhi_set_exists(h, 0x5453494c));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) 1623693378));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) -418599962));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) -966693999));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) 113552487));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) (int32_t) 0xE0878B35));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) 0));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) (int32_t) 0x5453494c));
 	printf("done checking\n");
 
 	fd = open("/tmp/test-save", O_WRONLY | O_TRUNC | O_CREAT, 0666);

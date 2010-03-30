@@ -22,7 +22,7 @@ int main(void)
 {
 	qhi *h;
 	qho *options = qho_create();
-	uint32_t i;
+	int32_t i;
 	int32_t value;
 	
 	options->size = 500000;
@@ -31,11 +31,11 @@ int main(void)
 
 	for (i= 0; i < 1048576; i += 2) {
 		value = (i*3 + i % 7);
-		qhi_hash_add(h, i, (qhv) value);
+		qhi_hash_add(h, (qhv) i, (qhv) value);
 	}
 
 	for (i= 0; i < 1048576; i++) {
-		if (qhi_hash_get(h, i, (qhv*) &value)) {
+		if (qhi_hash_get(h, (qhv) i, (qhv*) &value)) {
 //			printf("value: %d = %d\n", i, value);
 		} else {
 //			printf("value: %d = ?\n", i);

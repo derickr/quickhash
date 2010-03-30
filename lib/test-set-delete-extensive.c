@@ -34,29 +34,29 @@ int main(void)
 	h = qhi_create(options);
 
 	for (i = 0; i < 2048; i++) {
-		qhi_set_add(h, i);
+		qhi_set_add(h, (qhv) i);
 	}
 
 	// delete first in list
-	qhi_set_delete(h, 6);
+	qhi_set_delete(h, (qhv) 6);
 	for (i = 0; i < 2048; i++) {
-		value += qhi_set_exists(h, i);
+		value += qhi_set_exists(h, (qhv) i);
 	}
 	printf("total: %d\n", value);
 	value = 0;
 
 	// delete middle
-	qhi_set_delete(h, 123);
+	qhi_set_delete(h, (qhv) 123);
 	for (i = 0; i < 2048; i++) {
-		value += qhi_set_exists(h, i);
+		value += qhi_set_exists(h, (qhv) i);
 	}
 	printf("total: %d\n", value);
 	value = 0;
 
 	// delete last of list
-	qhi_set_delete(h, 2015);
+	qhi_set_delete(h, (qhv) 2015);
 	for (i = 0; i < 2048; i++) {
-		value += qhi_set_exists(h, i);
+		value += qhi_set_exists(h, (qhv) i);
 	}
 	printf("total: %d\n", value);
 	value = 0;

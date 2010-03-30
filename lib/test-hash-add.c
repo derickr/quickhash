@@ -28,25 +28,25 @@ int main(void)
 	options->check_for_dupes = 1;
 	h = qhi_create(options);
 
-	printf("exists: %d\n", (int32_t) qhi_set_exists(h, 7));
-	qhi_set_add(h, 1);
-	qhi_hash_add(h, 7, (qhv) 1048575);
-	qhi_set_add(h, 9);
-	qhi_set_add(h, 15);
-	qhi_hash_add(h, 17, (qhv) 912312);
-	qhi_set_add(h, 54);
-	printf("exists: %d\n", (int32_t) qhi_set_exists(h, 7));
-	printf("exists: %d\n", (int32_t) qhi_set_exists(h, 17));
-	printf("exists: %d\n", (int32_t) qhi_set_exists(h, 53));
+	printf("exists: %d\n", (int32_t) qhi_set_exists(h, (qhv) 7));
+	qhi_set_add(h, (qhv) 1);
+	qhi_hash_add(h, (qhv) 7, (qhv) 1048575);
+	qhi_set_add(h, (qhv) 9);
+	qhi_set_add(h, (qhv) 15);
+	qhi_hash_add(h, (qhv) 17, (qhv) 912312);
+	qhi_set_add(h, (qhv) 54);
+	printf("exists: %d\n", (int32_t) qhi_set_exists(h, (qhv) 7));
+	printf("exists: %d\n", (int32_t) qhi_set_exists(h, (qhv) 17));
+	printf("exists: %d\n", (int32_t) qhi_set_exists(h, (qhv) 53));
 
 	// values
-	if (qhi_hash_get(h, 7, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 7, (qhv*) &value)) {
 		printf("value: %d = %d\n", 7, value);
 	}
-	if (qhi_hash_get(h, 17, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 17, (qhv*) &value)) {
 		printf("value: %d = %d\n", 17, value);
 	}
-	if (qhi_hash_get(h, 53, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 53, (qhv*) &value)) {
 		printf("value: %d = %d\n", 53, value);
 	}
 

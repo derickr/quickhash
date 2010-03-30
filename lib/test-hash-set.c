@@ -32,11 +32,11 @@ int main(void)
 	options->check_for_dupes = 1;
 	h = qhi_create(options);
 
-	printf("%d\n", qhi_hash_set(h, 1, (qhv) 1));
-	printf("%d\n", qhi_hash_get(h, 1, (qhv*) &value));
+	printf("%d\n", qhi_hash_set(h, (qhv) 1, (qhv) 1));
+	printf("%d\n", qhi_hash_get(h, (qhv) 1, (qhv*) &value));
 	printf("value %d\n", value);
-	printf("%d\n", qhi_hash_set(h, 1, (qhv) 2));
-	printf("%d\n", qhi_hash_get(h, 1, (qhv*) &value));
+	printf("%d\n", qhi_hash_set(h, (qhv) 1, (qhv) 2));
+	printf("%d\n", qhi_hash_get(h, (qhv) 1, (qhv*) &value));
 	printf("value %d\n", value);
 
 	qhi_free(h);

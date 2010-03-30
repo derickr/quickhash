@@ -32,7 +32,7 @@
 void qhi_iterator_init(qhit *iter, qhi *hash)
 {
 	iter->hash = hash;
-	iter->key = 0;
+	iter->key = (qhv) 0;
 	iter->value = (qhv) 0;
 	iter->bucket_list_idx = 0;
 	iter->current_bucket = NULL;

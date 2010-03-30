@@ -22,20 +22,25 @@
 #define QUICK_HASH_H
 
 /**
- * Hasher algorithm
+ * Hasher algorithms
  */
 typedef uint32_t (*qha_t)(uint32_t key);
+typedef uint32_t (*qhsa_t)(char *key);
+
+/**
+ * Union value type used for hash values and keys.
+ */
+typedef union _qhv {
+	int32_t  i;
+	char    *s;
+} qhv;
 
 /**
  * Hash buckets
  */
-
-/**
- * Base, used for general casts
- */
 typedef struct _qhb {
 	struct _qhb *next;
-	uint32_t     key;
+	qhv          key;
 	uint32_t     value_idx;
 } qhb;
 
@@ -80,21 +85,15 @@ typedef struct _qhsl {
 } qhsl;
 
 /**
- * Union value type used for hash values.
- */
-typedef union _qhv {
-	int32_t  i;
-	char    *s;
-} qhv;
-
-/**
  * Integer hash type
  */
 typedef struct _qhi {
+	char      key_type; // either int or string
 	char      value_type; // either int or string
 
 	// hash related
 	qha_t     hasher;
+	qhsa_t    shasher;
 	qho      *options;
 
 	// bucket lists
@@ -137,7 +136,7 @@ typedef struct _qhit {
 	uint32_t  bucket_list_idx;
 	qhb      *current_bucket;
 
-	int32_t   key;
+	qhv       key;
 	qhv       value;
 } qhit;
 
@@ -166,9 +165,9 @@ qhi *qhi_create(qho *options);
 void qhi_free(qhi *hash);
 
 /* sets */
-int qhi_set_add(qhi *hash, int32_t position);
-int qhi_set_exists(qhi *hash, int32_t position);
-int qhi_set_delete(qhi *hash, int32_t position);
+int qhi_set_add(qhi *hash, qhv position);
+int qhi_set_exists(qhi *hash, qhv position);
+int qhi_set_delete(qhi *hash, qhv position);
 
 int qhi_process_set(qhi *hash, void *context, qhi_int32t_buffer_apply_func apply_func);
 uint32_t qhi_set_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t nr_of_elements);
@@ -176,10 +175,10 @@ qhi *qhi_set_load_from_file(int fd, qho *options);
 int qhi_set_save_to_file(int fd, qhi *hash);
 
 /* hash */
-int qhi_hash_add(qhi *hash, int32_t position, qhv value);
-int qhi_hash_get(qhi *hash, int32_t position, qhv *value);
-int qhi_hash_update(qhi *hash, int32_t position, qhv value);
-int qhi_hash_set(qhi *hash, int32_t position, qhv value);
+int qhi_hash_add(qhi *hash, qhv position, qhv value);
+int qhi_hash_get(qhi *hash, qhv position, qhv *value);
+int qhi_hash_update(qhi *hash, qhv position, qhv value);
+int qhi_hash_set(qhi *hash, qhv position, qhv value);
 
 int qhi_process_hash(qhi *hash, void *context, qhi_int32t_buffer_apply_func apply_func, qhi_char_buffer_apply_func);
 uint32_t qhi_hash_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t nr_of_elements);

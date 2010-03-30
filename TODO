@@ -1,5 +1,3 @@
-Phase IIb:
+Phase III:
 
-- Refactor: Make qhi_set_add also use add_entry_to_list, fold
-  hash->element_count++/--.
-- Look at segfault.
+- Add the QuickHashStringHash class.

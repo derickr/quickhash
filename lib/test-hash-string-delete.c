@@ -29,37 +29,37 @@ int main(void)
 	options->value_type = QHI_VALUE_TYPE_STRING;
 	h = qhi_create(options);
 
-	qhi_hash_add(h, 1, (qhv) "één");
-	qhi_hash_add(h, 2, (qhv) "twee");
-	qhi_hash_add(h, 3, (qhv) "drie");
-	qhi_hash_add(h, 4, (qhv) "vier");
+	qhi_hash_add(h, (qhv) 1, (qhv) "één");
+	qhi_hash_add(h, (qhv) 2, (qhv) "twee");
+	qhi_hash_add(h, (qhv) 3, (qhv) "drie");
+	qhi_hash_add(h, (qhv) 4, (qhv) "vier");
 
-	if (qhi_hash_get(h, 1, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 1, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 2, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 2, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 3, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 3, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 4, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 4, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
 
-	qhi_set_delete(h, 2);
-	qhi_set_delete(h, 3);
+	qhi_set_delete(h, (qhv) 2);
+	qhi_set_delete(h, (qhv) 3);
 
-	if (qhi_hash_get(h, 1, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 1, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 2, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 2, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 3, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 3, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
-	if (qhi_hash_get(h, 4, (qhv*) &value)) {
+	if (qhi_hash_get(h, (qhv) 4, (qhv*) &value)) {
 		printf("value: %s\n",value);
 	}
 

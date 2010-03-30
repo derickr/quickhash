@@ -26,7 +26,7 @@ int main(void)
 {
 	qhi *h;
 	qho *options = qho_create();
-	uint32_t i;
+	int32_t i;
 	int  fd;
 	
 	options->size = 500000;
@@ -35,7 +35,7 @@ int main(void)
 
 	for (i= 0; i < 1048576; i += 2) {
 		int32_t value = i*3 + i % 7;
-		qhi_hash_add(h, i, (qhv) value);
+		qhi_hash_add(h, (qhv) i, (qhv) value);
 	}
 
 	fd = open("/tmp/test-save", O_WRONLY | O_TRUNC | O_CREAT, 0666);

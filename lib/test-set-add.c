@@ -27,16 +27,16 @@ int main(void)
 	options->check_for_dupes = 1;
 	h = qhi_create(options);
 
-	printf("exists: %d\n", qhi_set_exists(h, 7));
-	qhi_set_add(h, 1);
-	qhi_set_add(h, 7);
-	qhi_set_add(h, 9);
-	qhi_set_add(h, 15);
-	qhi_set_add(h, 17);
-	qhi_set_add(h, 54);
-	printf("exists: %d\n", qhi_set_exists(h, 7));
-	printf("exists: %d\n", qhi_set_exists(h, 17));
-	printf("exists: %d\n", qhi_set_exists(h, 53));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) 7));
+	qhi_set_add(h, (qhv) 1);
+	qhi_set_add(h, (qhv) 7);
+	qhi_set_add(h, (qhv) 9);
+	qhi_set_add(h, (qhv) 15);
+	qhi_set_add(h, (qhv) 17);
+	qhi_set_add(h, (qhv) 54);
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) 7));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) 17));
+	printf("exists: %d\n", qhi_set_exists(h, (qhv) 53));
 
 	qhi_free(h);
 	qho_free(options);
