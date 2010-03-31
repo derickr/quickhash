@@ -777,6 +777,23 @@ static int qhi_add_entry_to_list(qhi *hash, qhl *list, qhv key, uint32_t value_i
 	return 1;
 }
 
+/**
+ * Updates the value belonging to a bucket.
+ *
+ * This function updates the value that belongs to the bucket, by updating it
+ * in the integer store when there is an integer values, or it will *add* a new
+ * value to the store for string values. The function does not clean up holes
+ * in the string store.
+ *
+ * Params:
+ * - hash: the hash the bucket belongs to
+ * - bucket: the bucket itself
+ * - value: the new value
+ *
+ * Returns:
+ * - 1 if the key was of a known type, or 0 otherwise. Only if something is
+ *   really wrong, 0 should be returned.
+ */
 static int qhi_update_value_in_bucket(qhi *hash, qhb *bucket, qhv value)
 {
 	switch (hash->value_type) {
@@ -796,7 +813,22 @@ static int qhi_update_value_in_bucket(qhi *hash, qhb *bucket, qhv value)
 	return 0;
 }
 
-static int qhi_get_value_from_bucket(qhi *hash, qhb *bucket, qhv* value)
+/**
+ * Fetches the value belonging to a bucket into "value".
+ *
+ * This function retrieves the integer or string value, and returns that into
+ * value which has to be a pointer to an allocated qhv structure.
+ *
+ * Params:
+ * - hash: the hash the bucket belongs to
+ * - bucket: the bucket
+ * - *value: a pointer to an allocated qhv structure to set the value in.
+ *
+ * Returns:
+ * - 1 if the key was of a known type, or 0 otherwise. Only if something is
+ *   really wrong, 0 should be returned.
+ */
+static int qhi_get_value_from_bucket(qhi *hash, qhb *bucket, qhv *value)
 {
 	switch (hash->value_type) {
 		case QHI_VALUE_TYPE_INT:
