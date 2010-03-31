@@ -7,7 +7,8 @@ TESTFILES=test-hash-add test-hash-delete test-set-delete-extensive test-hash-get
 	test-hash-string-add test-hash-string-update test-hash-string-delete \
 	test-hash-string-set test-hash-string-save-to-file \
 	test-hash-string-save-to-file2 test-string-hash-add test-string-hash-delete \
-	test-string-hash-set test-string-hash-update
+	test-string-hash-set test-string-hash-update test-string-hash-save-to-file \
+	test-string-hash-save-to-file2
 
 all: $(TESTFILES)
 
@@ -79,3 +80,9 @@ test-string-hash-set: test-string-hash-set.c $(LIBFILES)
 
 test-string-hash-update: test-string-hash-update.c $(LIBFILES)
 	gcc $(CFLAGS) -o test-string-hash-update test-string-hash-update.c $(LIBFILES) 
+
+test-string-hash-save-to-file: test-string-hash-save-to-file.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-string-hash-save-to-file test-string-hash-save-to-file.c $(LIBFILES) 
+
+test-string-hash-save-to-file2: test-string-hash-save-to-file2.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-string-hash-save-to-file2 test-string-hash-save-to-file2.c $(LIBFILES) 

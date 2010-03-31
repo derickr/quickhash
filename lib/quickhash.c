@@ -104,7 +104,7 @@ static inline void set_key(qhi *hash, qhb *bucket, qhv key)
 			bucket->key = key.i;
 			break;
 
-		case QHI_VALUE_TYPE_STRING: {
+		case QHI_KEY_TYPE_STRING: {
 			size_t str_len = strlen(key.s);
 			if (hash->keys.count + str_len + 1 >= hash->keys.size) {
 				hash->keys.values = hash->options->memory.realloc(hash->keys.values, (hash->keys.size + QHB_BUFFER_PREALLOC_INC));
@@ -130,7 +130,7 @@ static inline void set_key(qhi *hash, qhb *bucket, qhv key)
  */
 static inline int compare_key(qhi *hash, qhb *bucket, qhv key)
 {
-	if (hash->key_type == QHI_VALUE_TYPE_INT && bucket->key == key.i) {
+	if (hash->key_type == QHI_KEY_TYPE_INT && bucket->key == key.i) {
 		return 1;
 	}
 	if (hash->key_type == QHI_KEY_TYPE_STRING && memcmp(hash->keys.values + bucket->key, key.s, strlen(hash->keys.values + bucket->key)) == 0) {
@@ -455,6 +455,7 @@ int qhi_set_add(qhi *hash, qhv key)
 #endif
 	}
 	hash->element_count++;
+	list->size++;
 	return 1;
 }
 
@@ -488,6 +489,7 @@ static int delete_entry_from_list(qhi *hash, qhl *list, qhv key)
 				} else {
 					previous->next = current->next;
 				}
+				list->size--;
 				return 1;
 			}
 			previous = current;
@@ -774,6 +776,7 @@ static int qhi_add_entry_to_list(qhi *hash, qhl *list, qhv key, uint32_t value_i
 #endif
 	}
 	hash->element_count++;
+	list->size++;
 	return 1;
 }
 
@@ -1058,8 +1061,12 @@ qhi *qhi_hash_load_from_file(int fd, qho *options)
 	if (read(fd, &key_buffer, 2 * sizeof(int32_t)) != (2 * sizeof(int32_t))) {
 		return NULL;
 	}
-	if (key_buffer[0] == -QHI_VALUE_TYPE_STRING) {
-		// position 1 contains the string length now
+	if (key_buffer[0] == - (16 * QHI_KEY_TYPE_STRING)) {
+		// position 1 contains the key length now
+		finfo.st_size = finfo.st_size - (2 * sizeof(int32_t)) - key_buffer[1];
+		options->key_type = QHI_KEY_TYPE_STRING;
+	} else if (key_buffer[0] == -QHI_VALUE_TYPE_STRING) {
+		// position 1 contains the string store length now
 		finfo.st_size = finfo.st_size - (2 * sizeof(int32_t)) - key_buffer[1];
 		options->value_type = QHI_VALUE_TYPE_STRING;
 	} else {
@@ -1082,6 +1089,13 @@ qhi *qhi_hash_load_from_file(int fd, qho *options)
 	tmp = qhi_create(options);
 	if (!tmp) {
 		return NULL;
+	}
+
+	// read the keys if we have QHI_KEY_TYPE_STRING
+	if (tmp->key_type == QHI_KEY_TYPE_STRING) {
+		tmp->keys.values = tmp->options->memory.malloc(key_buffer[1] + 1);
+		read(fd, tmp->keys.values, key_buffer[1]);
+		tmp->keys.values[key_buffer[1]] = '\0';
 	}
 
 	// read the strings if we have QHI_VALUE_TYPE_STRING
@@ -1141,23 +1155,52 @@ int qhi_process_hash(qhi *hash, void *context, qhi_int32t_buffer_apply_func int3
 	uint32_t    elements_in_buffer = 0;
 	int32_t     key_buffer[1024];
 
-	if (hash->value_type == QHI_VALUE_TYPE_STRING) {
-		key_buffer[0] = -QHI_VALUE_TYPE_STRING;
-		key_buffer[1] = hash->s.count;
-		if (!int32t_apply_func(context, key_buffer, 2)) {
+	if (hash->value_type != QHI_VALUE_TYPE_INT || hash->key_type != QHI_KEY_TYPE_INT) {
+		key_buffer[0] = -hash->value_type - (16 * hash->key_type);
+		if (!int32t_apply_func(context, key_buffer, 1)) {
 			return 0;
 		}
-		if (!chars_apply_func(context, hash->s.values, hash->s.count)) {
-			return 0;
+
+		if (hash->key_type == QHI_KEY_TYPE_STRING) {
+			key_buffer[0] = hash->keys.count;
+			if (!int32t_apply_func(context, key_buffer, 1)) {
+				return 0;
+			}
+			if (!chars_apply_func(context, hash->keys.values, hash->keys.count)) {
+				return 0;
+			}
+		}
+
+		if (hash->value_type == QHI_VALUE_TYPE_STRING) {
+			key_buffer[0] = hash->s.count;
+			if (!int32t_apply_func(context, key_buffer, 1)) {
+				return 0;
+			}
+			if (!chars_apply_func(context, hash->s.values, hash->s.count)) {
+				return 0;
+			}
 		}
 	}
 
 	for (idx = 0; idx < hash->bucket_count; idx++)	{
-		qhl    *list = &(hash->bucket_list[idx]);
+		qhl *list = &(hash->bucket_list[idx]);
 		qhb *p = list->head;
 		qhb *n;
 
 		if (p) {
+			if (hash->key_type == QHI_KEY_TYPE_STRING) {
+				key_buffer[elements_in_buffer] = idx;
+				key_buffer[elements_in_buffer + 1] = list->size;
+				elements_in_buffer += 2;
+
+				if (elements_in_buffer == 1024) {
+					if (!int32t_apply_func(context, key_buffer, elements_in_buffer)) {
+						return 0;
+					}
+					elements_in_buffer = 0;
+				}
+			}
+
 			while(p) {
 				n = p->next;
 
