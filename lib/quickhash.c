@@ -85,7 +85,18 @@ static int fd_write_chars_apply_func(void *context, char *buffer, uint32_t eleme
  */
 #define QHB_BUFFER_PREALLOC_INC 1024
 
-
+/**
+ * Associates the key with a bucket.
+ *
+ * In case there is a string key it adds the key to the "key store", otherwise
+ * it just sets the proper property of the bucket to the key. In case of a
+ * string key, this function only stores the *index* into the key store.
+ *
+ * Params:
+ * - hash: the hash that the bucket belongs to
+ * - bucket: the bucket that will contain the key (or key index)
+ * - key: the key itself
+ */
 static inline void set_key(qhi *hash, qhb *bucket, qhv key)
 {
 	switch (hash->key_type) {
@@ -104,6 +115,28 @@ static inline void set_key(qhi *hash, qhb *bucket, qhv key)
 			hash->keys.count = hash->keys.count + str_len + 1;
 		} break;
 	}
+}
+
+/**
+ * Checks whether the key in the bucket, matches the one in "key".
+ *
+ * Params:
+ * - hash: the hash that the bucket belongs to
+ * - bucket: the bucket that will contain the key (or key index)
+ * - key: the key itself
+ *
+ * Returns:
+ * - 1 when the key matches, and 0 when it does not.
+ */
+static inline int compare_key(qhi *hash, qhb *bucket, qhv key)
+{
+	if (hash->key_type == QHI_VALUE_TYPE_INT && bucket->key == key.i) {
+		return 1;
+	}
+	if (hash->key_type == QHI_KEY_TYPE_STRING && memcmp(hash->keys.values + bucket->key, key.s, strlen(hash->keys.values + bucket->key)) == 0) {
+		return 1;
+	}
+	return 0;
 }
 
 /**
@@ -333,6 +366,10 @@ inline uint32_t qhi_set_hash(qhi *hash, qhv key)
 		case QHI_KEY_TYPE_STRING:
 			idx = hash->shasher(key.s);
 			break;
+
+		default:
+			idx = 0;
+			break;
 	}
 
 	return idx & (hash->bucket_count - 1);
@@ -359,8 +396,7 @@ static int find_bucket_from_list(qhi *hash, qhl *list, qhv key, qhb **bucket)
 
 		// loop over the elements in this bucket list to see if the key exists
 		do {
-			if ((hash->key_type == QHI_VALUE_TYPE_INT && p->key == key.i) ||
-				(hash->key_type == QHI_KEY_TYPE_STRING && memcmp(hash->keys.values + p->key, key.s, strlen(hash->keys.values + p->key)) == 0)) {
+			if (compare_key(hash, p, key)) {
 				if (bucket) {
 					*bucket = p;
 				}
@@ -433,7 +469,7 @@ int qhi_set_add(qhi *hash, qhv key)
  * Returns:
  * - 1 if the entry was deleted, or 0 if not
  */
-static int delete_entry_from_list(qhl *list, qhv key)
+static int delete_entry_from_list(qhi *hash, qhl *list, qhv key)
 {
 	if (!list->head) {
 		// there is no bucket list for this hashed key
@@ -445,7 +481,7 @@ static int delete_entry_from_list(qhl *list, qhv key)
 		// loop over the elements in this bucket list to see if the key exists,
 		// also keep track of the previous one
 		do {
-			if (current->key == key.i) {
+			if (compare_key(hash, current, key)) {
 				// if previous is not set, it's the first element in the list, so we just adjust head.
 				if (!previous) {
 					list->head = current->next;
@@ -484,7 +520,7 @@ int qhi_set_delete(qhi *hash, qhv key)
 	idx = qhi_set_hash(hash, key);
 	list = &(hash->bucket_list[idx]);
 
-	if (!delete_entry_from_list(list, key)) {
+	if (!delete_entry_from_list(hash, list, key)) {
 		return 0;
 	}
 	hash->element_count--;

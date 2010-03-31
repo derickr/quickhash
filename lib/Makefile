@@ -1,4 +1,4 @@
-CFLAGS=-Wall -O0 -ggdb3 -DDEBUG=1
+CFLAGS=-Wall -O0 -Winline -Wall -ggdb3 -DDEBUG=1
 LIBFILES=quickhash.c iterator.c hash-algorithms.c
 
 TESTFILES=test-hash-add test-hash-delete test-set-delete-extensive test-hash-get \
@@ -6,7 +6,8 @@ TESTFILES=test-hash-add test-hash-delete test-set-delete-extensive test-hash-get
 	test-normalize-size test-set-add test-set-load-from-file test-set-save-to-file \
 	test-hash-string-add test-hash-string-update test-hash-string-delete \
 	test-hash-string-set test-hash-string-save-to-file \
-	test-hash-string-save-to-file2 test-string-hash-add
+	test-hash-string-save-to-file2 test-string-hash-add test-string-hash-delete \
+	test-string-hash-set test-string-hash-update
 
 all: $(TESTFILES)
 
@@ -69,3 +70,12 @@ test-hash-string-save-to-file2: test-hash-string-save-to-file2.c $(LIBFILES)
 
 test-string-hash-add: test-string-hash-add.c $(LIBFILES)
 	gcc $(CFLAGS) -o test-string-hash-add test-string-hash-add.c $(LIBFILES) 
+
+test-string-hash-delete: test-string-hash-delete.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-string-hash-delete test-string-hash-delete.c $(LIBFILES) 
+
+test-string-hash-set: test-string-hash-set.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-string-hash-set test-string-hash-set.c $(LIBFILES) 
+
+test-string-hash-update: test-string-hash-update.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-string-hash-update test-string-hash-update.c $(LIBFILES) 
