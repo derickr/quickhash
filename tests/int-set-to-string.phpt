@@ -8,6 +8,15 @@ $file = dirname( __FILE__ ) . "/simple.set";
 $hash = QuickHashIntSet::loadFromFile( $file );
 $string = $hash->saveToString();
 
+for ( $i = 0; $i < strlen( $string ); $i++ )
+{
+	printf( '%02X ', ord( $string[$i] ) );
+	if ( $i % 16 == 15 ) {
+		echo "\n";
+	}
+}
+echo "\n\n";
+
 $hash = QuickHashIntSet::loadFromString( $string );
 
 foreach( range( 0, 0x1f ) as $key )
@@ -16,6 +25,11 @@ foreach( range( 0, 0x1f ) as $key )
 }
 ?>
 --EXPECT--
+11 00 00 00 0B 00 00 00 0D 00 00 00 1D 00 00 00 
+05 00 00 00 1B 00 00 00 17 00 00 00 01 00 00 00 
+13 00 00 00 07 00 00 00 02 00 00 00 1F 00 00 00 
+03 00 00 00 
+
 Key   0 ( 0) is unset
 Key   1 ( 1) is set
 Key   2 ( 2) is set
