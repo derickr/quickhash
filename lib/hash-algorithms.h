@@ -25,4 +25,7 @@ inline uint32_t qha_jenkins1(uint32_t key);
 inline uint32_t qha_jenkins2(uint32_t key);
 inline uint32_t qha_no_hash(uint32_t key);
 
+inline uint32_t qha_djb2(char *key);
+inline uint32_t qha_sdbm(char *key);
+
 #endif

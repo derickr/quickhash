@@ -74,3 +74,27 @@ inline uint32_t qha_no_hash(uint32_t key)
 {
 	return key;
 }
+
+inline uint32_t qha_djb2(char *key)
+{
+	uint32_t hash = 5381;
+	int c;
+
+	while ((c = *key++)) {
+		hash = ((hash << 5) + hash) + c;
+	}
+
+	return hash;
+}
+
+inline uint32_t qha_sdbm(char *key)
+{
+	uint32_t hash = 0;
+	int c;
+
+	while ((c = *key++)) {
+		hash = c + (hash << 6) + (hash << 16) - hash;
+	}
+
+	return hash;
+}
