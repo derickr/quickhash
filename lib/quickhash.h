@@ -40,7 +40,7 @@ typedef union _qhv {
  */
 typedef struct _qhb {
 	struct _qhb *next;
-	qhv          key;
+	int32_t      key;
 	uint32_t     value_idx;
 } qhb;
 
@@ -68,10 +68,12 @@ typedef struct _qhm {
  * - check_for_dupes: whether insertions should be checked for duplicates
  */
 typedef struct _qho {
+	char     key_type; // either int or string
 	char     value_type; // either int or string
 	uint32_t size;
 	char     check_for_dupes;
 	qha_t    hasher;
+	qhsa_t   shasher;
 	qhm      memory;
 } qho;
 
@@ -105,6 +107,13 @@ typedef struct _qhi {
 	uint32_t  bucket_buffer_pos;
 	qhb     **bucket_buffer;
 
+	// for storing string keys
+	struct {
+		uint32_t  count;
+		uint32_t  size;
+		char     *values;
+	} keys;
+
 	// for int values
 	struct {
 		uint32_t  count;
@@ -136,13 +145,16 @@ typedef struct _qhit {
 	uint32_t  bucket_list_idx;
 	qhb      *current_bucket;
 
-	qhv       key;
+	int32_t   key;
 	qhv       value;
 } qhit;
 
 /**
  * Constants
  */
+#define QHI_KEY_TYPE_INT      1
+#define QHI_KEY_TYPE_STRING   2
+
 #define QHI_VALUE_TYPE_INT    1
 #define QHI_VALUE_TYPE_STRING 2
 
