@@ -28,15 +28,15 @@
  * Helper struct that contains the file descriptor for use with
  * qhi_process_set or qhi_process_hash.
  */
-typedef struct _fd_write_apply_context {
+typedef struct _fd_apply_context {
 	int fd;
-} fd_write_apply_context;
+} fd_apply_context;
 
 /**
- * Function that is used by qhi_set_save_to_file as an apply function for
- * qhi_process_set or qhi_process_hash. It is called when the buffer is full,
- * and will write the buffer's contents to the filedescriptor that is
- * contained in the fd_write_apply_context struct.
+ * Function that is used as an apply function for qhi_process_set or
+ * qhi_process_hash. It is called when the buffer is full, and will write the
+ * buffer's contents to the filedescriptor that is contained in the
+ * fd_apply_context struct.
  *
  * Parameters:
  * - context: The context containing the filedescriptor
@@ -48,7 +48,7 @@ typedef struct _fd_write_apply_context {
  */
 static int fd_write_int32t_apply_func(void *context, int32_t *buffer, uint32_t elements)
 {
-	fd_write_apply_context *ctxt = (fd_write_apply_context*) context;
+	fd_apply_context *ctxt = (fd_apply_context*) context;
 
 	if (write(ctxt->fd, buffer, elements * sizeof(int32_t)) != (elements * sizeof(int32_t))) {
 		return 0;
@@ -57,10 +57,10 @@ static int fd_write_int32t_apply_func(void *context, int32_t *buffer, uint32_t e
 }
 
 /**
- * Function that is used by qhi_set_save_to_file as an apply function for
- * qhi_process_set or qhi_process_hash. It is called when the buffer is full,
- * and will write the buffer's contents to the filedescriptor that is
- * contained in the fd_write_apply_context struct.
+ * Function that is used as an apply function for qhi_process_set or
+ * qhi_process_hash. It is called when the buffer is full, and will write the
+ * buffer's contents to the filedescriptor that is contained in the
+ * fd_apply_context struct.
  *
  * Parameters:
  * - context: The context containing the filedescriptor
@@ -72,12 +72,50 @@ static int fd_write_int32t_apply_func(void *context, int32_t *buffer, uint32_t e
  */
 static int fd_write_chars_apply_func(void *context, char *buffer, uint32_t elements)
 {
-	fd_write_apply_context *ctxt = (fd_write_apply_context*) context;
+	fd_apply_context *ctxt = (fd_apply_context*) context;
 
 	if (write(ctxt->fd, buffer, elements) != elements) {
 		return 0;
 	}
 	return 1;
+}
+
+/**
+ * Function that is used qhi_obtain_hash. It is called to read data from a fd
+ * into the buffer.
+ *
+ * Parameters:
+ * - context: The context containing the filedescriptor
+ * - buffer: The buffer to store the data in
+ * - elements: The number of elements to read
+ *
+ * Returns:
+ * - the number of elements (not bytes) that have been read
+ */
+static int fd_read_int32t_apply_func(void *context, int32_t *buffer, uint32_t elements)
+{
+	fd_apply_context *ctxt = (fd_apply_context*) context;
+
+	return (read(ctxt->fd, buffer, elements * sizeof(int32_t)) / sizeof(int32_t));
+}
+
+/**
+ * Function that is used qhi_obtain_hash. It is called to read data from a fd
+ * into the buffer.
+ *
+ * Parameters:
+ * - context: The context containing the filedescriptor
+ * - buffer: The buffer to store the data in
+ * - elements: The number of elements to read
+ *
+ * Returns:
+ * - the number of elements (not bytes) that have been read
+ */
+static int fd_read_chars_apply_func(void *context, char *buffer, uint32_t elements)
+{
+	fd_apply_context *ctxt = (fd_apply_context*) context;
+
+	return read(ctxt->fd, buffer, elements);
 }
 
 /**
@@ -640,7 +678,7 @@ qhi *qhi_set_load_from_file(int fd, qho *options)
  * Returns:
  * - 1 of the function succeeded, and 0 if it did not.
  */
-int qhi_process_set(qhi *hash, void *context, qhi_int32t_buffer_apply_func int32t_apply_func)
+int qhi_process_set(qhi *hash, void *context, qhi_int32t_write_buffer_apply_func int32t_apply_func)
 {
 	uint32_t    idx;
 	uint32_t    elements_in_buffer = 0;
@@ -690,7 +728,7 @@ int qhi_process_set(qhi *hash, void *context, qhi_int32t_buffer_apply_func int32
  */
 int qhi_set_save_to_file(int fd, qhi *hash)
 {
-	fd_write_apply_context ctxt;
+	fd_apply_context ctxt;
 	ctxt.fd = fd;
 	return qhi_process_set(hash, (void *) &ctxt, fd_write_int32t_apply_func);
 }
@@ -1034,31 +1072,29 @@ uint32_t qhi_hash_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t 
 }
 
 /**
- * Loads a hash from a file pointed to by the file descriptor
+ * Creates a hash from a string containing a serialized hash
  *
  * Parameters:
- * - fd: a file descriptor that is suitable for reading from
  * - options: the options to create the hash with. This structure contains at
  *   least the nr of hash buckets, and whether set additions should be checked
  *   for duplicates. See the description of qho for a full list of options.
+ * - context: the context that reader functions can use to store specific data
+ *   in (such as a filedescription, or a PHP stream)
+ * - int32t_apply_func: The function to use for reading int32s.
+ * - chars_apply_func: The function to use for reading chars.
  *
  * Returns:
  * - A new hash, or NULL upon failure
  */
-qhi *qhi_hash_load_from_file(int fd, qho *options)
+qhi *qhi_obtain_hash(qho *options, void *context, qhi_int32t_read_buffer_apply_func int32t_apply_func, qhi_char_read_buffer_apply_func chars_apply_func)
 {
 	struct stat finfo;
 	uint32_t    nr_of_elements, elements_read = 0;
-	uint32_t    bytes_read;
 	int32_t     key_buffer[1024];
 	qhi        *tmp;
 
-	if (fstat(fd, &finfo) != 0) {
-		return NULL;
-	}
-
 	// we read the first int32s for the signature and nr of items
-	if (read(fd, &key_buffer, 2 * sizeof(int32_t)) != (2 * sizeof(int32_t))) {
+	if (!int32t_apply_func(context, key_buffer, 2)) {
 		return NULL;
 	}
 	if ((key_buffer[0] & 0xffff) != 0x4851) {
@@ -1086,17 +1122,17 @@ qhi *qhi_hash_load_from_file(int fd, qho *options)
 
 	// read the keys if we have QHI_KEY_TYPE_STRING
 	if (tmp->key_type == QHI_KEY_TYPE_STRING) {
-		read(fd, &key_buffer, sizeof(int32_t));
+		int32t_apply_func(context, key_buffer, 1);
 		tmp->keys.values = tmp->options->memory.malloc(key_buffer[0] + 1);
-		read(fd, tmp->keys.values, key_buffer[0]);
+		chars_apply_func(context, tmp->keys.values, key_buffer[0]);
 		tmp->keys.values[key_buffer[0]] = '\0';
 	}
 
 	// read the strings if we have QHI_VALUE_TYPE_STRING
 	if (tmp->value_type == QHI_VALUE_TYPE_STRING) {
-		read(fd, &key_buffer, sizeof(int32_t));
+		int32t_apply_func(context, key_buffer, 1);
 		tmp->s.values = tmp->options->memory.malloc(key_buffer[0] + 1);
-		read(fd, tmp->s.values, key_buffer[0]);
+		chars_apply_func(context, tmp->s.values, key_buffer[0]);
 		tmp->s.values[key_buffer[0]] = '\0';
 	}
 
@@ -1106,13 +1142,13 @@ qhi *qhi_hash_load_from_file(int fd, qho *options)
 			qhl *list;
 
 			// read hash key, and nr of elements in list
-			read(fd, &key_buffer, 2 * sizeof(int32_t));
+			int32t_apply_func(context, key_buffer, 2);
 			idx = key_buffer[0];
 			list_elements = key_buffer[1];
 
 			// read the hash elements
 			do {
-				bytes_read = read(fd, &key_buffer, 2 * sizeof(int32_t));
+				int32t_apply_func(context, key_buffer, 2);
 				list = &(tmp->bucket_list[idx]);
 				qhi_add_entry_to_list(tmp, list, (qhv) (tmp->keys.values + key_buffer[0]), hash_add_value(tmp, (qhv) key_buffer[1]));
 				elements_read++;
@@ -1122,13 +1158,32 @@ qhi *qhi_hash_load_from_file(int fd, qho *options)
 	} else {
 		// read the elements (key and value idx) and add them to the hash
 		do {
-			bytes_read = read(fd, &key_buffer, sizeof(key_buffer));
-			qhi_hash_add_elements_from_buffer(tmp, key_buffer, bytes_read / 4);
-			elements_read += (bytes_read / 4);
-		} while (elements_read < nr_of_elements);
+			elements_read = int32t_apply_func(context, key_buffer, 1024) / 2;
+			qhi_hash_add_elements_from_buffer(tmp, key_buffer, elements_read * 2);
+			nr_of_elements -= elements_read;
+		} while (nr_of_elements);
 	}
 
 	return tmp;
+}
+
+/**
+ * Loads a hash from a file pointed to by the file descriptor
+ *
+ * Parameters:
+ * - fd: a file descriptor that is suitable for reading from
+ * - options: the options to create the hash with. This structure contains at
+ *   least the nr of hash buckets, and whether set additions should be checked
+ *   for duplicates. See the description of qho for a full list of options.
+ *
+ * Returns:
+ * - A new hash, or NULL upon failure
+ */
+qhi *qhi_hash_load_from_file(int fd, qho *options)
+{
+	fd_apply_context ctxt;
+	ctxt.fd = fd;
+	return qhi_obtain_hash(options, (void*) &ctxt, fd_read_int32t_apply_func, fd_read_chars_apply_func);
 }
 
 static void add_to_buffer(qhi *hash, int32_t *key_buffer, uint32_t *elements_in_buffer, qhb *p)
@@ -1165,7 +1220,7 @@ static void add_to_buffer(qhi *hash, int32_t *key_buffer, uint32_t *elements_in_
  * Returns:
  * - 1 of the function succeeded, and 0 if it did not.
  */
-int qhi_process_hash(qhi *hash, void *context, qhi_int32t_buffer_apply_func int32t_apply_func, qhi_char_buffer_apply_func chars_apply_func)
+int qhi_process_hash(qhi *hash, void *context, qhi_int32t_write_buffer_apply_func int32t_apply_func, qhi_char_write_buffer_apply_func chars_apply_func)
 {
 	uint32_t    idx;
 	uint32_t    elements_in_buffer = 0;
@@ -1210,13 +1265,9 @@ int qhi_process_hash(qhi *hash, void *context, qhi_int32t_buffer_apply_func int3
 			if (hash->key_type == QHI_KEY_TYPE_STRING) {
 				key_buffer[elements_in_buffer] = idx;
 				key_buffer[elements_in_buffer + 1] = list->size;
-				elements_in_buffer += 2;
 
-				if (elements_in_buffer == 1024) {
-					if (!int32t_apply_func(context, key_buffer, elements_in_buffer)) {
-						return 0;
-					}
-					elements_in_buffer = 0;
+				if (!int32t_apply_func(context, key_buffer, 2)) {
+					return 0;
 				}
 			}
 
@@ -1235,11 +1286,11 @@ int qhi_process_hash(qhi *hash, void *context, qhi_int32t_buffer_apply_func int3
 				p = n;
 			}
 		}
-	}
 
-	if (elements_in_buffer > 0) {
-		if (!int32t_apply_func(context, key_buffer, elements_in_buffer)) {
-			return 0;
+		if (elements_in_buffer > 0) {
+			if (!int32t_apply_func(context, key_buffer, elements_in_buffer)) {
+				return 0;
+			}
 		}
 	}
 
@@ -1258,7 +1309,7 @@ int qhi_process_hash(qhi *hash, void *context, qhi_int32t_buffer_apply_func int3
  */
 int qhi_hash_save_to_file(int fd, qhi *hash)
 {
-	fd_write_apply_context ctxt;
+	fd_apply_context ctxt;
 	ctxt.fd = fd;
 	return qhi_process_hash(hash, (void *) &ctxt, fd_write_int32t_apply_func, fd_write_chars_apply_func);
 }

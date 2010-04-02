@@ -162,8 +162,10 @@ typedef struct _qhit {
 /**
  * Function type to be used as an utility function with qhi_process_set
  */
-typedef int (*qhi_int32t_buffer_apply_func)(void *context, int32_t *buffer, uint32_t elements);
-typedef int (*qhi_char_buffer_apply_func)(void *context, char *buffer, uint32_t elements);
+typedef int32_t (*qhi_int32t_write_buffer_apply_func)(void *context, int32_t *buffer, uint32_t elements);
+typedef int32_t (*qhi_char_write_buffer_apply_func)(void *context, char *buffer, uint32_t elements);
+typedef int32_t (*qhi_int32t_read_buffer_apply_func)(void *context, int32_t *buffer, uint32_t elements);
+typedef int32_t (*qhi_char_read_buffer_apply_func)(void *context, char *buffer, uint32_t elements);
 
 uint32_t qha_jenkins1(uint32_t key);
 uint32_t qha_jenkins2(uint32_t key);
@@ -182,7 +184,7 @@ int qhi_set_add(qhi *hash, qhv position);
 int qhi_set_exists(qhi *hash, qhv position);
 int qhi_set_delete(qhi *hash, qhv position);
 
-int qhi_process_set(qhi *hash, void *context, qhi_int32t_buffer_apply_func apply_func);
+int qhi_process_set(qhi *hash, void *context, qhi_int32t_write_buffer_apply_func apply_func);
 uint32_t qhi_set_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t nr_of_elements);
 qhi *qhi_set_load_from_file(int fd, qho *options);
 int qhi_set_save_to_file(int fd, qhi *hash);
@@ -193,7 +195,7 @@ int qhi_hash_get(qhi *hash, qhv position, qhv *value);
 int qhi_hash_update(qhi *hash, qhv position, qhv value);
 int qhi_hash_set(qhi *hash, qhv position, qhv value);
 
-int qhi_process_hash(qhi *hash, void *context, qhi_int32t_buffer_apply_func apply_func, qhi_char_buffer_apply_func);
+int qhi_process_hash(qhi *hash, void *context, qhi_int32t_write_buffer_apply_func apply_func, qhi_char_write_buffer_apply_func);
 uint32_t qhi_hash_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t nr_of_elements);
 qhi *qhi_hash_load_from_file(int fd, qho *options);
 int qhi_hash_save_to_file(int fd, qhi *hash);
