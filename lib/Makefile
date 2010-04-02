@@ -6,7 +6,9 @@ TESTFILES=test-hash-add test-hash-delete test-set-delete-extensive test-hash-get
 	test-normalize-size test-set-add test-set-load-from-file test-set-save-to-file \
 	test-hash-string-add test-hash-string-update test-hash-string-delete \
 	test-hash-string-set test-hash-string-save-to-file \
+	test-hash-load-from-file test-hash-load-from-file2 test-hash-load-from-file3 \
 	test-hash-string-save-to-file2 test-string-hash-add test-string-hash-delete \
+	test-hash-string-load-from-file test-hash-string-load-from-file2 test-hash-string-load-from-file3 \
 	test-string-hash-set test-string-hash-update test-string-hash-save-to-file \
 	test-string-hash-save-to-file2
 
@@ -39,6 +41,15 @@ test-hash-set: test-hash-set.c $(LIBFILES)
 test-hash-update: test-hash-update.c $(LIBFILES)
 	gcc $(CFLAGS) -o test-hash-update test-hash-update.c $(LIBFILES) 
 
+test-hash-load-from-file: test-hash-load-from-file.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-hash-load-from-file test-hash-load-from-file.c $(LIBFILES) 
+
+test-hash-load-from-file2: test-hash-load-from-file2.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-hash-load-from-file2 test-hash-load-from-file2.c $(LIBFILES) 
+
+test-hash-load-from-file3: test-hash-load-from-file3.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-hash-load-from-file3 test-hash-load-from-file3.c $(LIBFILES) 
+
 test-normalize-size: test-normalize-size.c $(LIBFILES)
 	gcc $(CFLAGS) -o test-normalize-size test-normalize-size.c $(LIBFILES) 
 
@@ -68,6 +79,15 @@ test-hash-string-save-to-file: test-hash-string-save-to-file.c $(LIBFILES)
 
 test-hash-string-save-to-file2: test-hash-string-save-to-file2.c $(LIBFILES)
 	gcc $(CFLAGS) -o test-hash-string-save-to-file2 test-hash-string-save-to-file2.c $(LIBFILES) 
+
+test-hash-string-load-from-file: test-hash-string-load-from-file.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-hash-string-load-from-file test-hash-string-load-from-file.c $(LIBFILES) 
+
+test-hash-string-load-from-file2: test-hash-string-load-from-file2.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-hash-string-load-from-file2 test-hash-string-load-from-file2.c $(LIBFILES) 
+
+test-hash-string-load-from-file3: test-hash-string-load-from-file3.c $(LIBFILES)
+	gcc $(CFLAGS) -o test-hash-string-load-from-file3 test-hash-string-load-from-file3.c $(LIBFILES) 
 
 test-string-hash-add: test-string-hash-add.c $(LIBFILES)
 	gcc $(CFLAGS) -o test-string-hash-add test-string-hash-add.c $(LIBFILES) 

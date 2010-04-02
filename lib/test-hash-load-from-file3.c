@@ -20,49 +20,31 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
 
-int main(void)
+int main(int argc, char *argv[])
 {
 	qhi *h;
 	qho *options = qho_create();
-	int32_t i;
-	int  fd;
-	int32_t value = 0;
-	
-	options->size = 5;
+	int  fd, i;
+	int32_t value;
+
+	options->size = 1048576;
 	options->check_for_dupes = 1;
-	options->key_type = QHI_KEY_TYPE_STRING;
-	h = qhi_create(options);
 
-	qhi_hash_add(h, (qhv) "één",  (qhv) 1);
-	qhi_hash_add(h, (qhv) "twee", (qhv) 2);
-	qhi_hash_add(h, (qhv) "drie", (qhv) 3);
-	qhi_hash_add(h, (qhv) "vier", (qhv) 4);
-
-	fd = open("/tmp/test-save", O_WRONLY | O_TRUNC | O_CREAT, 0666);
-	qhi_hash_save_to_file(fd, h);
-	close(fd);
-	qhi_free(h);
-
-	fd = open("/tmp/test-save", O_RDONLY);
+	fd = open("../tests/primes.hash", O_RDONLY);
 	h = qhi_hash_load_from_file(fd, options);
-	close(fd);
 
-	if (qhi_hash_get(h, (qhv) "één", (qhv*) &value)) {
-		printf("%d\n", value);
+	printf("done loading\n");
+	for (i = 0; i < 1000000; i++) {
+		if (qhi_set_exists(h, (qhv) i)) {
+			qhi_hash_get(h, (qhv) i, (qhv*) &value);
+			printf("%03d; value: %04d\n", i, value);
+		}
 	}
-	if (qhi_hash_get(h, (qhv) "twee", (qhv*) &value)) {
-		printf("%d\n", value);
-	}
-	if (qhi_hash_get(h, (qhv) "drie", (qhv*) &value)) {
-		printf("%d\n", value);
-	}
-	if (qhi_hash_get(h, (qhv) "vier", (qhv*) &value)) {
-		printf("%d\n", value);
-	}
+	printf("done checking\n");
 
 	qhi_free(h);
 	qho_free(options);
+
 	return 0;
 }

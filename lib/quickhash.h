@@ -153,8 +153,8 @@ typedef struct _qhit {
 /**
  * Constants
  */
-#define QHI_KEY_TYPE_INT      0
-#define QHI_KEY_TYPE_STRING   1
+#define QHI_KEY_TYPE_INT      1
+#define QHI_KEY_TYPE_STRING   2
 
 #define QHI_VALUE_TYPE_INT    1
 #define QHI_VALUE_TYPE_STRING 2
