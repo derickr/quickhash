@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 	for (i = 0; i < 1000000; i++) {
 		if (qhi_set_exists(h, (qhv) i)) {
 			qhi_hash_get(h, (qhv) i, (qhv*) &value);
-			printf("%03d; value: %04d\n", i, value);
+			printf("%06d; value: %06d\n", i, value);
 		}
 	}
 	printf("done checking\n");

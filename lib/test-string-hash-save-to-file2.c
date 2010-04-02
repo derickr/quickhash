@@ -26,7 +26,6 @@ int main(void)
 {
 	qhi *h;
 	qho *options = qho_create();
-	int32_t i;
 	int  fd;
 	int32_t value = 0;
 	
