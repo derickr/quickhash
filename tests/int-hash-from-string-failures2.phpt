@@ -8,7 +8,7 @@ for ( $i = 0; $i < 16; $i++ )
 {
 	try
 	{
-		$contents = str_repeat( chr(1), $i );
+		$contents = "QH\x11\x00\x08\x00\x00\x00" . str_repeat( chr(1), $i );
 		$hash = QuickHashIntHash::loadFromString( $contents );
 		echo "+";
 	}

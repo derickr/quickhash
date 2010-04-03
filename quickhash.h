@@ -46,14 +46,15 @@
 #define QH_HASHER_JENKINS2        0x0400
 #define QH_HASHER_MASK            0xFF00
 
-typedef struct _php_qh_save_to_string_context {
+typedef struct _php_qh_string_context {
 	char     *string;
 	uint32_t  string_len;
-} php_qh_save_to_string_context;
+	char     *ptr;
+} php_qh_string_context;
 
-typedef struct _php_qh_save_to_stream_context {
+typedef struct _php_qh_stream_context {
 	php_stream *stream;
-} php_qh_save_to_stream_context;
+} php_qh_stream_context;
 
 zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC);
 void qh_add_constants(zend_class_entry *ce TSRMLS_DC);
@@ -63,11 +64,18 @@ void qh_set_memory_functions(qho *options);
 typedef int (*php_qh_stream_validator)(php_stream_statbuf finfo, php_stream *stream, uint32_t *nr_of_elements, uint32_t *value_array_length);
 typedef int (*php_qh_string_validator)(char *string, long length, uint32_t *nr_of_elements, uint32_t *value_array_length);
 
-int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size, long flags, php_qh_stream_validator validator, uint32_t *nr_of_elements, uint32_t *value_array_length TSRMLS_DC);
+int32_t php_qh_get_size_from_string(void *context);
 int php_qh_prepare_string(qhi **hash, qho *options, char *string, long length, long size, long flags, php_qh_string_validator validator, uint32_t *nr_of_elements, uint32_t *value_array_length TSRMLS_DC);
+int php_qh_load_int32t_from_string_func(void *context, int32_t *buffer, uint32_t elements);
+int php_qh_load_chars_from_string_func(void *context, char *buffer, uint32_t elements);
 int php_qh_save_int32t_to_string_func(void *context, int32_t *buffer, uint32_t elements);
-int php_qh_save_int32t_to_stream_func(void *context, int32_t *buffer, uint32_t elements);
 int php_qh_save_chars_to_string_func(void *context, char *buffer, uint32_t elements);
+
+int32_t php_qh_get_size_from_stream(void *context);
+int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size, long flags, php_qh_stream_validator validator, uint32_t *nr_of_elements, uint32_t *value_array_length TSRMLS_DC);
+int php_qh_load_int32t_from_stream_func(void *context, int32_t *buffer, uint32_t elements);
+int php_qh_load_chars_from_stream_func(void *context, char *buffer, uint32_t elements);
+int php_qh_save_int32t_to_stream_func(void *context, int32_t *buffer, uint32_t elements);
 int php_qh_save_chars_to_stream_func(void *context, char *buffer, uint32_t elements);
 
 #endif

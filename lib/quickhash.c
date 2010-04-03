@@ -32,6 +32,17 @@ typedef struct _fd_apply_context {
 	int fd;
 } fd_apply_context;
 
+static int32_t fd_get_size_apply_func(void *context)
+{
+	fd_apply_context *ctxt = (fd_apply_context*) context;
+	struct stat       finfo;
+
+	if (fstat(ctxt->fd, &finfo) == 0) {
+		return finfo.st_size;
+	}
+	return -1;
+}
+
 /**
  * Function that is used as an apply function for qhi_process_set or
  * qhi_process_hash. It is called when the buffer is full, and will write the
@@ -625,23 +636,21 @@ uint32_t qhi_set_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t n
  * Returns:
  * - A new hash, or NULL upon failure
  */
-qhi *qhi_set_load_from_file(int fd, qho *options)
+qhi *qhi_obtain_set(qho *options, void *context, qhi_buffer_get_size get_size, qhi_int32t_read_buffer_apply_func int32t_apply_func)
 {
-	struct stat finfo;
 	uint32_t    nr_of_elements, elements_read = 0;
 	uint32_t    bytes_read;
 	int32_t     key_buffer[1024];
 	qhi        *tmp;
-
-	if (fstat(fd, &finfo) != 0) {
-		return NULL;
-	}
+	int32_t     buffer_size;
+	
+	buffer_size = get_size(context);
 
 	// if the filesize is not an increment of 4, abort
-	if (finfo.st_size % 4 != 0) {
+	if (buffer_size % 4 != 0) {
 		return NULL;
 	}
-	nr_of_elements = finfo.st_size / 4;
+	nr_of_elements = buffer_size / 4;
 
 	// override the nr of bucket lists if the size is still 0.
 	options->size = qhi_normalize_size(options->size == 0 ? nr_of_elements : options->size);
@@ -657,11 +666,19 @@ qhi *qhi_set_load_from_file(int fd, qho *options)
 
 	// read the elements and add them to the set
 	do {
-		bytes_read = read(fd, &key_buffer, sizeof(key_buffer));
-		qhi_set_add_elements_from_buffer(tmp, key_buffer, bytes_read / 4);
-		elements_read += (bytes_read / 4);
-	} while (elements_read < nr_of_elements);
+		elements_read = int32t_apply_func(context, key_buffer, 1024);
+		qhi_set_add_elements_from_buffer(tmp, key_buffer, elements_read);
+		nr_of_elements -= elements_read;
+	} while (elements_read && nr_of_elements);
+
 	return tmp;
+}
+
+qhi *qhi_set_load_from_file(int fd, qho *options)
+{
+	fd_apply_context ctxt;
+	ctxt.fd = fd;
+	return qhi_obtain_set(options, (void*) &ctxt, fd_get_size_apply_func, fd_read_int32t_apply_func);
 }
 
 /**
@@ -1088,7 +1105,6 @@ uint32_t qhi_hash_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t 
  */
 qhi *qhi_obtain_hash(qho *options, void *context, qhi_int32t_read_buffer_apply_func int32t_apply_func, qhi_char_read_buffer_apply_func chars_apply_func)
 {
-	struct stat finfo;
 	uint32_t    nr_of_elements, elements_read = 0;
 	int32_t     key_buffer[1024];
 	qhi        *tmp;
@@ -1102,9 +1118,6 @@ qhi *qhi_obtain_hash(qho *options, void *context, qhi_int32t_read_buffer_apply_f
 	}
 	options->key_type = (key_buffer[0] & 0xf00000) >> 20;
 	options->value_type = (key_buffer[0] & 0x0f0000) >> 16;
-
-	// remove the signature
-	finfo.st_size -= sizeof(int32_t);
 
 	nr_of_elements = key_buffer[1];
 
@@ -1124,6 +1137,7 @@ qhi *qhi_obtain_hash(qho *options, void *context, qhi_int32t_read_buffer_apply_f
 	if (tmp->key_type == QHI_KEY_TYPE_STRING) {
 		int32t_apply_func(context, key_buffer, 1);
 		tmp->keys.values = tmp->options->memory.malloc(key_buffer[0] + 1);
+		tmp->keys.size = tmp->keys.count = key_buffer[0];
 		chars_apply_func(context, tmp->keys.values, key_buffer[0]);
 		tmp->keys.values[key_buffer[0]] = '\0';
 	}
@@ -1132,6 +1146,7 @@ qhi *qhi_obtain_hash(qho *options, void *context, qhi_int32t_read_buffer_apply_f
 	if (tmp->value_type == QHI_VALUE_TYPE_STRING) {
 		int32t_apply_func(context, key_buffer, 1);
 		tmp->s.values = tmp->options->memory.malloc(key_buffer[0] + 1);
+		tmp->s.size = tmp->s.count = key_buffer[0];
 		chars_apply_func(context, tmp->s.values, key_buffer[0]);
 		tmp->s.values[key_buffer[0]] = '\0';
 	}
@@ -1161,7 +1176,7 @@ qhi *qhi_obtain_hash(qho *options, void *context, qhi_int32t_read_buffer_apply_f
 			elements_read = int32t_apply_func(context, key_buffer, 1024) / 2;
 			qhi_hash_add_elements_from_buffer(tmp, key_buffer, elements_read * 2);
 			nr_of_elements -= elements_read;
-		} while (nr_of_elements);
+		} while (elements_read && nr_of_elements);
 	}
 
 	return tmp;
@@ -1291,6 +1306,7 @@ int qhi_process_hash(qhi *hash, void *context, qhi_int32t_write_buffer_apply_fun
 			if (!int32t_apply_func(context, key_buffer, elements_in_buffer)) {
 				return 0;
 			}
+			elements_in_buffer = 0;
 		}
 	}
 

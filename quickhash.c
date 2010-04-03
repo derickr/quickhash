@@ -142,9 +142,47 @@ void qh_set_memory_functions(qho *options)
 	options->memory.free = qh_free;
 }
 
+int32_t php_qh_get_size_from_string(void *context)
+{
+	php_qh_string_context *ctxt = (php_qh_string_context*) context;
+
+	return ctxt->string_len;
+}
+
+int php_qh_load_int32t_from_string_func(void *context, int32_t *buffer, uint32_t elements)
+{
+	int32_t req;
+	php_qh_string_context *ctxt = (php_qh_string_context*) context;
+#if 0
+printf("req: %d; pos: %d : length: %d, max: %d\n",
+	elements * sizeof(int32_t),
+	ctxt->ptr - ctxt->string, 
+	ctxt->string_len, (ctxt->string_len - (ctxt->ptr - ctxt->string)));
+#endif
+	req = elements * sizeof(int32_t);
+	if (req > (ctxt->string_len - (ctxt->ptr - ctxt->string))) {
+		req = (ctxt->string_len - (ctxt->ptr - ctxt->string));
+	}
+
+	memcpy(buffer, ctxt->ptr, req);
+	ctxt->ptr += req;
+
+	return req / sizeof(int32_t);
+}
+
+int php_qh_load_chars_from_string_func(void *context, char *buffer, uint32_t elements)
+{
+	php_qh_string_context *ctxt = (php_qh_string_context*) context;
+
+	memcpy(buffer, ctxt->ptr, elements);
+	ctxt->ptr += elements;
+
+	return elements;
+}
+
 int php_qh_save_int32t_to_string_func(void *context, int32_t *buffer, uint32_t elements)
 {
-	php_qh_save_to_string_context *ctxt = (php_qh_save_to_string_context*) context;
+	php_qh_string_context *ctxt = (php_qh_string_context*) context;
 
 	ctxt->string = erealloc(ctxt->string, ctxt->string_len + (elements * sizeof(int32_t)) + 1);
 	memcpy(ctxt->string + ctxt->string_len, buffer, elements * sizeof(int32_t));
@@ -156,7 +194,7 @@ int php_qh_save_int32t_to_string_func(void *context, int32_t *buffer, uint32_t e
 
 int php_qh_save_chars_to_string_func(void *context, char *buffer, uint32_t elements)
 {
-	php_qh_save_to_string_context *ctxt = (php_qh_save_to_string_context*) context;
+	php_qh_string_context *ctxt = (php_qh_string_context*) context;
 
 	ctxt->string = erealloc(ctxt->string, ctxt->string_len + elements + 1);
 	memcpy(ctxt->string + ctxt->string_len, buffer, elements);
@@ -166,9 +204,37 @@ int php_qh_save_chars_to_string_func(void *context, char *buffer, uint32_t eleme
 	return 1;
 }
 
+int32_t php_qh_get_size_from_stream(void *context)
+{
+	php_qh_stream_context *ctxt = (php_qh_stream_context*) context;
+	php_stream_statbuf     finfo;
+
+	// obtain the filesize
+	if (php_stream_stat(ctxt->stream, &finfo) == 0) {
+		return finfo.sb.st_size;
+	}
+	return -1;
+}
+
+int php_qh_load_int32t_from_stream_func(void *context, int32_t *buffer, uint32_t elements)
+{
+	php_qh_stream_context *ctxt = (php_qh_stream_context*) context;
+	TSRMLS_FETCH();
+
+	return php_stream_read(ctxt->stream, (char*)buffer, elements * sizeof(int32_t)) / sizeof(int32_t);
+}
+
+int php_qh_load_chars_from_stream_func(void *context, char *buffer, uint32_t elements)
+{
+	php_qh_stream_context *ctxt = (php_qh_stream_context*) context;
+	TSRMLS_FETCH();
+
+	return php_stream_read(ctxt->stream, buffer, elements);
+}
+
 int php_qh_save_int32t_to_stream_func(void *context, int32_t *buffer, uint32_t elements)
 {
-	php_qh_save_to_stream_context *ctxt = (php_qh_save_to_stream_context*) context;
+	php_qh_stream_context *ctxt = (php_qh_stream_context*) context;
 	TSRMLS_FETCH();
 
 	if (php_stream_write(ctxt->stream, (char*)buffer, elements * sizeof(int32_t)) != (elements * sizeof(int32_t))) {
@@ -179,7 +245,7 @@ int php_qh_save_int32t_to_stream_func(void *context, int32_t *buffer, uint32_t e
 
 int php_qh_save_chars_to_stream_func(void *context, char *buffer, uint32_t elements)
 {
-	php_qh_save_to_stream_context *ctxt = (php_qh_save_to_stream_context*) context;
+	php_qh_stream_context *ctxt = (php_qh_stream_context*) context;
 	TSRMLS_FETCH();
 
 	if (php_stream_write(ctxt->stream, buffer, elements) != elements) {
@@ -219,12 +285,6 @@ int php_qh_prepare_file(qhi **hash, qho *options, php_stream *stream, long size,
 	// automatically set the size if the size is still 0.
 	options->size = size == 0 ? *nr_of_elements : size;
 
-	// create the hash
-	*hash = qhi_create(options);
-	if (*hash == NULL) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set/hash");
-		return 0;
-	}
 	return 1;
 }
 
@@ -245,12 +305,6 @@ int php_qh_prepare_string(qhi **hash, qho *options, char *string, long length, l
 	// automatically set the size if the size is still 0.
 	options->size = size == 0 ? *nr_of_elements : size;
 
-	// create the hash
-	*hash = qhi_create(options);
-	if (*hash == NULL) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Couldn't create set/hash");
-		return 0;
-	}
 	return 1;
 }
 

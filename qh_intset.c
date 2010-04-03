@@ -254,23 +254,19 @@ static int qh_intset_stream_validator(php_stream_statbuf finfo, php_stream *stre
 
 static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_stream *stream, long size, long flags TSRMLS_DC)
 {
-	uint32_t   nr_of_elements, elements_read = 0;
-	uint32_t   bytes_read;
-	int32_t    key_buffer[1024];
+	uint32_t   nr_of_elements;
 	qho       *options = qho_create();
+	php_qh_stream_context ctxt;
 
 	if (!php_qh_prepare_file(&obj->hash, options, stream, size, flags, qh_intset_stream_validator, &nr_of_elements, NULL TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}
-	
-	// read the elements and add them to the set
-	do {
-		bytes_read = php_stream_read(stream, (char*)&key_buffer, sizeof(key_buffer));
-		qhi_set_add_elements_from_buffer(obj->hash, key_buffer, bytes_read / sizeof(int32_t));
-		elements_read += (bytes_read / sizeof(int32_t));
-	} while (elements_read < nr_of_elements);
-	return nr_of_elements;
+
+	ctxt.stream = stream;
+
+	obj->hash = qhi_obtain_set(options, (void*) &ctxt, php_qh_get_size_from_stream, php_qh_load_int32t_from_stream_func);
+	return obj->hash->element_count;
 }
 
 /* {{{ proto QuickHashIntSet QuickHashIntSet::loadFromFile( string filename [, int size [, int flags ]] )
@@ -299,8 +295,8 @@ PHP_METHOD(QuickHashIntSet, loadFromFile)
 
 int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
 {
-	qhi                           *hash = obj->hash;
-	php_qh_save_to_stream_context  ctxt;
+	qhi                   *hash = obj->hash;
+	php_qh_stream_context  ctxt;
 
 	ctxt.stream = stream;
 
@@ -348,15 +344,19 @@ static uint32_t qh_intset_initialize_from_string(php_qh_intset_obj *obj, char *c
 {
 	uint32_t  nr_of_elements;
 	qho      *options = qho_create();
+	php_qh_string_context ctxt;
 
 	if (!php_qh_prepare_string(&obj->hash, options, contents, length, size, flags, qh_intset_string_validator, &nr_of_elements, NULL TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}
 
-	// read the elements and add them to the set
-	qhi_set_add_elements_from_buffer(obj->hash, (int32_t*)contents, nr_of_elements);
-	return nr_of_elements;
+	ctxt.string = contents;
+	ctxt.string_len = length;
+	ctxt.ptr = ctxt.string;
+
+	obj->hash = qhi_obtain_set(options, (void*) &ctxt, php_qh_get_size_from_string, php_qh_load_int32t_from_string_func);
+	return obj->hash->element_count;
 }
 
 /* {{{ proto QuickHashIntSet QuickHashIntSet::loadFromString( string contents [, int size [, int flags ]] )
@@ -380,8 +380,8 @@ PHP_METHOD(QuickHashIntSet, loadFromString)
 
 char *qh_intset_save_to_string(uint32_t *string_len, php_qh_intset_obj *obj)
 {
-	qhi                           *hash = obj->hash;
-	php_qh_save_to_string_context  ctxt;
+	qhi                   *hash = obj->hash;
+	php_qh_string_context  ctxt;
 
 	ctxt.string = NULL;
 	ctxt.string_len = 0;

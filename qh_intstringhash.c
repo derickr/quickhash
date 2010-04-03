@@ -266,44 +266,48 @@ PHP_METHOD(QuickHashIntStringHash, update)
 /* Validates whether the stream is in the correct format */
 static int qh_intstringhash_stream_validator(php_stream_statbuf finfo, php_stream *stream, uint32_t *nr_of_elements, uint32_t *value_array_length)
 {
-	int32_t header[2];
+	char key_buffer[4];
+	uint32_t hash_size;
+	uint32_t string_store_size;
 
-	php_stream_read(stream, (char*)&header, sizeof(header));
-
-	// if the filesize is not an increment of req_count * sizeof(int32_t), abort
-	if ((finfo.sb.st_size - (2 * sizeof(int32_t)) - header[1] ) % (2 * sizeof(int32_t)) != 0) {
+	if (php_stream_read(stream, key_buffer, 4) != 4) {
 		return 0;
 	}
-	*nr_of_elements = (finfo.sb.st_size - (2 * sizeof(int32_t)) - header[1]) / sizeof(int32_t);
-	*value_array_length = header[1];
+	if (key_buffer[0] != 'Q' || key_buffer[1] != 'H' || key_buffer[2] != 0x12) {
+		return 0;
+	}
+	if (php_stream_read(stream, (char*) &hash_size, sizeof(uint32_t)) != sizeof(uint32_t)) {
+		return 0;
+	}
+	if (php_stream_read(stream, (char*) &string_store_size, sizeof(uint32_t)) != sizeof(uint32_t)) {
+		return 0;
+	}
+
+	// if the filesize is not 12 + size * 8 + string_store_size, abort
+	if (finfo.sb.st_size != ((3 * sizeof(int32_t)) + (2 * sizeof(int32_t) * hash_size) + (string_store_size))) {
+		return 0;
+	}
+	*nr_of_elements = hash_size;
+
+	php_stream_rewind(stream);
 	return 1;
 }
 
 static uint32_t qh_intstringhash_initialize_from_file(php_qh_intstringhash_obj *obj, php_stream *stream, long size, long flags TSRMLS_DC)
 {
-	uint32_t  nr_of_elements, elements_read = 0, value_array_length;
-	uint32_t  bytes_read;
-	int32_t   key_buffer[1024];
+	uint32_t  nr_of_elements;
 	qho      *options = qho_create();
+	php_qh_stream_context ctxt;
 
-	options->value_type = QHI_VALUE_TYPE_STRING;
-	if (!php_qh_prepare_file(&obj->hash, options, stream, size, flags, qh_intstringhash_stream_validator, &nr_of_elements, &value_array_length TSRMLS_CC)) {
+	if (!php_qh_prepare_file(&obj->hash, options, stream, size, flags, qh_intstringhash_stream_validator, &nr_of_elements, NULL TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}
 
-	obj->hash->s.values = obj->hash->options->memory.malloc(value_array_length + 1);
-	obj->hash->s.count = value_array_length;
-	obj->hash->s.size  = value_array_length;
-	php_stream_read(stream, obj->hash->s.values, value_array_length);
+	ctxt.stream = stream;
 
-	// read the elements and add them to the hash
-	do {
-		bytes_read = php_stream_read(stream, (char*)&key_buffer, sizeof(key_buffer));
-		qhi_hash_add_elements_from_buffer(obj->hash, key_buffer, bytes_read / sizeof(int32_t));
-		elements_read += (bytes_read / sizeof(int32_t));
-	} while (elements_read < nr_of_elements);
-	return nr_of_elements;
+	obj->hash = qhi_obtain_hash(options, (void*) &ctxt, php_qh_load_int32t_from_stream_func, php_qh_load_chars_from_stream_func);
+	return obj->hash->element_count;
 }
 
 /* {{{ proto QuickHashIntStringHash QuickHashIntStringHash::loadFromFile( string filename [, int size [, int flags ]] )
@@ -332,8 +336,8 @@ PHP_METHOD(QuickHashIntStringHash, loadFromFile)
 
 int qh_intstringhash_save_to_file(php_stream *stream, php_qh_intstringhash_obj *obj)
 {
-	qhi                           *hash = obj->hash;
-	php_qh_save_to_stream_context  ctxt;
+	qhi                   *hash = obj->hash;
+	php_qh_stream_context  ctxt;
 
 	ctxt.stream = stream;
 
@@ -369,34 +373,42 @@ PHP_METHOD(QuickHashIntStringHash, saveToFile)
 /* Validates whether the string is in the correct format */
 static int qh_intstringhash_string_validator(char *string, long length, uint32_t *nr_of_elements, uint32_t *value_array_length)
 {
-	// if the length is not an increment of req_count * sizeof(int32_t), abort
-	if ((length - 8 - ((int32_t*)string)[1]) % (2 * sizeof(int32_t)) != 0) {
+	uint32_t *int_buffer = (uint32_t*) string;
+	uint32_t  hash_size;
+	uint32_t  string_store_size;
+
+	if (string[0] != 'Q' || string[1] != 'H' || string[2] != 0x12) {
 		return 0;
 	}
-	*nr_of_elements = (length - (2 * sizeof(int32_t)) - ((int32_t*)string)[1]) / sizeof(int32_t);
-	*value_array_length = ((int32_t*)string)[1];
+	hash_size = int_buffer[1];
+	string_store_size = int_buffer[2];
+
+	// if the filesize is not 12 + size * 8 + string_store_size, abort
+	if (length != ((3 * sizeof(int32_t)) + (2 * sizeof(int32_t) * hash_size) + (string_store_size))) {
+		return 0;
+	}
+	*nr_of_elements = hash_size;
+
 	return 1;
 }
 
 static uint32_t qh_intstringhash_initialize_from_string(php_qh_intstringhash_obj *obj, char *contents, long length, long size, long flags TSRMLS_DC)
 {
-	uint32_t  nr_of_elements, value_array_length;
+	uint32_t  nr_of_elements;
 	qho      *options = qho_create();
+	php_qh_string_context ctxt;
 
-	options->value_type = QHI_VALUE_TYPE_STRING;
-	if (!php_qh_prepare_string(&obj->hash, options, contents, length, size, flags, qh_intstringhash_string_validator, &nr_of_elements, &value_array_length TSRMLS_CC)) {
+	if (!php_qh_prepare_string(&obj->hash, options, contents, length, size, flags, qh_intstringhash_string_validator, &nr_of_elements, NULL TSRMLS_CC)) {
 		qho_free(options);
 		return 0;
 	}
 
-	obj->hash->s.values = obj->hash->options->memory.malloc(value_array_length + 1);
-	obj->hash->s.count = value_array_length;
-	obj->hash->s.size  = value_array_length;
-	memcpy(obj->hash->s.values, contents + 8, value_array_length);
+	ctxt.string = contents;
+	ctxt.string_len = length;
+	ctxt.ptr = ctxt.string;
 
-	// read the elements and add them to the hash
-	qhi_hash_add_elements_from_buffer(obj->hash, (int32_t*)(contents + 8 + ((int32_t*)contents)[1]), nr_of_elements);
-	return nr_of_elements;
+	obj->hash = qhi_obtain_hash(options, (void*) &ctxt, php_qh_load_int32t_from_string_func, php_qh_load_chars_from_string_func);
+	return obj->hash->element_count;
 }
 
 /* {{{ proto QuickHashIntStringHash QuickHashIntStringHash::loadFromString( string contents [, int size [, int flags ]] )
@@ -420,8 +432,8 @@ PHP_METHOD(QuickHashIntStringHash, loadFromString)
 
 char *qh_intstringhash_save_to_string(uint32_t *string_len, php_qh_intstringhash_obj *obj)
 {
-	qhi                           *hash = obj->hash;
-	php_qh_save_to_string_context  ctxt;
+	qhi                   *hash = obj->hash;
+	php_qh_string_context  ctxt;
 
 	ctxt.string = NULL;
 	ctxt.string_len = 0;
