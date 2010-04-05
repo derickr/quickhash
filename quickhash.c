@@ -33,6 +33,7 @@
 #include "qh_intset.h"
 #include "qh_inthash.h"
 #include "qh_intstringhash.h"
+#include "qh_stringinthash.h"
 
 function_entry quickhash_functions[] = {
 	{NULL, NULL, NULL}
@@ -316,6 +317,7 @@ PHP_MINIT_FUNCTION(quickhash)
 	qh_register_class_intset(TSRMLS_C);
 	qh_register_class_inthash(TSRMLS_C);
 	qh_register_class_intstringhash(TSRMLS_C);
+	qh_register_class_stringinthash(TSRMLS_C);
 
 	return SUCCESS;
 }
