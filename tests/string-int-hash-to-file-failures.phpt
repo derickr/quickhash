@@ -65,7 +65,7 @@ catch( Exception $e )
 	echo $e->getMessage(), "\n";
 }
 ?>
---EXPECT--
+--EXPECTF--
 
 Wrong params: 
 QuickHashStringIntHash::saveToFile() expects exactly 1 parameter, 0 given
@@ -76,7 +76,7 @@ Empty file:
 QuickHashStringIntHash::saveToFile(): Filename cannot be empty
 
 Directory: 
-QuickHashStringIntHash::saveToFile(/home/derick/dev/quickhash/tests): failed to open stream: Is a directory
+QuickHashStringIntHash::saveToFile(%stests): failed to open stream: Is a directory
 
 URL: 
 QuickHashStringIntHash::saveToFile(http://derickrethans.nl/): failed to open stream: HTTP wrapper does not support writeable connections

@@ -103,7 +103,7 @@ catch( Exception $e )
 	echo $e->getMessage(), "\n";
 }
 ?>
---EXPECT--
+--EXPECTF--
 
 Wrong params: 
 QuickHashIntStringHash::loadFromFile() expects at least 1 parameter, 0 given
@@ -119,7 +119,7 @@ Directory:
 QuickHashIntStringHash::loadFromFile(): File is not a normal file
 
 Non existing: 
-QuickHashIntStringHash::loadFromFile(/home/derick/dev/quickhash/tests/does-not-exist.set): failed to open stream: No such file or directory
+QuickHashIntStringHash::loadFromFile(%stests/does-not-exist.set): failed to open stream: No such file or directory
 
 Wrong size: 
 QuickHashIntStringHash::loadFromFile(): File is in the wrong format
