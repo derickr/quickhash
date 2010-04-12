@@ -328,6 +328,7 @@ static int qh_stringinthash_stream_validator(php_stream_statbuf finfo, php_strea
 	char key_buffer[4];
 	uint32_t hash_size;
 	uint32_t string_store_size;
+	uint32_t bucket_list_size;
 
 	if (php_stream_read(stream, key_buffer, 4) != 4) {
 		return 0;
@@ -341,11 +342,10 @@ static int qh_stringinthash_stream_validator(php_stream_statbuf finfo, php_strea
 	if (php_stream_read(stream, (char*) &string_store_size, sizeof(uint32_t)) != sizeof(uint32_t)) {
 		return 0;
 	}
-
-	// if the filesize is not 12 + size * 8 + string_store_size, abort
-	if (finfo.sb.st_size != ((3 * sizeof(int32_t)) + (2 * sizeof(int32_t) * hash_size) + (string_store_size))) {
+	if (php_stream_read(stream, (char*) &bucket_list_size, sizeof(uint32_t)) != sizeof(uint32_t)) {
 		return 0;
 	}
+
 	*nr_of_elements = hash_size;
 
 	php_stream_rewind(stream);
@@ -435,17 +435,15 @@ static int qh_stringinthash_string_validator(char *string, long length, uint32_t
 	uint32_t *int_buffer = (uint32_t*) string;
 	uint32_t  hash_size;
 	uint32_t  string_store_size;
+	uint32_t  bucket_list_size;
 
 	if (string[0] != 'Q' || string[1] != 'H' || string[2] != 0x21) {
 		return 0;
 	}
 	hash_size = int_buffer[1];
 	string_store_size = int_buffer[2];
+	bucket_list_size = int_buffer[3];
 
-	// if the filesize is not 12 + size * 8 + string_store_size, abort
-	if (length != ((3 * sizeof(int32_t)) + (2 * sizeof(int32_t) * hash_size) + (string_store_size))) {
-		return 0;
-	}
 	*nr_of_elements = hash_size;
 
 	return 1;

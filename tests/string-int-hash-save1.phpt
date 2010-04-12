@@ -9,45 +9,43 @@ $hash = QuickHashStringIntHash::loadFromFile( $file );
 $hash->saveToFile( '/tmp/test.hash.string' );
 
 $hash = QuickHashStringIntHash::loadFromFile( '/tmp/test.hash.string' );
-
 foreach( range( 0, 0x1f ) as $key )
 {
-	printf( "Key %3d (%2x) is ", $key, $key );
-	$value = $hash->get( $key );
-	print $value === false ? 'unset' : $value;
-	print "\n";
+    $i = 48712 + $key * 1631;
+    $k = base_convert( $i, 10, 36 );
+    echo $k, ' => ', $hash->get( $k ), "\n";
 }
 ?>
 --EXPECT--
-Key   0 ( 0) is unset
-Key   1 ( 1) is one.
-Key   2 ( 2) is four.
-Key   3 ( 3) is nine.
-Key   4 ( 4) is unset
-Key   5 ( 5) is twenty five.
-Key   6 ( 6) is unset
-Key   7 ( 7) is fourty nine.
-Key   8 ( 8) is unset
-Key   9 ( 9) is unset
-Key  10 ( a) is unset
-Key  11 ( b) is hundred twenty.
-Key  12 ( c) is unset
-Key  13 ( d) is one hundred ninety six.
-Key  14 ( e) is unset
-Key  15 ( f) is unset
-Key  16 (10) is unset
-Key  17 (11) is two hundred eighty nine.
-Key  18 (12) is unset
-Key  19 (13) is three hunderd sixty one.
-Key  20 (14) is unset
-Key  21 (15) is unset
-Key  22 (16) is unset
-Key  23 (17) is five hundred twenty nine.
-Key  24 (18) is unset
-Key  25 (19) is unset
-Key  26 (1a) is unset
-Key  27 (1b) is seven hundred twenty nine.
-Key  28 (1c) is unset
-Key  29 (1d) is eight hundred fourty one.
-Key  30 (1e) is unset
-Key  31 (1f) is nine hundred sixty one.
+11l4 => 48712
+12uf => 50343
+143q => 51974
+15d1 => 53605
+16mc => 55236
+17vn => 56867
+194y => 58498
+1ae9 => 60129
+1bnk => 61760
+1cwv => 63391
+1e66 => 65022
+1ffh => 66653
+1gos => 68284
+1hy3 => 69915
+1j7e => 71546
+1kgp => 73177
+1lq0 => 74808
+1mzb => 76439
+1o8m => 78070
+1phx => 79701
+1qr8 => 81332
+1s0j => 82963
+1t9u => 84594
+1uj5 => 86225
+1vsg => 87856
+1x1r => 89487
+1yb2 => 91118
+1zkd => 92749
+20to => 94380
+222z => 96011
+23ca => 97642
+24ll => 99273

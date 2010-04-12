@@ -146,24 +146,27 @@ static int fd_read_chars_apply_func(void *context, char *buffer, uint32_t elemen
  * - bucket: the bucket that will contain the key (or key index)
  * - key: the key itself
  */
-static inline void set_key(qhi *hash, qhb *bucket, qhv key)
+static inline uint32_t hash_add_key(qhi *hash, qhv key)
 {
 	switch (hash->key_type) {
 		case QHI_KEY_TYPE_INT:
-			bucket->key = key.i;
-			break;
+			return key.i;
 
 		case QHI_KEY_TYPE_STRING: {
 			size_t str_len = strlen(key.s);
+			uint32_t retval;
+
 			if (hash->keys.count + str_len + 1 >= hash->keys.size) {
 				hash->keys.values = hash->options->memory.realloc(hash->keys.values, (hash->keys.size + QHB_BUFFER_PREALLOC_INC));
 				hash->keys.size += QHB_BUFFER_PREALLOC_INC;
 			}
 			memcpy(hash->keys.values + hash->keys.count, key.s, str_len + 1);
-			bucket->key = hash->keys.count;
+			retval = hash->keys.count;
 			hash->keys.count = hash->keys.count + str_len + 1;
+			return retval;
 		} break;
 	}
+	return 0;
 }
 
 /**
@@ -487,7 +490,7 @@ int qhi_set_add(qhi *hash, qhv key)
 	if (!bucket) {
 		return 0;
 	}
-	set_key(hash, bucket, key);
+	bucket->key = hash_add_key(hash, key);
 	bucket->next = NULL;
 
 	// add bucket to list
@@ -639,7 +642,6 @@ uint32_t qhi_set_add_elements_from_buffer(qhi *hash, int32_t *buffer, uint32_t n
 qhi *qhi_obtain_set(qho *options, void *context, qhi_buffer_get_size get_size, qhi_int32t_read_buffer_apply_func int32t_apply_func)
 {
 	uint32_t    nr_of_elements, elements_read = 0;
-	uint32_t    bytes_read;
 	int32_t     key_buffer[1024];
 	qhi        *tmp;
 	int32_t     buffer_size;
@@ -798,13 +800,13 @@ static uint32_t hash_add_value(qhi *hash, qhv value)
  * Parameters:
  * - hash: A valid quickhash
  * - list: The list that corresponds to the hashed version of the key
- * - key: The entry's key
+ * - key: The entry's key index
  * - value: The value belonging to the entry
  *
  * Returns:
  * - 1 if the element was added or 0 if the element couldn't be added
  */
-static int qhi_add_entry_to_list(qhi *hash, qhl *list, qhv key, uint32_t value_idx)
+static int qhi_add_entry_to_list(qhi *hash, qhl *list, uint32_t key_idx, uint32_t value_idx)
 {
 	qhb *bucket;
 
@@ -813,7 +815,7 @@ static int qhi_add_entry_to_list(qhi *hash, qhl *list, qhv key, uint32_t value_i
 	if (!bucket) {
 		return 0;
 	}
-	set_key(hash, bucket, key);
+	bucket->key = key_idx;
 	bucket->next = NULL;
 	bucket->value_idx = value_idx;
 
@@ -931,7 +933,7 @@ int qhi_hash_add(qhi *hash, qhv key, qhv value)
 		return 0;
 	}
 
-	return qhi_add_entry_to_list(hash, list, key, hash_add_value(hash, value));
+	return qhi_add_entry_to_list(hash, list, hash_add_key(hash, key), hash_add_value(hash, value));
 }
 
 /**
@@ -959,7 +961,7 @@ int qhi_hash_add_with_index(qhi *hash, qhv key, uint32_t value_index)
 		return 0;
 	}
 
-	return qhi_add_entry_to_list(hash, list, key, value_index);
+	return qhi_add_entry_to_list(hash, list, hash_add_key(hash, key), value_index);
 }
 
 /**
@@ -1022,7 +1024,7 @@ int qhi_hash_set(qhi *hash, qhv key, qhv value)
 		return qhi_update_value_in_bucket(hash, bucket, value);
 	} else {
 		// add
-		return qhi_add_entry_to_list(hash, list, key, hash_add_value(hash, value)) ? 2 : 0;
+		return qhi_add_entry_to_list(hash, list, hash_add_key(hash, key), hash_add_value(hash, value)) ? 2 : 0;
 	}
 	return 0;
 }
@@ -1127,19 +1129,31 @@ qhi *qhi_obtain_hash(qho *options, void *context, qhi_int32t_read_buffer_apply_f
 	printf("Picking size: %u\n", options->size);
 #endif
 
-	// create the hash
-	tmp = qhi_create(options);
-	if (!tmp) {
-		return NULL;
-	}
-
 	// read the keys if we have QHI_KEY_TYPE_STRING
-	if (tmp->key_type == QHI_KEY_TYPE_STRING) {
-		int32t_apply_func(context, key_buffer, 1);
+	if (options->key_type == QHI_KEY_TYPE_STRING) {
+		int32t_apply_func(context, key_buffer, 2);
+		options->size = key_buffer[1];
+#if DEBUG
+		printf("Loading size: %u\n", options->size);
+#endif
+
+		// create the hash
+		tmp = qhi_create(options);
+		if (!tmp) {
+			return NULL;
+		}
+
+		// load the keys
 		tmp->keys.values = tmp->options->memory.malloc(key_buffer[0] + 1);
 		tmp->keys.size = tmp->keys.count = key_buffer[0];
 		chars_apply_func(context, tmp->keys.values, key_buffer[0]);
 		tmp->keys.values[key_buffer[0]] = '\0';
+	} else {
+		// create the hash
+		tmp = qhi_create(options);
+		if (!tmp) {
+			return NULL;
+		}
 	}
 
 	// read the strings if we have QHI_VALUE_TYPE_STRING
@@ -1165,7 +1179,7 @@ qhi *qhi_obtain_hash(qho *options, void *context, qhi_int32t_read_buffer_apply_f
 			do {
 				int32t_apply_func(context, key_buffer, 2);
 				list = &(tmp->bucket_list[idx]);
-				qhi_add_entry_to_list(tmp, list, (qhv) (tmp->keys.values + key_buffer[0]), hash_add_value(tmp, (qhv) key_buffer[1]));
+				qhi_add_entry_to_list(tmp, list, key_buffer[0], hash_add_value(tmp, (qhv) key_buffer[1]));
 				elements_read++;
 				list_elements--;
 			} while (list_elements);
@@ -1251,7 +1265,8 @@ int qhi_process_hash(qhi *hash, void *context, qhi_int32t_write_buffer_apply_fun
 	// add string keys
 	if (hash->key_type == QHI_KEY_TYPE_STRING) {
 		key_buffer[0] = hash->keys.count;
-		if (!int32t_apply_func(context, key_buffer, 1)) {
+		key_buffer[1] = hash->bucket_count;
+		if (!int32t_apply_func(context, key_buffer, 2)) {
 			return 0;
 		}
 		if (!chars_apply_func(context, hash->keys.values, hash->keys.count)) {
