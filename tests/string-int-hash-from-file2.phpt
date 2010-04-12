@@ -7,9 +7,9 @@ xdebug.default_enable=0
 $found = 0;
 $file = dirname( __FILE__ ) . "/tags.hash.string";
 $hash = QuickHashStringIntHash::loadFromFile( $file );
-for ( $i = 1; $i <= 200000; $i++ )
+foreach ( $hash as $key => $dummy )
 {
-	$found += $hash->exists( $i );
+	$found += $hash->exists( $key );
 }
 printf( "Found: %d\n", $found );
 echo memory_get_usage(), "\n";
@@ -19,9 +19,9 @@ echo memory_get_usage(), "\n";
 
 $found = 0;
 $hash = QuickHashStringIntHash::loadFromFile( $file, 0, QuickHashStringIntHash::DO_NOT_USE_ZEND_ALLOC );
-for ( $i = 1; $i <= 200000; $i++ )
+foreach ( $hash as $key => $dummy )
 {
-	$found += $hash->exists( $i );
+	$found += $hash->exists( $key );
 }
 printf( "Found: %d\n", $found );
 echo memory_get_usage(), "\n";
