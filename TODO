@@ -1,9 +1,7 @@
 Phase III:
 
-- Add the QuickHashStringHash class' iterator.
-- Add tests to QuickHashStringHash for file/string loading/saving parts of the
-  code.
 - Document QuickHashStringHash.
 - Document the file formats.
 - Check whether all string/stream validators are accurate (check the inthash
   string validator).
+- Fix test cases with PHP 5.2.4.
