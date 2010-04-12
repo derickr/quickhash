@@ -11,17 +11,17 @@ echo "Normal:\n";
 $hash = QuickHashStringIntHash::loadFromFile( $file );
 foreach( $hash as $key => $value )
 {
-	printf( "%4d-%s\n", $key, $value );
+	printf( "%s-%s\n", $key, $value );
 }
 echo "\n\n";
 
 echo "Add:\n";
 foreach( $hash as $key => $value )
 {
-	printf( "%4d-%s\n", $key, $value );
-	if ( $key == 17 )
+	printf( "%s-%s\n", $key, $value );
+	if ( $key == '12uf' )
 	{
-		var_dump( $hash->add( 41, 1681 ) );
+		var_dump( $hash->add( 'fourty one', 1681 ) );
 	}
 }
 echo "\n\n";
@@ -29,10 +29,10 @@ echo "\n\n";
 echo "Delete:\n";
 foreach( $hash as $key => $value )
 {
-	printf( "%4d-%s\n", $key, $value );
-	if ( $key == 5 )
+	printf( "%s-%s\n", $key, $value );
+	if ( $key == '23ca' )
 	{
-		var_dump( $hash->delete( 23 ) );
+		var_dump( $hash->delete( '1o8m' ) );
 	}
 }
 echo "\n\n";
@@ -40,80 +40,156 @@ echo "\n\n";
 echo "Set:\n";
 foreach( $hash as $key => $value )
 {
-	printf( "%4d-%s\n", $key, $value );
-	if ( $key == 23 )
+	printf( "%s-%s\n", $key, $value );
+	if ( $key == '24ll' )
 	{
-		var_dump( $hash->set( 1, 9999 ) );
+		var_dump( $hash->set( '20to', 9999 ) );
 	}
 }
 echo "\n\n";
 ?>
 --EXPECTF--
 Normal:
-  17-two hundred eighty nine.
-  11-hundred twenty.
-  13-one hundred ninety six.
-  29-eight hundred fourty one.
-   5-twenty five.
-  27-seven hundred twenty nine.
-  23-five hundred twenty nine.
-   1-one.
-  19-three hunderd sixty one.
-   7-fourty nine.
-   2-four.
-  31-nine hundred sixty one.
-   3-nine.
+12uf-50343
+1lq0-74808
+24ll-99273
+1cwv-63391
+1vsg-87856
+1ffh-66653
+1hy3-69915
+20to-94380
+143q-51974
+23ca-97642
+1bnk-61760
+1x1r-89487
+222z-96011
+1t9u-84594
+1mzb-76439
+15d1-53605
+1s0j-82963
+1yb2-91118
+1phx-79701
+11l4-48712
+1e66-65022
+1o8m-78070
+1uj5-86225
+17vn-56867
+1qr8-81332
+1ae9-60129
+1kgp-73177
+16mc-55236
+194y-58498
+1j7e-71546
+1gos-68284
+1zkd-92749
 
 
 Add:
-  17-two hundred eighty nine.
+12uf-50343
 bool(true)
-  11-hundred twenty.
-  13-one hundred ninety six.
-  29-eight hundred fourty one.
-   5-twenty five.
-  27-seven hundred twenty nine.
-  23-five hundred twenty nine.
-   1-one.
-  19-three hunderd sixty one.
-  41-1681
-   7-fourty nine.
-   2-four.
-  31-nine hundred sixty one.
-   3-nine.
+1lq0-74808
+24ll-99273
+1cwv-63391
+1vsg-87856
+1ffh-66653
+1hy3-69915
+20to-94380
+143q-51974
+23ca-97642
+1bnk-61760
+1x1r-89487
+222z-96011
+1t9u-84594
+1mzb-76439
+15d1-53605
+1s0j-82963
+1yb2-91118
+1phx-79701
+11l4-48712
+1e66-65022
+1o8m-78070
+1uj5-86225
+fourty one-1681
+17vn-56867
+1qr8-81332
+1ae9-60129
+1kgp-73177
+16mc-55236
+194y-58498
+1j7e-71546
+1gos-68284
+1zkd-92749
 
 
 Delete:
-  17-two hundred eighty nine.
-  11-hundred twenty.
-  13-one hundred ninety six.
-  29-eight hundred fourty one.
-   5-twenty five.
+12uf-50343
+1lq0-74808
+24ll-99273
+1cwv-63391
+1vsg-87856
+1ffh-66653
+1hy3-69915
+20to-94380
+143q-51974
+23ca-97642
 bool(false)
-  27-seven hundred twenty nine.
-  23-five hundred twenty nine.
-   1-one.
-  19-three hunderd sixty one.
-  41-1681
-   7-fourty nine.
-   2-four.
-  31-nine hundred sixty one.
-   3-nine.
+1bnk-61760
+1x1r-89487
+222z-96011
+1t9u-84594
+1mzb-76439
+15d1-53605
+1s0j-82963
+1yb2-91118
+1phx-79701
+11l4-48712
+1e66-65022
+1o8m-78070
+1uj5-86225
+fourty one-1681
+17vn-56867
+1qr8-81332
+1ae9-60129
+1kgp-73177
+16mc-55236
+194y-58498
+1j7e-71546
+1gos-68284
+1zkd-92749
 
 
 Set:
-  17-two hundred eighty nine.
-  11-hundred twenty.
-  13-one hundred ninety six.
-  29-eight hundred fourty one.
-   5-twenty five.
-  27-seven hundred twenty nine.
-  23-five hundred twenty nine.
+12uf-50343
+1lq0-74808
+24ll-99273
 int(1)
-   1-9999
-  19-three hunderd sixty one.
-  41-1681
-   7-fourty nine.
-   2-four.
-  31-nine hundred sixty one.
-   3-nine.
+1cwv-63391
+1vsg-87856
+1ffh-66653
+1hy3-69915
+20to-9999
+143q-51974
+23ca-97642
+1bnk-61760
+1x1r-89487
+222z-96011
+1t9u-84594
+1mzb-76439
+15d1-53605
+1s0j-82963
+1yb2-91118
+1phx-79701
+11l4-48712
+1e66-65022
+1o8m-78070
+1uj5-86225
+fourty one-1681
+17vn-56867
+1qr8-81332
+1ae9-60129
+1kgp-73177
+16mc-55236
+194y-58498
+1j7e-71546
+1gos-68284
+1zkd-92749

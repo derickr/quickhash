@@ -6,64 +6,43 @@ xdebug.default_enable=0
 <?php
 $found = 0; $value = 0;
 $file = dirname( __FILE__ ) . "/simple.hash.string";
-$hash = QuickHashStringIntHash::loadFromFile( $file, QuickHashStringIntHash::HASHER_NO_HASH );
-foreach( $hash as $key => $value )
-{
-	printf( "%s-%4d\n", $key, $value );
-}
-echo "\n";
-$hash = QuickHashStringIntHash::loadFromFile( $file, QuickHashStringIntHash::HASHER_JENKINS1 );
-foreach( $hash as $key => $value )
-{
-	printf( "%s-%4d\n", $key, $value );
-}
-echo "\n";
-$hash = QuickHashStringIntHash::loadFromFile( $file, QuickHashStringIntHash::HASHER_JENKINS2 );
+$hash = QuickHashStringIntHash::loadFromFile( $file );
 foreach( $hash as $key => $value )
 {
 	printf( "%s-%4d\n", $key, $value );
 }
 echo "\n";
 ?>
---EXPECTF--
-  17-two hundred eighty nine.
-  23-five hundred twenty nine.
-  13-one hundred ninety six.
-   2-four.
-  31-nine hundred sixty one.
-   5-twenty five.
-  27-seven hundred twenty nine.
-   1-one.
-   3-nine.
-  11-hundred twenty.
-  29-eight hundred fourty one.
-  19-three hunderd sixty one.
-   7-fourty nine.
-
-  23-five hundred twenty nine.
-  13-one hundred ninety six.
-   5-twenty five.
-  27-seven hundred twenty nine.
-   1-one.
-  11-hundred twenty.
-  29-eight hundred fourty one.
-   7-fourty nine.
-  17-two hundred eighty nine.
-   2-four.
-  31-nine hundred sixty one.
-   3-nine.
-  19-three hunderd sixty one.
-
-  13-one hundred ninety six.
-   1-one.
-   2-four.
-  19-three hunderd sixty one.
-  23-five hundred twenty nine.
-   5-twenty five.
-  27-seven hundred twenty nine.
-  11-hundred twenty.
-  29-eight hundred fourty one.
-   7-fourty nine.
-  17-two hundred eighty nine.
-  31-nine hundred sixty one.
-   3-nine.
+--EXPECT--
+12uf-50343
+1lq0-74808
+24ll-99273
+1cwv-63391
+1vsg-87856
+1ffh-66653
+1hy3-69915
+20to-94380
+143q-51974
+23ca-97642
+1bnk-61760
+1x1r-89487
+222z-96011
+1t9u-84594
+1mzb-76439
+15d1-53605
+1s0j-82963
+1yb2-91118
+1phx-79701
+11l4-48712
+1e66-65022
+1o8m-78070
+1uj5-86225
+17vn-56867
+1qr8-81332
+1ae9-60129
+1kgp-73177
+16mc-55236
+194y-58498
+1j7e-71546
+1gos-68284
+1zkd-92749

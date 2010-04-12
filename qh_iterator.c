@@ -86,10 +86,17 @@ static void qh_intset_it_current_data(zend_object_iterator *iter, zval ***data T
 
 static int qh_intset_it_current_key(zend_object_iterator *iter, char **str_key, uint *str_key_len, ulong *int_key TSRMLS_DC)
 {
-	qh_intset_it   *iterator = (qh_intset_it *)iter;
+	qh_intset_it *iterator = (qh_intset_it *)iter;
+	qhi          *hash = (qhi* ) iterator->intern.data;
 
-	*int_key = iterator->iterator.key;
-	return HASH_KEY_IS_LONG;
+	if (hash->key_type == QHI_KEY_TYPE_STRING) {
+		*str_key = estrndup(hash->keys.values + iterator->iterator.key, strlen(hash->keys.values + iterator->iterator.key));
+		*str_key_len = strlen(*str_key) + 1;
+		return HASH_KEY_IS_STRING;
+	} else {
+		*int_key = iterator->iterator.key;
+		return HASH_KEY_IS_LONG;
+	}
 }
 
 static void qh_intset_it_move_forward(zend_object_iterator *iter TSRMLS_DC)
