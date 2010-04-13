@@ -283,6 +283,10 @@ PHP_METHOD(QuickHashIntSet, loadFromFile)
 		return;
 	}
 
+	if (!filename_len) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Filename cannot be empty");
+	}
+
 	qh_instantiate(qh_ce_intset, return_value TSRMLS_CC);
 	stream = php_stream_open_wrapper(filename, "r", IGNORE_PATH | REPORT_ERRORS, NULL);
 	if (stream) {
@@ -316,6 +320,10 @@ PHP_METHOD(QuickHashIntSet, saveToFile)
 	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Os", &object, qh_ce_intset, &filename, &filename_len) == FAILURE) {
 		return;
+	}
+
+	if (!filename_len) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Filename cannot be empty");
 	}
 
 	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);

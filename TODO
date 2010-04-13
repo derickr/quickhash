@@ -4,4 +4,3 @@ Phase III:
 - Document the file formats.
 - Check whether all string/stream validators are accurate (check the inthash
   string validator).
-- Fix test cases with PHP 5.2.4.

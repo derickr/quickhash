@@ -79,4 +79,4 @@ Directory:
 QuickHashStringIntHash::saveToFile(%stests): failed to open stream: Is a directory
 
 URL: 
-QuickHashStringIntHash::saveToFile(http://derickrethans.nl/): failed to open stream: HTTP wrapper does not support writeable connections
+QuickHashStringIntHash::saveToFile(http://derickrethans.nl/): failed to open stream: HTTP wrapper does not support writeable connection%s
