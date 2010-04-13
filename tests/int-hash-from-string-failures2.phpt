@@ -4,11 +4,11 @@ Test for string length failure conditions for loadFromString.
 xdebug.default_enable=0
 --FILE--
 <?php
-for ( $i = 0; $i < 16; $i++ )
+for ( $i = 0; $i <= 20; $i++ )
 {
 	try
 	{
-		$contents = "QH\x11\x00\x08\x00\x00\x00" . str_repeat( chr(1), $i );
+		$contents = "QH\x11\x00\x02\x00\x00\x00" . str_repeat( chr(1), $i);
 		$hash = QuickHashIntHash::loadFromString( $contents );
 		echo "+";
 	}
@@ -19,4 +19,4 @@ for ( $i = 0; $i < 16; $i++ )
 }
 ?>
 --EXPECT--
-+-------+-------
+----------------+----

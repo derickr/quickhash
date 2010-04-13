@@ -361,18 +361,19 @@ PHP_METHOD(QuickHashIntHash, saveToFile)
 /* Validates whether the string is in the correct format */
 static int qh_inthash_string_validator(char *string, long length, uint32_t *nr_of_elements, uint32_t *value_array_length)
 {
-	// verify signature
+	uint32_t *int_buffer = (uint32_t*) string;
+	uint32_t  hash_size;
+
 	if (string[0] != 'Q' || string[1] != 'H' || string[2] != 0x11) {
 		return 0;
 	}
+	hash_size = int_buffer[1];
 
-	length -= 2 * sizeof(int32_t);
-
-	// if the length is not an increment of req_count * sizeof(int32_t), abort
-	if (length % (2 * sizeof(int32_t)) != 0) {
+	// if the length is not 8 + size * 8, abort
+	if (length != ((2 * sizeof(int32_t)) + (2 * sizeof(int32_t) * hash_size))) {
 		return 0;
 	}
-	*nr_of_elements = length / sizeof(int32_t);
+	*nr_of_elements = hash_size;
 
 	return 1;
 }
