@@ -16,11 +16,38 @@
   </methodsynopsis>
   <para>
    This factory method creates a new hash from a definition file on disk. The
-   file format consists of 32 bit signed integers packed together in the
-   Endianness that the system that the code runs on uses. For each element
-   there are two 32 bit signed integers stored. The first of each element is
-   the key, and the second is the value belonging to the key.
+   file format consists of a signature 'QH\0x11\0', the number of elements as
+   a 32 bit signed integer in system Endianness, followed by 32 bit signed
+   integers packed together in the Endianness that the system that the code
+   runs on uses. For each hash element there are two 32 bit signed integers
+   stored.  The first of each element is the key, and the second is the value
+   belonging to the key. An example could be:
   </para>
+  <para>
+   <example><![CDATA[00000000  51 48 11 00 02 00 00 00  01 00 00 00 01 00 00 00  |QH..............|
+00000010  03 00 00 00 09 00 00 00                           |........|
+00000018
+]]></example>
+  </para>
+  <para>
+   <example><![CDATA[
+header signature ('QH'; key type: 1; value type: 1; filler: \0x00)
+00000000  51 48 11 00
+
+number of elements:
+00000004  02 00 00 00
+
+data string:
+00000000  01 00 00 00 01 00 00 00  03 00 00 00 09 00 00 00
+
+key/value 1 (key = 1, value = 1)
+01 00 00 00  01 00 00 00
+
+key/value 2 (key = 3, value = 9)
+03 00 00 00  09 00 00 00
+]]></example>
+  </para>
+
  </refsect1>
 
  <refsect1 role="parameters">

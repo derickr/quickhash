@@ -16,36 +16,43 @@
   </methodsynopsis>
   <para>
    This factory method creates a new hash from a definition file on disk. The
-   file format is as follows: an signed 32 bit integer containing -2 (fe ff ff
-   ff), an unsigned 32 bit integer containing the number of element data to
-   follow in characters. This element data contains all the strings. After the
-   header and the strings, the elements follow in pairs of two unsigned 32 bit
-   integers where the first one is the key, and the second one the index in
-   the the element data string. An example could be:
+   file format consists of a signature 'QH\0x12\0', the number of elements as
+   a 32 bit signed integer in system Endianness, an unsigned 32 bit integer
+   containing the number of element data to follow in characters. This element
+   data contains all the strings. After the header and the strings, the
+   elements follow in pairs of two unsigned 32 bit integers where the first
+   one is the key, and the second one the index in the the element data
+   string. An example could be:
   </para>
   <para>
-   <example><![CDATA[00000000  fe ff ff ff 17 00 00 00  66 6f 75 72 74 79 20 74  |........fourty t|
-00000010  68 72 65 65 00 66 69 66  74 79 20 74 77 6f 00 04  |hree.fifty two..|
-00000020  00 00 00 00 00 00 00 04  00 00 00 0d 00 00 00     |...............|
-0000002f]]></example>
+   <example><![CDATA[00000000  51 48 12 00 02 00 00 00  09 00 00 00 4f 4e 45 00  |QH..........ONE.|
+00000010  4e 49 4e 45 00 01 00 00  00 00 00 00 00 03 00 00  |NINE............|
+00000020  00 04 00 00 00                                    |.....|
+00000025
+]]></example>
   </para>
   <para>
    <example><![CDATA[
-header signature:
-00000000  fe ff ff ff
+header signature ('QH'; key type: 1; value type: 2; filler: \0x00)
+00000000  51 48 12 00
 
-data string length:
-00000004  17 00 00 00
+number of elements:
+00000004  02 00 00 00
+
+length of string values (9 characters):
+00000008  09 00 00 00
+
+string values:
+0000000C  4f 4e 45 00 4e 49 4e 45  00
 
 data string:
-00000000  66 6f 75 72 74 79 20 74  68 72 65 65 00 66 69 66
-00000010  74 79 20 74 77 6f 00
+00000015  01 00 00 00 00 00 00 00  03 00 00 00 04 00 00 00
 
-key/value 1 (key = 4, index = 0 ("fourty three")):
-04 00 00 00  00 00 00 00
+key/value 1 (key = 1, string index = 0 ("ONE")):
+01 00 00 00  00 00 00 00
 
-key/value 2 (key = 5, index = 0d ("fifty two")):
-05 00 00 00  0d 00 00 00
+key/value 2 (key = 3, string index = 4 ("NINE")):
+03 00 00 00  04 00 00 00
 ]]></example>
   </para>
  </refsect1>

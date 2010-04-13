@@ -1,6 +1,4 @@
 Phase III:
 
-- Document QuickHashStringHash.
-- Document the file formats.
 - Check whether all string/stream validators are accurate (check the inthash
   string validator).
