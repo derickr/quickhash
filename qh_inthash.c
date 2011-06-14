@@ -146,7 +146,11 @@ static inline zend_object_value qh_object_new_inthash_ex(zend_class_entry *class
 	}
 
 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
+#if PHP_MINOR_VERSION > 3
+	object_properties_init(&intern->std, class_type);
+#else
 	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
+#endif
 	
 	retval.handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t) qh_object_free_storage_inthash, NULL TSRMLS_CC);
 	retval.handlers = &qh_object_handlers_inthash;
