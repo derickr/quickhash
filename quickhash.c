@@ -35,7 +35,7 @@
 #include "qh_intstringhash.h"
 #include "qh_stringinthash.h"
 
-function_entry quickhash_functions[] = {
+zend_function_entry quickhash_functions[] = {
 	{NULL, NULL, NULL}
 };
 
