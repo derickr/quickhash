@@ -1,66 +1,73 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<package>
-  <name>quickhash</name>
-  <summary>Provides a set of specific strongly-typed classes for sets and hashing</summary>
-  <status>beta</status>
-  <maintainers>
-    <maintainer>
-      <user>derick</user>
-      <name>Derick Rethans</name>
-      <email>derick@php.net</email>
-      <role>lead</role>
-    </maintainer>
-  </maintainers>
-  <description>
-This extension contains four classes for managing: an integer set, an integer
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.9.3" version="2.0"
+xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+ <name>quickhash</name>
+ <channel>pecl.php.net</channel>
+ <summary>Provides a set of specific strongly-typed classes for sets and hashing</summary>
+ <description>This extension contains four classes for managing: an integer set, an integer
 hash, integer to string hash and a string to integer hash. The main features
 are low memory consumption and fast serialization and deserialization of
 the sets and hashes.
-  </description>
-  <license>BSD style</license>
-  <release>
-   <state>beta</state>
-   <version>0.1.0</version>
-   <date>2011-06-16</date>
-   <notes>
-   </notes>
-   <filelist>
-    <file role="src"  name="php_quickhash.h"/>
-    <file role="src"  name="qh_inthash.c"/>
-    <file role="src"  name="qh_inthash.h"/>
-    <file role="src"  name="qh_intset.c"/>
-    <file role="src"  name="qh_intset.h"/>
-    <file role="src"  name="qh_intstringhash.c"/>
-    <file role="src"  name="qh_intstringhash.h"/>
-    <file role="src"  name="qh_iterator.c"/>
-    <file role="src"  name="qh_iterator.h"/>
-    <file role="src"  name="qh_stringinthash.c"/>
-    <file role="src"  name="qh_stringinthash.h"/>
-    <file role="src"  name="quickhash.c"/>
-    <file role="src"  name="quickhash.h"/>
-
-    <file role="src"  name="Makefile.in"/>
-    <file role="src"  name="Makefile.frag"/>
-    <file role="src"  name="config.m4"/>
-    <file role="src"  name="config.w32"/>
-
-    <file role="doc"  name="CREDITS"/>
-    <file role="doc"  name="LICENSE"/>
-
-    <dir name="lib">
-     <file role="src"  name="hash-algorithms.c"/>
-     <file role="src"  name="hash-algorithms.h"/>
-     <file role="src"  name="iterator.c"/>
-     <file role="src"  name="quickhash.c"/>
-     <file role="src"  name="quickhash.h"/>
-     <file role="src"  name="hash-algorithms.h"/>
-     <file role="src"  name="hash-algorithms.h"/>
-     <file role="src"  name="hash-algorithms.h"/>
-    </dir>
-   </dir>
-  </filelist>
-  <deps>
-   <dep type="php" rel="ge" version="5.2.0" />
-  </deps>
- </release>
+  
+ </description>
+ <lead>
+  <name>Derick Rethans</name>
+  <user>derick</user>
+  <email>derick@php.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2011-06-15</date>
+ <time>15:52:30</time>
+ <version>
+  <release>0.1.0</release>
+  <api>0.1.0</api>
+ </version>
+ <stability>
+  <release>beta</release>
+  <api>beta</api>
+ </stability>
+ <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+ <notes>
+- First release
+ </notes>
+ <contents>
+  <dir name="/">
+   <file name="config.m4" role="src" />
+   <file name="CREDITS" role="doc" />
+   <file name="LICENSE" role="doc" />
+   <file name="php_quickhash.h" role="src" />
+   <file name="qh_inthash.c" role="src" />
+   <file name="qh_inthash.h" role="src" />
+   <file name="qh_intset.c" role="src" />
+   <file name="qh_intset.h" role="src" />
+   <file name="qh_intstringhash.c" role="src" />
+   <file name="qh_intstringhash.h" role="src" />
+   <file name="qh_iterator.c" role="src" />
+   <file name="qh_iterator.h" role="src" />
+   <file name="qh_stringinthash.c" role="src" />
+   <file name="qh_stringinthash.h" role="src" />
+   <file name="quickhash.c" role="src" />
+   <file name="quickhash.h" role="src" />
+   <dir name="hashlib">
+    <file name="hash-algorithms.c" role="src" />
+    <file name="hash-algorithms.h" role="src" />
+    <file name="iterator.c" role="src" />
+    <file name="quickhash.c" role="src" />
+    <file name="quickhash.h" role="src" />
+   </dir> <!-- //lib -->
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.2.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0b1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <providesextension>quickhash</providesextension>
+ <extsrcrelease />
 </package>
