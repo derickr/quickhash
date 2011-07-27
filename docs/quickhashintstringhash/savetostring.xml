@@ -10,19 +10,11 @@
  <refsect1 role="description">
   &reftitle.description;
   <methodsynopsis>
-   <modifier>public</modifier> <type>void</type><methodname>QuickHashIntStringHash::saveToFile</methodname>
+   <modifier>public</modifier> <type>string</type><methodname>QuickHashIntStringHash::saveToStringe</methodname><void/>
   </methodsynopsis>
   <para>
    This method returns a serialized version of the hash in the same format that
    loadFromString() can read.
-  </para>
- </refsect1>
-
- <refsect1 role="parameters">
-  &reftitle.parameters;
-  <para>
-   <variablelist>
-   </variablelist>
   </para>
  </refsect1>
 

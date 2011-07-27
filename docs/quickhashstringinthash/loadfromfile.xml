@@ -30,15 +30,19 @@
    example could be:
   </para>
   <para>
-   <example><![CDATA[00000000  51 48 21 00 02 00 00 00  09 00 00 00 40 00 00 00  |QH!.........@...|
+   <example>
+    <title>QuickHash StringIntHash file format</title>
+    <screen><![CDATA[<![CDATA[00000000  51 48 21 00 02 00 00 00  09 00 00 00 40 00 00 00  |QH!.........@...|
 00000010  4f 4e 45 00 4e 49 4e 45  00 07 00 00 00 01 00 00  |ONE.NINE........|
 00000020  00 00 00 00 00 01 00 00  00 2f 00 00 00 01 00 00  |........./......|
 00000030  00 04 00 00 00 03 00 00  00                       |.........|
-00000039]]></example>
+00000039]]></screen>
+   </example>
   </para>
   <para>
-   <example><![CDATA[
-header signature ('QH'; key type: 2; value type: 1; filler: \0x00)
+   <example>
+    <title>QuickHash IntHash file format</title>
+    <screen><![CDATA[header signature ('QH'; key type: 2; value type: 1; filler: \0x00)
 00000000  51 48 21 00
 
 number of elements:
@@ -66,7 +70,8 @@ bucket lists:
     elements (key index: 4 ('NINE'), value = 3):
     04 00 00 00 03 00 00 00
 
-]]></example>
+]]></screen>
+   </example>
   </para>
  </refsect1>
 

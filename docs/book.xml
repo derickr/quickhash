@@ -16,8 +16,11 @@
  &reference.quickhash.setup;
  &reference.quickhash.constants;
  &reference.quickhash.examples;
- &reference.quickhash.reference;
 
+ &reference.quickhash.quickhashintset;
+ &reference.quickhash.quickhashinthash;
+ &reference.quickhash.quickhashstringinthash;
+ &reference.quickhash.quickhashintstringhash;
 </book>
 
 <!-- Keep this comment at the end of the file

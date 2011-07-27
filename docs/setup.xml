@@ -13,19 +13,15 @@
 
  <section xml:id="quickhash.installation">
   &reftitle.install;
-  &no.install;
+  <para>
+   &pecl.info;
+   <link xlink:href="&url.pecl.package;quickhash">&url.pecl.package;quickhash</link>
+  </para>
  </section>
 
  <section xml:id="quickhash.configuration">
   &reftitle.runtime;
   &no.config;
- </section>
-
- <section xml:id="quickhash.resources">
-  &reftitle.resources;
-  <para>
-
-  </para>
  </section>
 
 </chapter>

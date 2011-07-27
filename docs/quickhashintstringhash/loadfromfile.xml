@@ -25,14 +25,19 @@
    string. An example could be:
   </para>
   <para>
-   <example><![CDATA[00000000  51 48 12 00 02 00 00 00  09 00 00 00 4f 4e 45 00  |QH..........ONE.|
+   <example>
+    <title>QuickHash IntString file format</title>
+    <screen><![CDATA[00000000  51 48 12 00 02 00 00 00  09 00 00 00 4f 4e 45 00  |QH..........ONE.|
 00000010  4e 49 4e 45 00 01 00 00  00 00 00 00 00 03 00 00  |NINE............|
 00000020  00 04 00 00 00                                    |.....|
 00000025
-]]></example>
+]]></screen>
+   </example>
   </para>
   <para>
-   <example><![CDATA[
+   <example>
+    <title>QuickHash IntString file format</title>
+    <screen><![CDATA[
 header signature ('QH'; key type: 1; value type: 2; filler: \0x00)
 00000000  51 48 12 00
 
@@ -53,7 +58,8 @@ key/value 1 (key = 1, string index = 0 ("ONE")):
 
 key/value 2 (key = 3, string index = 4 ("NINE")):
 03 00 00 00  04 00 00 00
-]]></example>
+]]></screen>
+   </example>
   </para>
  </refsect1>
 
