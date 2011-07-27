@@ -27,7 +27,7 @@ the sets and hashes.
   <release>beta</release>
   <api>beta</api>
  </stability>
- <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+ <license uri="http://www.php.net/license/3_01.txt">The PHP License</license>
  <notes>
 - First release
  </notes>
