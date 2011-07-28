@@ -17,8 +17,8 @@ the sets and hashes.
   <email>derick@php.net</email>
   <active>yes</active>
  </lead>
- <date>2011-07-21</date>
- <time>16:55:30</time>
+ <date>2011-07-28</date>
+ <time>17:55:30</time>
  <version>
   <release>0.1.0</release>
   <api>0.1.0</api>
@@ -49,7 +49,7 @@ the sets and hashes.
    <file name="qh_stringinthash.h" role="src" />
    <file name="quickhash.c" role="src" />
    <file name="quickhash.h" role="src" />
-   <dir name="hashlib">
+   <dir name="lib">
     <file name="hash-algorithms.c" role="src" />
     <file name="hash-algorithms.h" role="src" />
     <file name="iterator.c" role="src" />
