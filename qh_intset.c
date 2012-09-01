@@ -23,6 +23,7 @@
 #include "qh_intset.h"
 #include "qh_iterator.h"
 #include "quickhash.h"
+#include "zend_interfaces.h"
 
 zend_class_entry *qh_ce_intset;
 
@@ -74,6 +75,11 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_save_to_string, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_array_access_set, 0, 0, 2)
+	ZEND_ARG_INFO(0, key)
+	ZEND_ARG_INFO(0, value)
+ZEND_END_ARG_INFO()
+
 /* Class methods definition */
 zend_function_entry qh_funcs_intset[] = {
 	PHP_ME(QuickHashIntSet, __construct,    arginfo_qh_intset_construct,        ZEND_ACC_CTOR|ZEND_ACC_PUBLIC)
@@ -85,6 +91,12 @@ zend_function_entry qh_funcs_intset[] = {
 	PHP_ME(QuickHashIntSet, saveToFile,     arginfo_qh_intset_save_to_file,     ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, loadFromString, arginfo_qh_intset_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, saveToString,   arginfo_qh_intset_save_to_string,   ZEND_ACC_PUBLIC)
+
+	/* ArrayAccess methods */
+	PHP_MALIAS(QuickHashIntSet, offsetExists, exists, arginfo_qh_intset_exists, ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntSet, offsetGet,    exists, arginfo_qh_intset_exists, ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntSet, offsetSet,    add,    arginfo_qh_intset_array_access_set, ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntSet, offsetUnset,  delete, arginfo_qh_intset_delete, ZEND_ACC_PUBLIC)
 	{NULL, NULL, NULL}
 };
 
@@ -102,6 +114,8 @@ void qh_register_class_intset(TSRMLS_D)
 	memcpy(&qh_object_handlers_intset, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
 	qh_add_constants(qh_ce_intset TSRMLS_CC);
+
+	zend_class_implements(qh_ce_intset TSRMLS_CC, 1, zend_ce_arrayaccess);
 }
 
 static inline zend_object_value qh_object_new_intset_ex(zend_class_entry *class_type, php_qh_intset_obj **ptr TSRMLS_DC)
@@ -204,8 +218,9 @@ PHP_METHOD(QuickHashIntSet, add)
 	zval              *object;
 	php_qh_intset_obj *intset_obj;
 	long               key;
+	long               dummy; /* Dummy long so that it can work with ArrayAccess. */
 
-	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_intset, &key) == FAILURE) {
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol|l", &object, qh_ce_intset, &key, &dummy) == FAILURE) {
 		RETURN_FALSE;
 	}
 	intset_obj = (php_qh_intset_obj *) zend_object_store_get_object(object TSRMLS_CC);

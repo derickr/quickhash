@@ -107,10 +107,8 @@ zend_function_entry qh_funcs_inthash[] = {
 	PHP_ME(QuickHashIntHash, saveToString,   arginfo_qh_inthash_save_to_string,   ZEND_ACC_PUBLIC)
 
 	/* ArrayAccess methods */
-	PHP_MALIAS(QuickHashIntSet,  offsetExists, exists, arginfo_qh_inthash_exists, ZEND_ACC_PUBLIC)
 	PHP_MALIAS(QuickHashIntHash, offsetGet,    get,    arginfo_qh_inthash_get,    ZEND_ACC_PUBLIC)
 	PHP_MALIAS(QuickHashIntHash, offsetSet,    set,    arginfo_qh_inthash_set,    ZEND_ACC_PUBLIC)
-	PHP_MALIAS(QuickHashIntSet,  offsetUnset,  delete, arginfo_qh_inthash_delete, ZEND_ACC_PUBLIC)
 
 	{NULL, NULL, NULL}
 };
