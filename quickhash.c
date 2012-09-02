@@ -52,7 +52,7 @@ zend_module_entry quickhash_module_entry = {
 	PHP_RSHUTDOWN(quickhash),
 	PHP_MINFO(quickhash),
 #if ZEND_MODULE_API_NO >= 20010901
-	"0.0.1",
+	"1.0.0",
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
