@@ -112,7 +112,6 @@ Implemented ArrayAccess for QuickHashIntSet
     <file role="test" name="int-string-hash-create.phpt" />
     <file role="test" name="int-string-hash-delete.phpt" />
     <file role="test" name="int-string-hash-from-file1.phpt" />
-    <file role="test" name="int-string-hash-from-file2.phpt" />
     <file role="test" name="int-string-hash-from-file3.phpt" />
     <file role="test" name="int-string-hash-from-file-failures.phpt" />
     <file role="test" name="int-string-hash-from-string1.phpt" />
@@ -169,6 +168,7 @@ Implemented ArrayAccess for QuickHashIntSet
     <file role="test" name="int-hash-getsize.phpt" />
     <file role="test" name="int-set-from-file2.phpt" />
     <file role="test" name="int-set-getsize.phpt" />
+    <file role="test" name="int-string-hash-from-file2.phpt" />
     <file role="test" name="string-int-hash-from-file2.phpt" />
     <file role="test" name="tags.hash.string" />
     <file role="test" name="tags.string.hash" />
