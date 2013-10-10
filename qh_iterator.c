@@ -84,6 +84,18 @@ static void qh_intset_it_current_data(zend_object_iterator *iter, zval ***data T
 	*data = &iterator->current_value;
 }
 
+#if ZEND_MODULE_API_NO >= 20121212
+static void qh_intset_it_current_key(zend_object_iterator *iter, zval *key TSRMLS_DC)
+{
+	qh_intset_it *iterator = (qh_intset_it *)iter;
+	qhi          *hash = (qhi* ) iterator->intern.data;
+
+	if (hash->key_type == QHI_KEY_TYPE_STRING) {
+		ZVAL_STRING(key, estrndup(hash->keys.values + iterator->iterator.key, strlen(hash->keys.values + iterator->iterator.key)), 0);
+	} else {
+		ZVAL_LONG(key, iterator->iterator.key);
+	}
+#else
 static int qh_intset_it_current_key(zend_object_iterator *iter, char **str_key, uint *str_key_len, ulong *int_key TSRMLS_DC)
 {
 	qh_intset_it *iterator = (qh_intset_it *)iter;
@@ -97,6 +109,7 @@ static int qh_intset_it_current_key(zend_object_iterator *iter, char **str_key, 
 		*int_key = iterator->iterator.key;
 		return HASH_KEY_IS_LONG;
 	}
+#endif
 }
 
 static void qh_intset_it_move_forward(zend_object_iterator *iter TSRMLS_DC)
