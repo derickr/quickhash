@@ -122,7 +122,9 @@ static inline zend_object_value qh_object_new_intset_ex(zend_class_entry *class_
 {
 	php_qh_intset_obj *intern;
 	zend_object_value retval;
+#if PHP_MINOR_VERSION <= 3
 	zval *tmp;
+#endif
 
 	intern = emalloc(sizeof(php_qh_intset_obj));
 	memset(intern, 0, sizeof(php_qh_intset_obj));

@@ -138,7 +138,9 @@ static inline zend_object_value qh_object_new_stringinthash_ex(zend_class_entry 
 {
 	php_qh_stringinthash_obj *intern;
 	zend_object_value retval;
+#if PHP_MINOR_VERSION <= 3
 	zval *tmp;
+#endif
 
 	intern = emalloc(sizeof(php_qh_stringinthash_obj));
 	memset(intern, 0, sizeof(php_qh_stringinthash_obj));
@@ -446,15 +448,13 @@ static int qh_stringinthash_string_validator(char *string, long length, uint32_t
 {
 	uint32_t *int_buffer = (uint32_t*) string;
 	uint32_t  hash_size;
-	uint32_t  string_store_size;
-	uint32_t  bucket_list_size;
 
 	if (string[0] != 'Q' || string[1] != 'H' || string[2] != 0x21) {
 		return 0;
 	}
 	hash_size = int_buffer[1];
-	string_store_size = int_buffer[2];
-	bucket_list_size = int_buffer[3];
+	/* string_store_size = int_buffer[2]; */
+	/* bucket_list_size = int_buffer[3];  */
 
 	*nr_of_elements = hash_size;
 
