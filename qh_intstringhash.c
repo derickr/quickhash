@@ -275,6 +275,7 @@ static int qh_intstringhash_stream_validator(php_stream_statbuf finfo, php_strea
 	char key_buffer[4];
 	uint32_t hash_size;
 	uint32_t string_store_size;
+	TSRMLS_FETCH();
 
 	if (php_stream_read(stream, key_buffer, 4) != 4) {
 		return 0;

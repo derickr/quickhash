@@ -209,6 +209,7 @@ int32_t php_qh_get_size_from_stream(void *context)
 {
 	php_qh_stream_context *ctxt = (php_qh_stream_context*) context;
 	php_stream_statbuf     finfo;
+	TSRMLS_FETCH();
 
 	// obtain the filesize
 	if (php_stream_stat(ctxt->stream, &finfo) == 0) {
