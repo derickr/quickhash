@@ -29,6 +29,8 @@ extern zend_module_entry quickhash_module_entry;
 #include "TSRM.h"
 #endif
 
+#define PHP_QUICKHASH_VERSION "1.0.0"
+
 PHP_MINIT_FUNCTION(quickhash);
 PHP_MSHUTDOWN_FUNCTION(quickhash);
 PHP_RINIT_FUNCTION(quickhash);

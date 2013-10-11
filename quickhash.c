@@ -52,7 +52,7 @@ zend_module_entry quickhash_module_entry = {
 	PHP_RSHUTDOWN(quickhash),
 	PHP_MINFO(quickhash),
 #if ZEND_MODULE_API_NO >= 20010901
-	"1.0.0",
+	PHP_QUICKHASH_VERSION,
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
@@ -347,5 +347,6 @@ PHP_MINFO_FUNCTION(quickhash)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "quickhash support", "enabled");
+	php_info_print_table_row(2, "quickhash version", PHP_QUICKHASH_VERSION);
 	php_info_print_table_end();
 }
