@@ -41,9 +41,7 @@ zend_function_entry quickhash_functions[] = {
 
 
 zend_module_entry quickhash_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
-#endif
 	"quickhash",
 	quickhash_functions,
 	PHP_MINIT(quickhash),
@@ -51,9 +49,7 @@ zend_module_entry quickhash_module_entry = {
 	PHP_RINIT(quickhash),	
 	PHP_RSHUTDOWN(quickhash),
 	PHP_MINFO(quickhash),
-#if ZEND_MODULE_API_NO >= 20010901
 	PHP_QUICKHASH_VERSION,
-#endif
 	STANDARD_MODULE_PROPERTIES
 };
 

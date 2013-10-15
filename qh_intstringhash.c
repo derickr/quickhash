@@ -138,7 +138,7 @@ static inline zend_object_value qh_object_new_intstringhash_ex(zend_class_entry 
 {
 	php_qh_intstringhash_obj *intern;
 	zend_object_value retval;
-#if PHP_MINOR_VERSION <= 3
+#if PHP_VERSION_ID < 50400
 	zval *tmp;
 #endif
 
@@ -149,7 +149,7 @@ static inline zend_object_value qh_object_new_intstringhash_ex(zend_class_entry 
 	}
 
 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
-#if PHP_MINOR_VERSION > 3
+#if PHP_VERSION_ID >= 50400
 	object_properties_init(&intern->std, class_type);
 #else
 	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));

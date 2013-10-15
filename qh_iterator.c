@@ -84,7 +84,7 @@ static void qh_intset_it_current_data(zend_object_iterator *iter, zval ***data T
 	*data = &iterator->current_value;
 }
 
-#if ZEND_MODULE_API_NO >= 20121212
+#if PHP_VERSION_ID >= 50500
 static void qh_intset_it_current_key(zend_object_iterator *iter, zval *key TSRMLS_DC)
 {
 	qh_intset_it *iterator = (qh_intset_it *)iter;

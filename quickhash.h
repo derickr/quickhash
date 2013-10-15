@@ -46,8 +46,8 @@
 #define QH_HASHER_JENKINS2        0x0400
 #define QH_HASHER_MASK            0xFF00
 
-#if PHP_MAJOR_VERSION >= 5 && PHP_MINOR_VERSION >= 3
-/* php_std_error_handling() is deprecated */
+#if PHP_VERSION_ID >= 50300
+/* php_set_error_handling() is deprecated */
 #define QH_SET_ERROR_HANDLING(type, handler)  zend_replace_error_handling(type, handler, NULL TSRMLS_CC)
 #else
 #define QH_SET_ERROR_HANDLING(type, handler)  php_set_error_handling(type, handler  TSRMLS_CC)
