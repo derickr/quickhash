@@ -21,11 +21,11 @@
 #ifndef QH_HASH_ALGORITHMS_H
 #define QH_HASH_ALGORITHMS_H
 
-inline uint32_t qha_jenkins1(uint32_t key);
-inline uint32_t qha_jenkins2(uint32_t key);
-inline uint32_t qha_no_hash(uint32_t key);
+uint32_t qha_jenkins1(uint32_t key);
+uint32_t qha_jenkins2(uint32_t key);
+uint32_t qha_no_hash(uint32_t key);
 
-inline uint32_t qha_djb2(char *key);
-inline uint32_t qha_sdbm(char *key);
+uint32_t qha_djb2(char *key);
+uint32_t qha_sdbm(char *key);
 
 #endif
