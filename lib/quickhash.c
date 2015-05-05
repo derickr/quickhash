@@ -15,13 +15,8 @@
    | Authors: Derick Rethans <derick@derickrethans.nl>                    |
    +----------------------------------------------------------------------+
  */
-#include <malloc.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <string.h>
-
 #include "quickhash.h"
+
 #include "hash-algorithms.h"
 
 /**

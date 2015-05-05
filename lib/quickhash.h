@@ -15,8 +15,24 @@
    | Authors: Derick Rethans <derick@derickrethans.nl>                    |
    +----------------------------------------------------------------------+
  */
-#include <stdint.h>
-#include <stdlib.h>
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
+#if HAVE_STDINT_H
+# include <stdint.h>
+#endif
+#if HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
+#if HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#if HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+#if HAVE_STRING_H
+# include <string.h>
+#endif
 
 #ifndef QUICK_HASH_H
 #define QUICK_HASH_H
