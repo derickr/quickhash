@@ -29,7 +29,7 @@
  * Returns:
  * - the hash key
  */
-inline uint32_t qha_jenkins1(uint32_t key)
+uint32_t qha_jenkins1(uint32_t key)
 {
 	key = (key ^ 61) ^ (key >> 16);
 	key = key + (key << 3);
@@ -50,7 +50,7 @@ inline uint32_t qha_jenkins1(uint32_t key)
  * Returns:
  * - the hash key
  */
-inline uint32_t qha_jenkins2(uint32_t key)
+uint32_t qha_jenkins2(uint32_t key)
 {
 	key = (key+0x7ed55d16) + (key<<12);
 	key = (key^0xc761c23c) ^ (key>>19);
@@ -70,12 +70,12 @@ inline uint32_t qha_jenkins2(uint32_t key)
  * Returns:
  * - the hash key
  */
-inline uint32_t qha_no_hash(uint32_t key)
+uint32_t qha_no_hash(uint32_t key)
 {
 	return key;
 }
 
-inline uint32_t qha_djb2(char *key)
+uint32_t qha_djb2(char *key)
 {
 	uint32_t hash = 5381;
 	int c;
@@ -87,7 +87,7 @@ inline uint32_t qha_djb2(char *key)
 	return hash;
 }
 
-inline uint32_t qha_sdbm(char *key)
+uint32_t qha_sdbm(char *key)
 {
 	uint32_t hash = 0;
 	int c;
