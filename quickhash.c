@@ -41,9 +41,7 @@ zend_function_entry quickhash_functions[] = {
 
 
 zend_module_entry quickhash_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
-#endif
 	"quickhash",
 	quickhash_functions,
 	PHP_MINIT(quickhash),
@@ -51,9 +49,7 @@ zend_module_entry quickhash_module_entry = {
 	PHP_RINIT(quickhash),	
 	PHP_RSHUTDOWN(quickhash),
 	PHP_MINFO(quickhash),
-#if ZEND_MODULE_API_NO >= 20010901
-	"1.0.0",
-#endif
+	PHP_QUICKHASH_VERSION,
 	STANDARD_MODULE_PROPERTIES
 };
 
@@ -209,6 +205,7 @@ int32_t php_qh_get_size_from_stream(void *context)
 {
 	php_qh_stream_context *ctxt = (php_qh_stream_context*) context;
 	php_stream_statbuf     finfo;
+	TSRMLS_FETCH();
 
 	// obtain the filesize
 	if (php_stream_stat(ctxt->stream, &finfo) == 0) {
@@ -346,5 +343,6 @@ PHP_MINFO_FUNCTION(quickhash)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "quickhash support", "enabled");
+	php_info_print_table_row(2, "quickhash version", PHP_QUICKHASH_VERSION);
 	php_info_print_table_end();
 }
