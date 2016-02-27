@@ -48,7 +48,7 @@ zend_module_entry quickhash_module_entry = {
 	quickhash_functions,
 	PHP_MINIT(quickhash),
 	PHP_MSHUTDOWN(quickhash),
-	PHP_RINIT(quickhash),	
+	PHP_RINIT(quickhash),
 	PHP_RSHUTDOWN(quickhash),
 	PHP_MINFO(quickhash),
 #if ZEND_MODULE_API_NO >= 20010901
@@ -75,10 +75,7 @@ static void quickhash_init_globals(zend_quickhash_globals *quickhash_globals)
 
 zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC)
 {
-	Z_TYPE_P(object) = IS_OBJECT;
 	object_init_ex(object, pce);
-	Z_SET_REFCOUNT_P(object, 1);
-	Z_UNSET_ISREF_P(object);
 	return object;
 }
 

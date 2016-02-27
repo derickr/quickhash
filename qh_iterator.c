@@ -30,7 +30,6 @@ typedef struct {
 	zend_object_iterator  intern;
 	zval                 *current_value;
 	qhit                  iterator;
-	zval                 *object_ref; /* Used so that we can protect the object from being destroyed prematurely */
 } qh_intset_it;
 
 /* iterator handlers */
@@ -38,10 +37,11 @@ static void qh_intset_it_dtor(zend_object_iterator *iter TSRMLS_DC)
 {
 	qh_intset_it *iterator = (qh_intset_it *)iter;
 
-	Z_DELREF_P(iterator->object_ref);
 	qhi_iterator_deinit(&iterator->iterator);
-	zval_ptr_dtor(&iterator->current_value);
-	efree(iterator);
+	zval_ptr_dtor(&iterator->intern.data);
+
+	zval_ptr_dtor(iterator->current_value);
+	efree(iterator->current_value);
 }
 
 static int qh_intset_it_has_more(zend_object_iterator *iter TSRMLS_DC)
@@ -59,7 +59,7 @@ static int qh_inthash_it_has_more(zend_object_iterator *iter TSRMLS_DC)
 {
 	qh_intset_it *iterator = (qh_intset_it *)iter;
 	int            ret;
-	qhi           *hash = (qhi* ) iterator->intern.data;
+	qhi           *hash = Z_QH_INTSET_OBJ_P(&iterator->intern.data)->hash;
 
 	ret = qhi_iterator_forward(&iterator->iterator) ? SUCCESS : FAILURE;
 	switch (hash->value_type) {
@@ -70,32 +70,26 @@ static int qh_inthash_it_has_more(zend_object_iterator *iter TSRMLS_DC)
 			if (Z_TYPE_P(iterator->current_value) == IS_STRING) {
 				zval_dtor(iterator->current_value);
 			}
-			ZVAL_STRING(iterator->current_value, iterator->iterator.value.s, 1);
+			ZVAL_STRING(iterator->current_value, iterator->iterator.value.s);
 			break;
 	}
-
 	return ret;
 }
 
-static void qh_intset_it_current_data(zend_object_iterator *iter, zval ***data TSRMLS_DC)
+static zval* qh_intset_it_current_data(zend_object_iterator *iter)
 {
-	qh_intset_it *iterator = (qh_intset_it *)iter;
-
-	*data = &iterator->current_value;
+	return ((qh_intset_it *)iter)->current_value;
 }
 
-static int qh_intset_it_current_key(zend_object_iterator *iter, char **str_key, uint *str_key_len, ulong *int_key TSRMLS_DC)
+static void qh_intset_it_current_key(zend_object_iterator *iter, zval *key)
 {
 	qh_intset_it *iterator = (qh_intset_it *)iter;
-	qhi          *hash = (qhi* ) iterator->intern.data;
+	qhi          *hash = Z_QH_INTSET_OBJ_P(&iterator->intern.data)->hash;
 
 	if (hash->key_type == QHI_KEY_TYPE_STRING) {
-		*str_key = estrndup(hash->keys.values + iterator->iterator.key, strlen(hash->keys.values + iterator->iterator.key));
-		*str_key_len = strlen(*str_key) + 1;
-		return HASH_KEY_IS_STRING;
+        ZVAL_STRINGL(key, hash->keys.values + iterator->iterator.key, strlen(hash->keys.values + iterator->iterator.key));
 	} else {
-		*int_key = iterator->iterator.key;
-		return HASH_KEY_IS_LONG;
+        ZVAL_LONG(key, iterator->iterator.key);
 	}
 }
 
@@ -106,9 +100,7 @@ static void qh_intset_it_move_forward(zend_object_iterator *iter TSRMLS_DC)
 static void qh_intset_it_rewind(zend_object_iterator *iter TSRMLS_DC)
 {
 	qh_intset_it *iterator = (qh_intset_it *)iter;
-	qhi           *hash = (qhi* ) iterator->intern.data;
-
-	qhi_iterator_init(&iterator->iterator, hash);
+	qhi_iterator_init(&iterator->iterator, Z_QH_INTSET_OBJ_P(&iterator->intern.data)->hash);
 }
 
 /* iterator handler table for sets */
@@ -125,21 +117,19 @@ zend_object_iterator_funcs qh_intset_it_funcs = {
 zend_object_iterator *qh_intset_get_iterator(zend_class_entry *ce, zval *object, int by_ref TSRMLS_DC)
 {
 	qh_intset_it  *iterator = emalloc(sizeof(qh_intset_it));
-	php_qh_intset_obj  *obj    = (php_qh_intset_obj *)zend_object_store_get_object(object TSRMLS_CC);
 
 	if (by_ref) {
 		zend_error(E_ERROR, "An iterator cannot be used with foreach by reference");
 	}
 
-	iterator->intern.data = (void*) obj->hash;
+    zend_iterator_init(&iterator->intern);
+    ZVAL_COPY(&iterator->intern.data, object);
 	iterator->intern.funcs = &qh_intset_it_funcs;
-	iterator->object_ref = object;
-	Z_ADDREF_P(iterator->object_ref);
 
-	MAKE_STD_ZVAL(iterator->current_value);
+    iterator->current_value = emalloc(sizeof(zval));
 	ZVAL_NULL(iterator->current_value);
 
-	return (zend_object_iterator*)iterator;
+	return &iterator->intern;
 }
 
 /* iterator handler table for hashes */
@@ -156,19 +146,17 @@ zend_object_iterator_funcs qh_inthash_it_funcs = {
 zend_object_iterator *qh_inthash_get_iterator(zend_class_entry *ce, zval *object, int by_ref TSRMLS_DC)
 {
 	qh_intset_it  *iterator = emalloc(sizeof(qh_intset_it));
-	php_qh_intset_obj  *obj    = (php_qh_intset_obj *)zend_object_store_get_object(object TSRMLS_CC);
 
 	if (by_ref) {
 		zend_error(E_ERROR, "An iterator cannot be used with foreach by reference");
 	}
 
-	iterator->intern.data = (void*) obj->hash;
+    zend_iterator_init(&iterator->intern);
+	ZVAL_COPY(&iterator->intern.data, object);
 	iterator->intern.funcs = &qh_inthash_it_funcs;
-	iterator->object_ref = object;
-	Z_ADDREF_P(iterator->object_ref);
 
-	MAKE_STD_ZVAL(iterator->current_value);
+	iterator->current_value = emalloc(sizeof(zval));
 	ZVAL_NULL(iterator->current_value);
 
-	return (zend_object_iterator*)iterator;
+	return &iterator->intern;
 }

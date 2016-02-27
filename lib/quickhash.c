@@ -15,6 +15,11 @@
    | Authors: Derick Rethans <derick@derickrethans.nl>                    |
    +----------------------------------------------------------------------+
  */
+
+#include "php.h"
+#include "zend.h"
+#include "zend_API.h"
+
 #include "quickhash.h"
 
 #include "hash-algorithms.h"

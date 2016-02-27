@@ -48,9 +48,6 @@ foreach( $hash as $key => $value )
 }
 echo "\n\n";
 ?>
---XFAIL--
-For now, there is a memleak that I can not find which only occurs when using
-the ArrayAccess way of removing an element from the list (with unset()).
 --EXPECTF--
 Normal:
   17- 289    11- 121    13- 196    29- 841     5-  25    27- 729    23- 529     1-   1    19- 361     7-  49     2-   4    31- 961     3-   9  
