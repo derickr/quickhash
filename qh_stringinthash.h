@@ -25,8 +25,8 @@
 typedef struct _php_qh_stringinthash_obj php_qh_stringinthash_obj;
 
 struct _php_qh_stringinthash_obj {
-	zend_object   std;
 	qhi          *hash;
+	zend_object   std;
 };
 
 PHP_METHOD(QuickHashStringIntHash, __construct);

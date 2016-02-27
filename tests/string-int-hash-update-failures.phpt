@@ -18,4 +18,4 @@ Warning: QuickHashStringIntHash::update() expects exactly 2 parameters, 1 given 
 
 Warning: QuickHashStringIntHash::update() expects exactly 2 parameters, 3 given in %sstring-int-hash-update-failures.php on line 7
 
-Warning: QuickHashStringIntHash::update() expects parameter 2 to be long, object given in %sstring-int-hash-update-failures.php on line 9
+Warning: QuickHashStringIntHash::update() expects parameter 2 to be integer, object given in %sstring-int-hash-update-failures.php on line 9

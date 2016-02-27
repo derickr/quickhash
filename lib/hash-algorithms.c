@@ -16,6 +16,10 @@
    +----------------------------------------------------------------------+
  */
 
+#include "php.h"
+#include "zend.h"
+#include "zend_API.h"
+
 #include "hash-algorithms.h"
 
 /**

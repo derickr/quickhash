@@ -26,6 +26,13 @@
 #include "quickhash.h"
 #include "zend_interfaces.h"
 
+static inline php_qh_inthash_obj* php_qh_inthash_obj_fetch_object(zend_object *obj) {
+      return (php_qh_inthash_obj*)((char*)obj - XtOffsetOf(php_qh_inthash_obj, std));
+}
+
+#define Z_QH_INTHASH_OBJ(zv) php_qh_inthash_obj_fetch_object(zv)
+#define Z_QH_INTHASH_OBJ_P(zv) Z_QH_INTHASH_OBJ(Z_OBJ_P(zv))
+
 zend_class_entry *qh_ce_inthash;
 
 PHPAPI zend_class_entry *php_qh_get_inthash_ce(void)
@@ -35,8 +42,8 @@ PHPAPI zend_class_entry *php_qh_get_inthash_ce(void)
 
 zend_object_handlers qh_object_handlers_inthash;
 
-static void qh_object_free_storage_inthash(void *object TSRMLS_DC);
-static zend_object_value qh_object_new_inthash(zend_class_entry *class_type TSRMLS_DC);
+static void qh_object_free_storage_inthash(zend_object *object TSRMLS_DC);
+static zend_object* qh_object_new_inthash(zend_class_entry *class_type TSRMLS_DC);
 
 /* Reflection Information Structs */
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_construct, 0, 0, 1)
@@ -118,52 +125,44 @@ void qh_register_class_inthash(TSRMLS_D)
 	zend_class_entry ce_inthash;
 
 	INIT_CLASS_ENTRY(ce_inthash, "QuickHashIntHash", qh_funcs_inthash);
-	ce_inthash.create_object = qh_object_new_inthash;
-	qh_ce_inthash = zend_register_internal_class_ex(&ce_inthash, php_qh_get_intset_ce(), NULL TSRMLS_CC);
 
+	qh_ce_inthash = zend_register_internal_class_ex(&ce_inthash, php_qh_get_intset_ce());
+    qh_ce_inthash->create_object = qh_object_new_inthash;
 	qh_ce_inthash->get_iterator = qh_inthash_get_iterator;
 	qh_ce_inthash->iterator_funcs.funcs = &qh_inthash_it_funcs;
 
 	memcpy(&qh_object_handlers_inthash, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
-	qh_add_constants(qh_ce_inthash TSRMLS_CC);
-
 	zend_class_implements(qh_ce_inthash TSRMLS_CC, 1, zend_ce_arrayaccess);
 }
 
-static inline zend_object_value qh_object_new_inthash_ex(zend_class_entry *class_type, php_qh_inthash_obj **ptr TSRMLS_DC)
+static inline zend_object* qh_object_new_inthash_ex(zend_class_entry *class_type, php_qh_inthash_obj **ptr TSRMLS_DC)
 {
 	php_qh_inthash_obj *intern;
-	zend_object_value retval;
-	zval *tmp;
 
-	intern = emalloc(sizeof(php_qh_inthash_obj));
-	memset(intern, 0, sizeof(php_qh_inthash_obj));
+	intern = ecalloc(1, sizeof(php_qh_inthash_obj) + zend_object_properties_size(class_type));
 	if (ptr) {
 		*ptr = intern;
 	}
 
 	zend_object_std_init(&intern->std, class_type TSRMLS_CC);
-#if PHP_MINOR_VERSION > 3
 	object_properties_init(&intern->std, class_type);
-#else
-	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
-#endif
-	
-	retval.handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t) qh_object_free_storage_inthash, NULL TSRMLS_CC);
-	retval.handlers = &qh_object_handlers_inthash;
-	
-	return retval;
+	qh_object_handlers_inthash.offset = XtOffsetOf(php_qh_inthash_obj, std);
+	qh_object_handlers_inthash.dtor_obj = zend_objects_destroy_object;
+	qh_object_handlers_inthash.free_obj = qh_object_free_storage_inthash;
+	intern->std.handlers = &qh_object_handlers_inthash;
+
+	return &intern->std;
 }
 
-static zend_object_value qh_object_new_inthash(zend_class_entry *class_type TSRMLS_DC)
+static zend_object* qh_object_new_inthash(zend_class_entry *class_type TSRMLS_DC)
 {
 	return qh_object_new_inthash_ex(class_type, NULL TSRMLS_CC);
 }
 
-static void qh_object_free_storage_inthash(void *object TSRMLS_DC)
+static void qh_object_free_storage_inthash(zend_object *object TSRMLS_DC)
 {
-	php_qh_inthash_obj *intern = (php_qh_inthash_obj *) object;
+	php_qh_inthash_obj *intern = Z_QH_INTHASH_OBJ(object);
 
 	if (intern->hash) {
 		qho *tmp_options = intern->hash->options;
@@ -173,7 +172,6 @@ static void qh_object_free_storage_inthash(void *object TSRMLS_DC)
 	}
 
 	zend_object_std_dtor(&intern->std TSRMLS_CC);
-	efree(object);
 }
 
 /* {{{ proto bool QuickHashIntHash::add( int key [ , int value ] )
@@ -187,7 +185,7 @@ PHP_METHOD(QuickHashIntHash, add)
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol|l", &object, qh_ce_inthash, &key, &value) == FAILURE) {
 		RETURN_FALSE;
 	}
-	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	inthash_obj = Z_QH_INTHASH_OBJ_P(object);
 	RETURN_BOOL(qhi_hash_add(inthash_obj->hash, (qhv) (int32_t) key, (qhv) (int32_t) value));
 }
 /* }}} */
@@ -204,12 +202,12 @@ PHP_METHOD(QuickHashIntHash, get)
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_inthash, &key) == FAILURE) {
 		RETURN_FALSE;
 	}
-	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	inthash_obj = Z_QH_INTHASH_OBJ_P(object);
 	if (qhi_hash_get(inthash_obj->hash, (qhv) (int32_t) key, &value)) {
 		if (inthash_obj->hash->value_type == QHI_VALUE_TYPE_INT) {
 			RETURN_LONG(value.i);
 		} else if (inthash_obj->hash->value_type == QHI_VALUE_TYPE_STRING) {
-			RETURN_STRING(value.s, 1);
+			RETURN_STRING(value.s);
 		}
 	}
 	RETURN_FALSE;
@@ -228,7 +226,7 @@ PHP_METHOD(QuickHashIntHash, set)
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Oll", &object, qh_ce_inthash, &key, &value) == FAILURE) {
 		RETURN_FALSE;
 	}
-	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	inthash_obj = Z_QH_INTHASH_OBJ_P(object TSRMLS_CC);
 	RETURN_LONG(qhi_hash_set(inthash_obj->hash, (qhv) (int32_t) key, (qhv) (int32_t) value));
 }
 /* }}} */
@@ -244,7 +242,7 @@ PHP_METHOD(QuickHashIntHash, update)
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Oll", &object, qh_ce_inthash, &key, &value) == FAILURE) {
 		RETURN_FALSE;
 	}
-	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	inthash_obj = Z_QH_INTHASH_OBJ_P(object TSRMLS_CC);
 	RETURN_BOOL(qhi_hash_update(inthash_obj->hash, (qhv) (int32_t) key, (qhv) (int32_t) value));
 }
 /* }}} */
@@ -297,12 +295,15 @@ static uint32_t qh_inthash_initialize_from_file(php_qh_inthash_obj *obj, php_str
 PHP_METHOD(QuickHashIntHash, loadFromFile)
 {
 	char *filename;
-	int   filename_len;
+	size_t   filename_len;
 	long  size = 0, flags = 0;
 	php_stream *stream;
 
-	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+    zend_error_handling error_handling;
+    zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
+
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &filename, &filename_len, &size, &flags) == FAILURE) {
+        zend_restore_error_handling(&error_handling TSRMLS_CC);
 		return;
 	}
 
@@ -313,10 +314,10 @@ PHP_METHOD(QuickHashIntHash, loadFromFile)
 	qh_instantiate(qh_ce_inthash, return_value TSRMLS_CC);
 	stream = php_stream_open_wrapper(filename, "r", IGNORE_PATH | REPORT_ERRORS, NULL);
 	if (stream) {
-		qh_inthash_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, size, flags TSRMLS_CC);
+		qh_inthash_initialize_from_file(Z_QH_INTHASH_OBJ_P(return_value TSRMLS_CC), stream, size, flags TSRMLS_CC);
 		php_stream_close(stream);
 	}
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_restore_error_handling(&error_handling TSRMLS_CC);
 }
 /* }}} */
 
@@ -335,13 +336,16 @@ int qh_inthash_save_to_file(php_stream *stream, php_qh_inthash_obj *obj)
 PHP_METHOD(QuickHashIntHash, saveToFile)
 {
 	char *filename;
-	int   filename_len;
+	size_t   filename_len;
 	zval              *object;
 	php_qh_inthash_obj *inthash_obj;
 	php_stream *stream;
 
-	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	zend_error_handling error_handling;
+    zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
+
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Os", &object, qh_ce_inthash, &filename, &filename_len) == FAILURE) {
+        zend_restore_error_handling(&error_handling TSRMLS_CC);
 		return;
 	}
 
@@ -349,14 +353,14 @@ PHP_METHOD(QuickHashIntHash, saveToFile)
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Filename cannot be empty");
 	}
 
-	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	inthash_obj = Z_QH_INTHASH_OBJ_P(object TSRMLS_CC);
 	stream = php_stream_open_wrapper(filename, "w", IGNORE_PATH | REPORT_ERRORS, NULL);
 
 	if (stream) {
 		qh_inthash_save_to_file(stream, inthash_obj);
 		php_stream_close(stream);
 	}
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_restore_error_handling(&error_handling TSRMLS_CC);
 }
 /* }}} */
 
@@ -404,17 +408,20 @@ static uint32_t qh_inthash_initialize_from_string(php_qh_inthash_obj *obj, char 
 PHP_METHOD(QuickHashIntHash, loadFromString)
 {
 	char    *contents;
-	int      contents_len;
+	size_t      contents_len;
 	long     size = 0, flags = 0;
 
-	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	zend_error_handling error_handling;
+    zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
+
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &contents, &contents_len, &size, &flags) == FAILURE) {
+        zend_restore_error_handling(&error_handling TSRMLS_CC);
 		return;
 	}
 
 	qh_instantiate(qh_ce_inthash, return_value TSRMLS_CC);
-	qh_inthash_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, size, flags TSRMLS_CC);
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	qh_inthash_initialize_from_string(Z_QH_INTHASH_OBJ_P(return_value TSRMLS_CC), contents, contents_len, size, flags TSRMLS_CC);
+	zend_restore_error_handling(&error_handling TSRMLS_CC);
 }
 /* }}} */
 
@@ -440,15 +447,19 @@ PHP_METHOD(QuickHashIntHash, saveToString)
 	char              *string;
 	uint32_t           string_len;
 
-	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	zend_error_handling error_handling;
+    zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
+
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &object, qh_ce_inthash) == FAILURE) {
+        zend_restore_error_handling(&error_handling TSRMLS_CC);
 		return;
 	}
 
-	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
+	inthash_obj = Z_QH_INTHASH_OBJ_P(object TSRMLS_CC);
 
 	string = qh_inthash_save_to_string(&string_len, inthash_obj);
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
-	RETURN_STRINGL(string, string_len, 0);
+	zend_restore_error_handling(&error_handling TSRMLS_CC);
+	RETVAL_STRINGL(string, string_len);
+	efree(string);
 }
 /* }}} */
