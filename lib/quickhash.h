@@ -15,6 +15,12 @@
    | Authors: Derick Rethans <derick@derickrethans.nl>                    |
    +----------------------------------------------------------------------+
  */
+
+// Added to support uint32_t on linux because it is defined in stdint.h
+#include "php.h"
+#include "zend.h"
+#include "zend_API.h"
+
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif

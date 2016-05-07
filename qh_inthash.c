@@ -301,8 +301,10 @@ PHP_METHOD(QuickHashIntHash, loadFromFile)
 	long  size = 0, flags = 0;
 	php_stream *stream;
 
-	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	zend_error_handling error_handling;
+	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &filename, &filename_len, &size, &flags) == FAILURE) {
+		zend_restore_error_handling(&error_handling TSRMLS_CC);
 		return;
 	}
 
@@ -316,7 +318,7 @@ PHP_METHOD(QuickHashIntHash, loadFromFile)
 		qh_inthash_initialize_from_file(zend_object_store_get_object(return_value TSRMLS_CC), stream, size, flags TSRMLS_CC);
 		php_stream_close(stream);
 	}
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_restore_error_handling(&error_handling TSRMLS_CC);
 }
 /* }}} */
 
@@ -340,8 +342,10 @@ PHP_METHOD(QuickHashIntHash, saveToFile)
 	php_qh_inthash_obj *inthash_obj;
 	php_stream *stream;
 
-	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	zend_error_handling error_handling;
+	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Os", &object, qh_ce_inthash, &filename, &filename_len) == FAILURE) {
+		zend_restore_error_handling(&error_handling TSRMLS_CC);
 		return;
 	}
 
@@ -356,7 +360,7 @@ PHP_METHOD(QuickHashIntHash, saveToFile)
 		qh_inthash_save_to_file(stream, inthash_obj);
 		php_stream_close(stream);
 	}
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_restore_error_handling(&error_handling TSRMLS_CC);
 }
 /* }}} */
 
@@ -407,14 +411,16 @@ PHP_METHOD(QuickHashIntHash, loadFromString)
 	int      contents_len;
 	long     size = 0, flags = 0;
 
-	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	zend_error_handling error_handling;
+	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &contents, &contents_len, &size, &flags) == FAILURE) {
+		zend_restore_error_handling(&error_handling TSRMLS_CC);
 		return;
 	}
 
 	qh_instantiate(qh_ce_inthash, return_value TSRMLS_CC);
 	qh_inthash_initialize_from_string(zend_object_store_get_object(return_value TSRMLS_CC), contents, contents_len, size, flags TSRMLS_CC);
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_restore_error_handling(&error_handling TSRMLS_CC);
 }
 /* }}} */
 
@@ -440,15 +446,17 @@ PHP_METHOD(QuickHashIntHash, saveToString)
 	char              *string;
 	uint32_t           string_len;
 
-	php_set_error_handling(EH_THROW, NULL TSRMLS_CC);
+	zend_error_handling error_handling;
+	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &object, qh_ce_inthash) == FAILURE) {
+		zend_restore_error_handling(&error_handling TSRMLS_CC);
 		return;
 	}
 
 	inthash_obj = (php_qh_inthash_obj *) zend_object_store_get_object(object TSRMLS_CC);
 
 	string = qh_inthash_save_to_string(&string_len, inthash_obj);
-	php_set_error_handling(EH_NORMAL, NULL TSRMLS_CC);
+	zend_restore_error_handling(&error_handling TSRMLS_CC);
 	RETURN_STRINGL(string, string_len, 0);
 }
 /* }}} */
