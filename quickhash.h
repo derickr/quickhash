@@ -47,9 +47,13 @@
 #define QH_HASHER_MASK            0xFF00
 
 #if PHP_VERSION_ID < 70000
-#define QH_PHP_OBJ zend_object std; qhi* hash;
+# define QH_PHP_OBJ zend_object std; qhi* hash;
+# define ZEND_OBJECT_VALUE_PTR zend_object_value
+# define ZEND_OBJECT_PTR void*
 #else
-#define QH_PHP_OBJ qhi* hash; zend_object std;
+# define QH_PHP_OBJ qhi* hash; zend_object std;
+# define ZEND_OBJECT_VALUE_PTR zend_object*
+# define ZEND_OBJECT_PTR ZEND_OBJECT_VALUE_PTR
 #endif
 
 typedef struct _php_qh_string_context {

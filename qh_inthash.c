@@ -27,13 +27,9 @@
 #include "zend_interfaces.h"
 
 #if PHP_VERSION_ID < 70000
-#define ZEND_OBJECT_VALUE_PTR zend_object_value
-#define ZEND_OBJECT_PTR void*
 #define Z_QH_INTHASH_OBJ(object) (php_qh_inthash_obj *)object
 #define Z_QH_INTHASH_OBJ_P(object) (php_qh_inthash_obj *)zend_object_store_get_object(object)
 #else
-#define ZEND_OBJECT_VALUE_PTR zend_object*
-#define ZEND_OBJECT_PTR ZEND_OBJECT_VALUE_PTR
 static inline php_qh_inthash_obj* php_qh_inthash_obj_fetch_object(zend_object *obj) {
       return (php_qh_inthash_obj*)((char*)obj - XtOffsetOf(php_qh_inthash_obj, std));
 }
