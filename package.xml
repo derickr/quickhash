@@ -9,7 +9,7 @@ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/ta
 hash, integer to string hash and a string to integer hash. The main features
 are low memory consumption and fast serialization and deserialization of
 the sets and hashes.
-  
+
  </description>
  <lead>
   <name>Derick Rethans</name>
@@ -17,10 +17,10 @@ the sets and hashes.
   <email>derick@php.net</email>
   <active>yes</active>
  </lead>
- <date>2012-09-02</date>
- <time>22:44:00</time>
+ <date>2016-05-07</date>
+ <time>17:40:00</time>
  <version>
-  <release>1.0.0</release>
+  <release>2.0.0</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -28,9 +28,7 @@ the sets and hashes.
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">The PHP License</license>
- <notes>
-Implemented ArrayAccess for QuickHashIntSet
- </notes>
+ <notes>PHP7 support</notes>
  <contents>
   <dir name="/">
    <file name="config.m4" role="src" />
@@ -61,7 +59,7 @@ Implemented ArrayAccess for QuickHashIntSet
  <dependencies>
   <required>
    <php>
-    <min>5.2.0</min>
+    <min>5.5.0</min>
    </php>
    <pearinstaller>
     <min>1.4.0b1</min>
