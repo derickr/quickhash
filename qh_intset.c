@@ -315,7 +315,7 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
 PHP_METHOD(QuickHashIntSet, loadFromFile)
 {
 	char *filename;
-	size_t   filename_len;
+	TYPE_ARG_L   filename_len;
 	long  size = 0, flags = 0;
 	php_stream *stream;
 
@@ -355,7 +355,7 @@ int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
 PHP_METHOD(QuickHashIntSet, saveToFile)
 {
 	char *filename;
-	size_t   filename_len;
+	TYPE_ARG_L   filename_len;
 	zval              *object;
 	php_qh_intset_obj *intset_obj;
 	php_stream *stream;
@@ -417,7 +417,7 @@ static uint32_t qh_intset_initialize_from_string(php_qh_intset_obj *obj, char *c
 PHP_METHOD(QuickHashIntSet, loadFromString)
 {
 	char    *contents;
-	size_t      contents_len;
+	TYPE_ARG_L      contents_len;
 	long     size = 0, flags = 0;
 
 	zend_error_handling error_handling;

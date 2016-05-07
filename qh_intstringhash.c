@@ -248,7 +248,7 @@ PHP_METHOD(QuickHashIntStringHash, add)
 	php_qh_intstringhash_obj *intstringhash_obj;
 	long               key;
 	char              *value;
-	size_t               value_len;
+	TYPE_ARG_L               value_len;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ols", &object, qh_ce_intstringhash, &key, &value, &value_len) == FAILURE) {
 		RETURN_FALSE;
@@ -266,7 +266,7 @@ PHP_METHOD(QuickHashIntStringHash, set)
 	php_qh_intstringhash_obj *intstringhash_obj;
 	long                key;
 	char              *value;
-	size_t               value_len;
+	TYPE_ARG_L               value_len;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ols", &object, qh_ce_intstringhash, &key, &value, &value_len) == FAILURE) {
 		RETURN_FALSE;
@@ -284,7 +284,7 @@ PHP_METHOD(QuickHashIntStringHash, update)
 	php_qh_intstringhash_obj *intstringhash_obj;
 	long                key;
 	char              *value;
-	size_t               value_len;
+	TYPE_ARG_L               value_len;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ols", &object, qh_ce_intstringhash, &key, &value, &value_len) == FAILURE) {
 		RETURN_FALSE;
@@ -347,7 +347,7 @@ static uint32_t qh_intstringhash_initialize_from_file(php_qh_intstringhash_obj *
 PHP_METHOD(QuickHashIntStringHash, loadFromFile)
 {
 	char *filename;
-	size_t   filename_len;
+	TYPE_ARG_L   filename_len;
 	long  size = 0, flags = 0;
 	php_stream *stream;
 
@@ -387,7 +387,7 @@ int qh_intstringhash_save_to_file(php_stream *stream, php_qh_intstringhash_obj *
 PHP_METHOD(QuickHashIntStringHash, saveToFile)
 {
 	char *filename;
-	size_t   filename_len;
+	TYPE_ARG_L   filename_len;
 	zval              *object;
 	php_qh_intstringhash_obj *intstringhash_obj;
 	php_stream *stream;
@@ -460,7 +460,7 @@ static uint32_t qh_intstringhash_initialize_from_string(php_qh_intstringhash_obj
 PHP_METHOD(QuickHashIntStringHash, loadFromString)
 {
 	char    *contents;
-	size_t      contents_len;
+	TYPE_ARG_L      contents_len;
 	long     size = 0, flags = 0;
 
 	zend_error_handling error_handling;

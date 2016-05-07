@@ -331,7 +331,7 @@ static uint32_t qh_inthash_initialize_from_file(php_qh_inthash_obj *obj, php_str
 PHP_METHOD(QuickHashIntHash, loadFromFile)
 {
 	char *filename;
-	size_t   filename_len;
+	TYPE_ARG_L   filename_len;
 	long  size = 0, flags = 0;
 	php_stream *stream;
 
@@ -371,7 +371,7 @@ int qh_inthash_save_to_file(php_stream *stream, php_qh_inthash_obj *obj)
 PHP_METHOD(QuickHashIntHash, saveToFile)
 {
 	char *filename;
-	size_t   filename_len;
+	TYPE_ARG_L   filename_len;
 	zval              *object;
 	php_qh_inthash_obj *inthash_obj;
 	php_stream *stream;
@@ -442,7 +442,7 @@ static uint32_t qh_inthash_initialize_from_string(php_qh_inthash_obj *obj, char 
 PHP_METHOD(QuickHashIntHash, loadFromString)
 {
 	char    *contents;
-	size_t      contents_len;
+	TYPE_ARG_L      contents_len;
 	long     size = 0, flags = 0;
 
 	zend_error_handling error_handling;

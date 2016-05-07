@@ -249,7 +249,7 @@ PHP_METHOD(QuickHashStringIntHash, add)
 	zval              *object;
 	php_qh_stringinthash_obj *stringinthash_obj;
 	char              *key;
-	size_t               key_len;
+	TYPE_ARG_L               key_len;
 	long               value;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Osl", &object, qh_ce_stringinthash, &key, &key_len, &value) == FAILURE) {
@@ -267,7 +267,7 @@ PHP_METHOD(QuickHashStringIntHash, exists)
 	zval              *object;
 	php_qh_stringinthash_obj *intset_obj;
 	char              *key;
-	size_t               key_len;
+	TYPE_ARG_L               key_len;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Os", &object, qh_ce_stringinthash, &key, &key_len) == FAILURE) {
 		RETURN_FALSE;
@@ -284,7 +284,7 @@ PHP_METHOD(QuickHashStringIntHash, get)
 	zval               *object;
 	php_qh_stringinthash_obj *stringinthash_obj;
 	char               *key;
-	size_t                key_len;
+	TYPE_ARG_L                key_len;
 	qhv                 value;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Os", &object, qh_ce_stringinthash, &key, &key_len) == FAILURE) {
@@ -313,7 +313,7 @@ PHP_METHOD(QuickHashStringIntHash, set)
 	zval               *object;
 	php_qh_stringinthash_obj *stringinthash_obj;
 	char               *key;
-	size_t                key_len;
+	TYPE_ARG_L                key_len;
 	long                value;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Osl", &object, qh_ce_stringinthash, &key, &key_len, &value) == FAILURE) {
@@ -331,7 +331,7 @@ PHP_METHOD(QuickHashStringIntHash, update)
 	zval              *object;
 	php_qh_stringinthash_obj *stringinthash_obj;
 	char               *key;
-	size_t                key_len;
+	TYPE_ARG_L                key_len;
 	long                value;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Osl", &object, qh_ce_stringinthash, &key, &key_len, &value) == FAILURE) {
@@ -349,7 +349,7 @@ PHP_METHOD(QuickHashStringIntHash, delete)
 	zval              *object;
 	php_qh_stringinthash_obj *intset_obj;
 	char               *key;
-	size_t                key_len;
+	TYPE_ARG_L                key_len;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Os", &object, qh_ce_stringinthash, &key, &key_len) == FAILURE) {
 		RETURN_FALSE;
@@ -412,7 +412,7 @@ static uint32_t qh_stringinthash_initialize_from_file(php_qh_stringinthash_obj *
 PHP_METHOD(QuickHashStringIntHash, loadFromFile)
 {
 	char *filename;
-	size_t   filename_len;
+	TYPE_ARG_L   filename_len;
 	long  size = 0, flags = 0;
 	php_stream *stream;
 
@@ -452,7 +452,7 @@ int qh_stringinthash_save_to_file(php_stream *stream, php_qh_stringinthash_obj *
 PHP_METHOD(QuickHashStringIntHash, saveToFile)
 {
 	char *filename;
-	size_t   filename_len;
+	TYPE_ARG_L   filename_len;
 	zval              *object;
 	php_qh_stringinthash_obj *stringinthash_obj;
 	php_stream *stream;
@@ -519,7 +519,7 @@ static uint32_t qh_stringinthash_initialize_from_string(php_qh_stringinthash_obj
 PHP_METHOD(QuickHashStringIntHash, loadFromString)
 {
 	char    *contents;
-	size_t      contents_len;
+	TYPE_ARG_L      contents_len;
 	long     size = 0, flags = 0;
 
 	zend_error_handling error_handling;

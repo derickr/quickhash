@@ -50,10 +50,12 @@
 # define QH_PHP_OBJ zend_object std; qhi* hash;
 # define ZEND_OBJECT_VALUE_PTR zend_object_value
 # define ZEND_OBJECT_PTR void*
+# define TYPE_ARG_L int
 #else
 # define QH_PHP_OBJ qhi* hash; zend_object std;
 # define ZEND_OBJECT_VALUE_PTR zend_object*
 # define ZEND_OBJECT_PTR ZEND_OBJECT_VALUE_PTR
+# define TYPE_ARG_L size_t
 #endif
 
 typedef struct _php_qh_string_context {
