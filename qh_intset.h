@@ -21,12 +21,12 @@
 #define PHP_QUICKHASH_INTSET_H
 
 #include "lib/quickhash.h"
+#include "quickhash.h"
 
 typedef struct _php_qh_intset_obj php_qh_intset_obj;
 
 struct _php_qh_intset_obj {
-	zend_object   std;
-	qhi          *hash;
+	QH_PHP_OBJ
 };
 
 PHP_METHOD(QuickHashIntSet, __construct);

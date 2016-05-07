@@ -46,6 +46,12 @@
 #define QH_HASHER_JENKINS2        0x0400
 #define QH_HASHER_MASK            0xFF00
 
+#if PHP_VERSION_ID < 70000
+#define QH_PHP_OBJ zend_object std; qhi* hash;
+#else
+#define QH_PHP_OBJ qhi* hash; zend_object std;
+#endif
+
 typedef struct _php_qh_string_context {
 	char     *string;
 	uint32_t  string_len;
