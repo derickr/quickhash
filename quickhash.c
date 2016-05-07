@@ -78,10 +78,14 @@ static void quickhash_init_globals(zend_quickhash_globals *quickhash_globals)
 
 zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC)
 {
+#if PHP_VERSION_ID < 70000
 	Z_TYPE_P(object) = IS_OBJECT;
+#endif
 	object_init_ex(object, pce);
+#if PHP_VERSION_ID < 70000
 	Z_SET_REFCOUNT_P(object, 1);
 	Z_UNSET_ISREF_P(object);
+#endif
 	return object;
 }
 
