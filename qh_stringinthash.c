@@ -152,10 +152,10 @@ static inline zend_object_value qh_object_new_stringinthash_ex(zend_class_entry 
 #else
 	zend_hash_copy(intern->std.properties, &class_type->default_properties, (copy_ctor_func_t) zval_add_ref, (void *) &tmp, sizeof(zval *));
 #endif
-	
+
 	retval.handle = zend_objects_store_put(intern, (zend_objects_store_dtor_t)zend_objects_destroy_object, (zend_objects_free_object_storage_t) qh_object_free_storage_stringinthash, NULL TSRMLS_CC);
 	retval.handlers = &qh_object_handlers_stringinthash;
-	
+
 	return retval;
 }
 
@@ -330,6 +330,7 @@ PHP_METHOD(QuickHashStringIntHash, delete)
 /* Validates whether the stream is in the correct format */
 static int qh_stringinthash_stream_validator(php_stream_statbuf finfo, php_stream *stream, uint32_t *nr_of_elements, uint32_t *value_array_length)
 {
+	TSRMLS_FETCH();
 	char key_buffer[4];
 	uint32_t hash_size;
 	uint32_t string_store_size;

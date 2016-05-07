@@ -30,7 +30,7 @@
 #define ZEND_OBJECT_VALUE_PTR zend_object_value
 #define ZEND_OBJECT_PTR void*
 #define Z_QH_INTHASH_OBJ(object) (php_qh_inthash_obj *)object
-#define Z_QH_INTHASH_OBJ_P(object) (php_qh_inthash_obj *)zend_object_store_get_object(object TSRMLS_CC)
+#define Z_QH_INTHASH_OBJ_P(object) (php_qh_inthash_obj *)zend_object_store_get_object(object)
 #else
 #define ZEND_OBJECT_VALUE_PTR zend_object*
 #define ZEND_OBJECT_PTR ZEND_OBJECT_VALUE_PTR
@@ -220,7 +220,7 @@ PHP_METHOD(QuickHashIntHash, add)
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol|l", &object, qh_ce_inthash, &key, &value) == FAILURE) {
 		RETURN_FALSE;
 	}
-	inthash_obj = Z_QH_INTHASH_OBJ_P(object);
+	inthash_obj = Z_QH_INTHASH_OBJ_P(object TSRMLS_CC);
 	RETURN_BOOL(qhi_hash_add(inthash_obj->hash, (qhv) (int32_t) key, (qhv) (int32_t) value));
 }
 /* }}} */
@@ -237,7 +237,7 @@ PHP_METHOD(QuickHashIntHash, get)
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_inthash, &key) == FAILURE) {
 		RETURN_FALSE;
 	}
-	inthash_obj = Z_QH_INTHASH_OBJ_P(object);
+	inthash_obj = Z_QH_INTHASH_OBJ_P(object TSRMLS_CC);
 	if (qhi_hash_get(inthash_obj->hash, (qhv) (int32_t) key, &value)) {
 		if (inthash_obj->hash->value_type == QHI_VALUE_TYPE_INT) {
 			RETURN_LONG(value.i);
@@ -289,6 +289,7 @@ PHP_METHOD(QuickHashIntHash, update)
 /* Validates whether the stream is in the correct format */
 static int qh_inthash_stream_validator(php_stream_statbuf finfo, php_stream *stream, uint32_t *nr_of_elements, uint32_t *value_array_length)
 {
+	TSRMLS_FETCH();
 	char key_buffer[4];
 	uint32_t hash_size;
 
