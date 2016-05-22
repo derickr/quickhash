@@ -16,17 +16,10 @@
    +----------------------------------------------------------------------+
  */
 
-// Added to support uint32_t on linux because it is defined in stdint.h
-#include "php.h"
-#include "zend.h"
-#include "zend_API.h"
-
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
-#if HAVE_STDINT_H
-# include <stdint.h>
-#endif
+#include <stdint.h>
 #if HAVE_STDLIB_H
 # include <stdlib.h>
 #endif

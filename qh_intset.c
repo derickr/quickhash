@@ -204,10 +204,10 @@ static int qh_intset_initialize(php_qh_intset_obj *obj, long size, long flags TS
    Creates a new QuickHashIntSet */
 PHP_METHOD(QuickHashIntSet, __construct)
 {
-	long size;
-	long flags = 0;
-
+	long                size;
+	long                flags = 0;
 	zend_error_handling error_handling;
+
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &size, &flags) == SUCCESS) {
 		if (!qh_intset_initialize(Z_QH_INTSET_OBJ_P(getThis() TSRMLS_CC), size, flags TSRMLS_CC)) {
@@ -314,12 +314,12 @@ static uint32_t qh_intset_initialize_from_file(php_qh_intset_obj *obj, php_strea
    Creates a QuickHashIntSet from data in file filename */
 PHP_METHOD(QuickHashIntSet, loadFromFile)
 {
-	char *filename;
-	TYPE_ARG_L   filename_len;
-	long  size = 0, flags = 0;
-	php_stream *stream;
-
+	char               *filename;
+	TYPE_ARG_L          filename_len;
+	long                size = 0, flags = 0;
+	php_stream         *stream;
 	zend_error_handling error_handling;
+
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &filename, &filename_len, &size, &flags) == FAILURE) {
 		zend_restore_error_handling(&error_handling TSRMLS_CC);
@@ -354,13 +354,13 @@ int qh_intset_save_to_file(php_stream *stream, php_qh_intset_obj *obj)
    Saves the hash to a file */
 PHP_METHOD(QuickHashIntSet, saveToFile)
 {
-	char *filename;
-	TYPE_ARG_L   filename_len;
-	zval              *object;
-	php_qh_intset_obj *intset_obj;
-	php_stream *stream;
-
+	char               *filename;
+	TYPE_ARG_L          filename_len;
+	zval               *object;
+	php_qh_intset_obj  *intset_obj;
+	php_stream         *stream;
 	zend_error_handling error_handling;
+
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Os", &object, qh_ce_intset, &filename, &filename_len) == FAILURE) {
 		zend_restore_error_handling(&error_handling TSRMLS_CC);
@@ -416,11 +416,11 @@ static uint32_t qh_intset_initialize_from_string(php_qh_intset_obj *obj, char *c
    Creates a QuickHashIntSet from data in a string */
 PHP_METHOD(QuickHashIntSet, loadFromString)
 {
-	char    *contents;
-	TYPE_ARG_L      contents_len;
-	long     size = 0, flags = 0;
-
+	char               *contents;
+	TYPE_ARG_L          contents_len;
+	long                size = 0, flags = 0;
 	zend_error_handling error_handling;
+
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &contents, &contents_len, &size, &flags) == FAILURE) {
 		zend_restore_error_handling(&error_handling TSRMLS_CC);
@@ -450,12 +450,12 @@ char *qh_intset_save_to_string(uint32_t *string_len, php_qh_intset_obj *obj)
    Returns the hash as a string */
 PHP_METHOD(QuickHashIntSet, saveToString)
 {
-	zval              *object;
-	php_qh_intset_obj *intset_obj;
-	char              *string;
-	uint32_t           string_len;
-
+	zval               *object;
+	php_qh_intset_obj  *intset_obj;
+	char               *string;
+	uint32_t            string_len;
 	zend_error_handling error_handling;
+
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &object, qh_ce_intset) == FAILURE) {
 		zend_restore_error_handling(&error_handling TSRMLS_CC);

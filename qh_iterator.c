@@ -44,7 +44,6 @@ static void qh_intset_it_dtor(zend_object_iterator *iter TSRMLS_DC)
 #endif
 	qhi_iterator_deinit(&iterator->iterator);
 #if PHP_VERSION_ID < 70000
-	qhi_iterator_deinit(&iterator->iterator);
 	zval_ptr_dtor(&iterator->current_value);
 	efree(iterator);
 #else
@@ -106,7 +105,7 @@ static void qh_intset_it_current_data(zend_object_iterator *iter, zval ***data T
 static void qh_intset_it_current_key(zend_object_iterator *iter, zval *key TSRMLS_DC)
 {
 	qh_intset_it *iterator = (qh_intset_it *)iter;
-	qhi          *hash = (qhi* ) iterator->intern.data;
+	qhi          *hash     = (qhi* )iterator->intern.data;
 
 	if (hash->key_type == QHI_KEY_TYPE_STRING) {
 		ZVAL_STRINGL(key, hash->keys.values + iterator->iterator.key, strlen(hash->keys.values + iterator->iterator.key), 1);

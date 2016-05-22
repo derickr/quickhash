@@ -59,9 +59,9 @@ zend_module_entry quickhash_module_entry = {
 
 
 #ifdef COMPILE_DL_QUICKHASH
-#if defined(ZTS) && PHP_VERSION_ID >= 70000
+# if defined(ZTS) && PHP_VERSION_ID >= 70000
 	ZEND_TSRMLS_CACHE_DEFINE();
-#endif
+# endif
 ZEND_GET_MODULE(quickhash)
 #endif
 
@@ -339,9 +339,9 @@ PHP_MSHUTDOWN_FUNCTION(quickhash)
 
 PHP_RINIT_FUNCTION(quickhash)
 {
-	#if defined(COMPILE_DL_QUICKHASH) && defined(ZTS) && PHP_VERSION_ID >= 70000
-		ZEND_TSRMLS_CACHE_UPDATE();
-	#endif
+#if defined(COMPILE_DL_QUICKHASH) && defined(ZTS) && PHP_VERSION_ID >= 70000
+	ZEND_TSRMLS_CACHE_UPDATE();
+#endif
 	return SUCCESS;
 }
 

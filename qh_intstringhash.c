@@ -226,10 +226,10 @@ static int qh_intstringhash_initialize(php_qh_intstringhash_obj *obj, long size,
    Creates a new QuickHashIntStringHash */
 PHP_METHOD(QuickHashIntStringHash, __construct)
 {
-	long size;
-	long flags = 0;
-
+	long                size;
+	long                flags = 0;
 	zend_error_handling error_handling;
+
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l|l", &size, &flags) == SUCCESS) {
 		if (!qh_intstringhash_initialize(Z_QH_INTSTRINGHASH_OBJ_P(getThis() TSRMLS_CC), size, flags TSRMLS_CC)) {
@@ -244,11 +244,11 @@ PHP_METHOD(QuickHashIntStringHash, __construct)
    Adds an element with key key and value value to the hash */
 PHP_METHOD(QuickHashIntStringHash, add)
 {
-	zval              *object;
+	zval                     *object;
 	php_qh_intstringhash_obj *intstringhash_obj;
-	long               key;
-	char              *value;
-	TYPE_ARG_L               value_len;
+	long                      key;
+	char                     *value;
+	TYPE_ARG_L                value_len;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ols", &object, qh_ce_intstringhash, &key, &value, &value_len) == FAILURE) {
 		RETURN_FALSE;
@@ -262,11 +262,11 @@ PHP_METHOD(QuickHashIntStringHash, add)
    Updates the value of an element if it exists, or otherwise adds a new element */
 PHP_METHOD(QuickHashIntStringHash, set)
 {
-	zval               *object;
+	zval                     *object;
 	php_qh_intstringhash_obj *intstringhash_obj;
-	long                key;
-	char              *value;
-	TYPE_ARG_L               value_len;
+	long                      key;
+	char                     *value;
+	TYPE_ARG_L                value_len;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ols", &object, qh_ce_intstringhash, &key, &value, &value_len) == FAILURE) {
 		RETURN_FALSE;
@@ -280,11 +280,11 @@ PHP_METHOD(QuickHashIntStringHash, set)
    Updates the value of an element for key key */
 PHP_METHOD(QuickHashIntStringHash, update)
 {
-	zval              *object;
+	zval                     *object;
 	php_qh_intstringhash_obj *intstringhash_obj;
-	long                key;
-	char              *value;
-	TYPE_ARG_L               value_len;
+	long                      key;
+	char                     *value;
+	TYPE_ARG_L                value_len;
 
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ols", &object, qh_ce_intstringhash, &key, &value, &value_len) == FAILURE) {
 		RETURN_FALSE;
@@ -346,12 +346,12 @@ static uint32_t qh_intstringhash_initialize_from_file(php_qh_intstringhash_obj *
    Creates a QuickHashIntStringHash from data in file filename */
 PHP_METHOD(QuickHashIntStringHash, loadFromFile)
 {
-	char *filename;
-	TYPE_ARG_L   filename_len;
-	long  size = 0, flags = 0;
-	php_stream *stream;
-
+	char               *filename;
+	TYPE_ARG_L          filename_len;
+	long                size = 0, flags = 0;
+	php_stream         *stream;
 	zend_error_handling error_handling;
+
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &filename, &filename_len, &size, &flags) == FAILURE) {
 		zend_restore_error_handling(&error_handling TSRMLS_CC);
@@ -386,13 +386,13 @@ int qh_intstringhash_save_to_file(php_stream *stream, php_qh_intstringhash_obj *
    Saves the hash to a file */
 PHP_METHOD(QuickHashIntStringHash, saveToFile)
 {
-	char *filename;
-	TYPE_ARG_L   filename_len;
-	zval              *object;
+	char                     *filename;
+	TYPE_ARG_L                filename_len;
+	zval                     *object;
 	php_qh_intstringhash_obj *intstringhash_obj;
-	php_stream *stream;
+	php_stream               *stream;
+	zend_error_handling       error_handling;
 
-	zend_error_handling error_handling;
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Os", &object, qh_ce_intstringhash, &filename, &filename_len) == FAILURE) {
 		zend_restore_error_handling(&error_handling TSRMLS_CC);
@@ -459,11 +459,11 @@ static uint32_t qh_intstringhash_initialize_from_string(php_qh_intstringhash_obj
    Creates a QuickHashIntStringHash from data in a string */
 PHP_METHOD(QuickHashIntStringHash, loadFromString)
 {
-	char    *contents;
-	TYPE_ARG_L      contents_len;
-	long     size = 0, flags = 0;
-
+	char               *contents;
+	TYPE_ARG_L          contents_len;
+	long                size = 0, flags = 0;
 	zend_error_handling error_handling;
+
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|ll", &contents, &contents_len, &size, &flags) == FAILURE) {
 		zend_restore_error_handling(&error_handling TSRMLS_CC);
@@ -493,12 +493,12 @@ char *qh_intstringhash_save_to_string(uint32_t *string_len, php_qh_intstringhash
    Returns the hash as a string */
 PHP_METHOD(QuickHashIntStringHash, saveToString)
 {
-	zval              *object;
+	zval                     *object;
 	php_qh_intstringhash_obj *intstringhash_obj;
-	char              *string;
-	uint32_t           string_len;
+	char                     *string;
+	uint32_t                  string_len;
+	zend_error_handling       error_handling;
 
-	zend_error_handling error_handling;
 	zend_replace_error_handling(EH_THROW, NULL, &error_handling TSRMLS_CC);
 	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "O", &object, qh_ce_intstringhash) == FAILURE) {
 		zend_restore_error_handling(&error_handling TSRMLS_CC);
