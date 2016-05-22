@@ -20,9 +20,7 @@
 # include <config.h>
 #endif
 #include <stdint.h>
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
+#include <stdlib.h>
 
 #ifndef QH_HASH_ALGORITHMS_H
 #define QH_HASH_ALGORITHMS_H
