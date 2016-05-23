@@ -28,7 +28,7 @@ the sets and hashes.
   <api>stable</api>
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">The PHP License</license>
- <notes>PHP7 support</notes>
+ <notes>PHP 7 support</notes>
  <contents>
   <dir name="/">
    <file name="config.m4" role="src" />
