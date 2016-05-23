@@ -37,10 +37,17 @@ PHP_MINFO_FUNCTION(quickhash);
 
 ZEND_BEGIN_MODULE_GLOBALS(quickhash)
 	/* empty */
-ZEND_END_MODULE_GLOBALS(quickhash) 
+ZEND_END_MODULE_GLOBALS(quickhash)
 
 #ifdef ZTS
-# define QUICKHASH_G(v) TSRMG(quickhash_globals_id, zend_quickhash_globals *, v)
+# if PHP_VERSION_ID < 70000
+#  define QUICKHASH_G(v) TSRMG(quickhash_globals_id, zend_quickhash_globals *, v)
+# else
+# if defined(COMPILE_DL_QUICKHASH)
+ZEND_TSRMLS_CACHE_EXTERN();
+# endif
+#  define QUICKHASH_G(v) ZEND_TSRMG(quickhash_globals_id, zend_quickhash_globals *, v)
+# endif
 #else
 # define QUICKHASH_G(v) (quickhash_globals.v)
 #endif

@@ -61,13 +61,13 @@ catch( Exception $e )
 	echo $e->getMessage(), "\n";
 }
 ?>
---EXPECT--
+--EXPECTF--
 
 Wrong params: 
 QuickHashIntStringHash::loadFromString() expects at least 1 parameter, 0 given
 QuickHashIntStringHash::loadFromString() expects at most 3 parameters, 4 given
-QuickHashIntStringHash::loadFromString() expects parameter 3 to be long, string given
-QuickHashIntStringHash::loadFromString() expects parameter 2 to be long, string given
+QuickHashIntStringHash::loadFromString() expects parameter 3 to be %s, string given
+QuickHashIntStringHash::loadFromString() expects parameter 2 to be %s, string given
 QuickHashIntStringHash::loadFromString() expects parameter 1 to be string, object given
 
 Wrong size: 

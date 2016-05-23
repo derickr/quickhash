@@ -21,12 +21,12 @@
 #define PHP_QUICKHASH_STRINGINTHASH_H
 
 #include "lib/quickhash.h"
+#include "quickhash.h"
 
 typedef struct _php_qh_stringinthash_obj php_qh_stringinthash_obj;
 
 struct _php_qh_stringinthash_obj {
-	zend_object   std;
-	qhi          *hash;
+	QH_PHP_OBJ
 };
 
 PHP_METHOD(QuickHashStringIntHash, __construct);

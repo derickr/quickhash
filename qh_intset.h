@@ -21,12 +21,20 @@
 #define PHP_QUICKHASH_INTSET_H
 
 #include "lib/quickhash.h"
+#include "quickhash.h"
 
 typedef struct _php_qh_intset_obj php_qh_intset_obj;
 
+#if PHP_VERSION_ID < 70000
+# define Z_QH_INTSET_OBJ(zv) (php_qh_intset_obj*)zv
+# define Z_QH_INTSET_OBJ_P(zv) zend_object_store_get_object(zv)
+#else
+# define Z_QH_INTSET_OBJ(zv) php_qh_intset_obj_fetch_object(zv)
+# define Z_QH_INTSET_OBJ_P(zv) Z_QH_INTSET_OBJ(Z_OBJ_P(zv))
+#endif
+
 struct _php_qh_intset_obj {
-	zend_object   std;
-	qhi          *hash;
+	QH_PHP_OBJ
 };
 
 PHP_METHOD(QuickHashIntSet, __construct);
@@ -41,5 +49,8 @@ PHP_METHOD(QuickHashIntSet, saveToString);
 
 void qh_register_class_intset(TSRMLS_D);
 PHPAPI zend_class_entry *php_qh_get_intset_ce(void);
+#if PHP_VERSION_ID >= 70000
+php_qh_intset_obj* php_qh_intset_obj_fetch_object(zend_object *obj);
+#endif
 
 #endif

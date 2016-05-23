@@ -108,8 +108,8 @@ catch( Exception $e )
 Wrong params: 
 QuickHashIntStringHash::loadFromFile() expects at least 1 parameter, 0 given
 QuickHashIntStringHash::loadFromFile() expects at most 3 parameters, 4 given
-QuickHashIntStringHash::loadFromFile() expects parameter 3 to be long, string given
-QuickHashIntStringHash::loadFromFile() expects parameter 2 to be long, string given
+QuickHashIntStringHash::loadFromFile() expects parameter 3 to be %s, string given
+QuickHashIntStringHash::loadFromFile() expects parameter 2 to be %s, string given
 QuickHashIntStringHash::loadFromFile() expects parameter 1 to be string, object given
 
 Empty file: 

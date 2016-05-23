@@ -15,15 +15,12 @@
    | Authors: Derick Rethans <derick@derickrethans.nl>                    |
    +----------------------------------------------------------------------+
  */
+
 #if HAVE_CONFIG_H
 # include <config.h>
 #endif
-#if HAVE_STDINT_H
-# include <stdint.h>
-#endif
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
+#include <stdint.h>
+#include <stdlib.h>
 
 #ifndef QH_HASH_ALGORITHMS_H
 #define QH_HASH_ALGORITHMS_H

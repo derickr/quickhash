@@ -48,7 +48,7 @@ zend_module_entry quickhash_module_entry = {
 	quickhash_functions,
 	PHP_MINIT(quickhash),
 	PHP_MSHUTDOWN(quickhash),
-	PHP_RINIT(quickhash),	
+	PHP_RINIT(quickhash),
 	PHP_RSHUTDOWN(quickhash),
 	PHP_MINFO(quickhash),
 #if ZEND_MODULE_API_NO >= 20010901
@@ -59,6 +59,9 @@ zend_module_entry quickhash_module_entry = {
 
 
 #ifdef COMPILE_DL_QUICKHASH
+# if defined(ZTS) && PHP_VERSION_ID >= 70000
+	ZEND_TSRMLS_CACHE_DEFINE();
+# endif
 ZEND_GET_MODULE(quickhash)
 #endif
 
@@ -67,7 +70,7 @@ ZEND_DECLARE_MODULE_GLOBALS(quickhash)
 PHP_INI_BEGIN()
 PHP_INI_END()
 */
- 
+
 static void quickhash_init_globals(zend_quickhash_globals *quickhash_globals)
 {
 	/* Empty */
@@ -75,10 +78,14 @@ static void quickhash_init_globals(zend_quickhash_globals *quickhash_globals)
 
 zval *qh_instantiate(zend_class_entry *pce, zval *object TSRMLS_DC)
 {
+#if PHP_VERSION_ID < 70000
 	Z_TYPE_P(object) = IS_OBJECT;
+#endif
 	object_init_ex(object, pce);
+#if PHP_VERSION_ID < 70000
 	Z_SET_REFCOUNT_P(object, 1);
 	Z_UNSET_ISREF_P(object);
+#endif
 	return object;
 }
 
@@ -157,7 +164,7 @@ int php_qh_load_int32t_from_string_func(void *context, int32_t *buffer, uint32_t
 #if 0
 printf("req: %d; pos: %d : length: %d, max: %d\n",
 	elements * sizeof(int32_t),
-	ctxt->ptr - ctxt->string, 
+	ctxt->ptr - ctxt->string,
 	ctxt->string_len, (ctxt->string_len - (ctxt->ptr - ctxt->string)));
 #endif
 	req = elements * sizeof(int32_t);
@@ -207,6 +214,7 @@ int php_qh_save_chars_to_string_func(void *context, char *buffer, uint32_t eleme
 
 int32_t php_qh_get_size_from_stream(void *context)
 {
+	TSRMLS_FETCH();
 	php_qh_stream_context *ctxt = (php_qh_stream_context*) context;
 	php_stream_statbuf     finfo;
 
@@ -331,6 +339,9 @@ PHP_MSHUTDOWN_FUNCTION(quickhash)
 
 PHP_RINIT_FUNCTION(quickhash)
 {
+#if defined(COMPILE_DL_QUICKHASH) && defined(ZTS) && PHP_VERSION_ID >= 70000
+	ZEND_TSRMLS_CACHE_UPDATE();
+#endif
 	return SUCCESS;
 }
 

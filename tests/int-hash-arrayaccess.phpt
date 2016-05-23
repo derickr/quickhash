@@ -30,7 +30,7 @@ bool(false)
 bool(false)
 bool(false)
 
-Warning: QuickHashIntHash::offsetGet() expects parameter 1 to be long, string given in %sint-hash-arrayaccess.php on line 13
+Warning: QuickHashIntHash::offsetGet() expects parameter 1 to be %s, string given in %sint-hash-arrayaccess.php on line 13
 bool(false)
 bool(false)
 int(-42)

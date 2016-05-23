@@ -19,6 +19,6 @@ Warning: QuickHashIntStringHash::update() expects exactly 2 parameters, 1 given 
 
 Warning: QuickHashIntStringHash::update() expects exactly 2 parameters, 3 given in %sint-string-hash-update-failures.php on line 7
 
-Warning: QuickHashIntStringHash::update() expects parameter 1 to be long, string given in %sint-string-hash-update-failures.php on line 9
+Warning: QuickHashIntStringHash::update() expects parameter 1 to be %s, string given in %sint-string-hash-update-failures.php on line 9
 
 Warning: QuickHashIntStringHash::update() expects parameter 2 to be string, object given in %sint-string-hash-update-failures.php on line 10
