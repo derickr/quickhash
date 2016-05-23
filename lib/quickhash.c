@@ -195,7 +195,7 @@ static inline int compare_key(qhi *hash, qhb *bucket, qhv key)
  * Returns:
  * - A newly allocated hash bucket or NULL upon allocation failure
  */
-inline qhb *qhb_create(qhi *hash)
+extern inline qhb *qhb_create(qhi *hash)
 {
 	void   *tmp = NULL;
 	size_t  ptr_size = 0;
@@ -401,7 +401,7 @@ void qhi_free(qhi *hash)
  * Returns:
  * - The hashed key
  */
-inline uint32_t qhi_set_hash(qhi *hash, qhv key)
+extern inline uint32_t qhi_set_hash(qhi *hash, qhv key)
 {
 	uint32_t idx;
 
