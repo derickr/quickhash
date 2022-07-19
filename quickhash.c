@@ -1,8 +1,9 @@
 /*
    +----------------------------------------------------------------------+
-   | PHP Version 5                                                        |
+   | PHP                                                                  |
    +----------------------------------------------------------------------+
    | Copyright (c) 2010-2011 StumbleUpon Inc.                             |
+   | Copyright (c) 2012-2022 Derick Rethans                               |
    +----------------------------------------------------------------------+
    | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
@@ -52,7 +53,7 @@ zend_module_entry quickhash_module_entry = {
 	PHP_RSHUTDOWN(quickhash),
 	PHP_MINFO(quickhash),
 #if ZEND_MODULE_API_NO >= 20010901
-	"1.0.0",
+	"1.1.0",
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
