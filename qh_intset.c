@@ -120,7 +120,9 @@ void qh_register_class_intset(TSRMLS_D)
 #endif
 
 	qh_ce_intset->get_iterator = qh_intset_get_iterator;
+#if PHP_VERSION_ID < 70300
 	qh_ce_intset->iterator_funcs.funcs = &qh_intset_it_funcs;
+#endif
 
 	memcpy(&qh_object_handlers_intset, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 

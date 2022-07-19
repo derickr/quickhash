@@ -143,7 +143,9 @@ void qh_register_class_stringinthash(TSRMLS_D)
 #endif
 
 	qh_ce_stringinthash->get_iterator = qh_inthash_get_iterator;
+#if PHP_VERSION_ID < 70300
 	qh_ce_stringinthash->iterator_funcs.funcs = &qh_inthash_it_funcs;
+#endif
 
 	memcpy(&qh_object_handlers_stringinthash, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 #if PHP_VERSION_ID < 70000

@@ -17,6 +17,8 @@
  */
 #include "quickhash.h"
 
+#include <unistd.h>
+
 #include "hash-algorithms.h"
 
 /**

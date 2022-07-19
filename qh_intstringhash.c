@@ -141,7 +141,9 @@ void qh_register_class_intstringhash(TSRMLS_D)
 #endif
 
 	qh_ce_intstringhash->get_iterator = qh_inthash_get_iterator;
+#if PHP_VERSION_ID < 70300
 	qh_ce_intstringhash->iterator_funcs.funcs = &qh_inthash_it_funcs;
+#endif
 
 	memcpy(&qh_object_handlers_intstringhash, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 #if PHP_VERSION_ID < 70000

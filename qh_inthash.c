@@ -138,7 +138,9 @@ void qh_register_class_inthash(TSRMLS_D)
 	qh_ce_inthash->create_object = qh_object_new_inthash;
 #endif
 	qh_ce_inthash->get_iterator = qh_inthash_get_iterator;
+#if PHP_VERSION_ID < 70300
 	qh_ce_inthash->iterator_funcs.funcs = &qh_inthash_it_funcs;
+#endif
 
 	memcpy(&qh_object_handlers_inthash, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
 
