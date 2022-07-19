@@ -63,7 +63,58 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_add, 0, 0, 1)
 	ZEND_ARG_INFO(0, value)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_update, 0, 0, 2)
+	ZEND_ARG_INFO(0, key)
+	ZEND_ARG_INFO(0, value)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_load_from_file, 0, 0, 1)
+	ZEND_ARG_INFO(0, filename)
+	ZEND_ARG_INFO(0, size)
+	ZEND_ARG_INFO(0, flags)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_save_to_file, 0, 0, 1)
+	ZEND_ARG_INFO(0, filename)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_load_from_string, 0, 0, 1)
+	ZEND_ARG_INFO(0, contents)
+	ZEND_ARG_INFO(0, size)
+	ZEND_ARG_INFO(0, flags)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_save_to_string, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+#if PHP_VERSION_ID >= 80100
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_inthash_exists, 0, 1, _IS_BOOL, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_inthash_get, 0, 1, IS_MIXED, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_inthash_set, 0, 2, IS_LONG, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+    ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_inthash_array_access_set, 0, 2, IS_VOID, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+    ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_inthash_delete, 0, 1, _IS_BOOL, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+#else
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_exists, 0, 0, 1)
+	ZEND_ARG_INFO(0, key)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_delete, 0, 0, 1)
 	ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
@@ -76,31 +127,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_set, 0, 0, 2)
 	ZEND_ARG_INFO(0, value)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_update, 0, 0, 2)
-	ZEND_ARG_INFO(0, key)
-	ZEND_ARG_INFO(0, value)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_delete, 0, 0, 1)
-	ZEND_ARG_INFO(0, key)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_load_from_file, 0, 0, 1)
-	ZEND_ARG_INFO(0, filename)
-	ZEND_ARG_INFO(0, flags)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_save_to_file, 0, 0, 1)
-	ZEND_ARG_INFO(0, filename)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_load_from_string, 0, 0, 1)
-	ZEND_ARG_INFO(0, contents)
-	ZEND_ARG_INFO(0, flags)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_inthash_save_to_string, 0, 0, 0)
-ZEND_END_ARG_INFO()
+#define arginfo_qh_inthash_array_access_set arginfo_qh_inthash_set
+#endif
 
 /* Class methods definition */
 zend_function_entry qh_funcs_inthash[] = {
@@ -111,15 +139,15 @@ zend_function_entry qh_funcs_inthash[] = {
 	PHP_ME(QuickHashIntHash, get,            arginfo_qh_inthash_get,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, set,            arginfo_qh_inthash_set,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, update,         arginfo_qh_inthash_update,           ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntSet,  delete,         arginfo_qh_inthash_exists,           ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet,  delete,         arginfo_qh_inthash_delete,           ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromFile,   arginfo_qh_inthash_load_from_file,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, saveToFile,     arginfo_qh_inthash_save_to_file,     ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, loadFromString, arginfo_qh_inthash_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntHash, saveToString,   arginfo_qh_inthash_save_to_string,   ZEND_ACC_PUBLIC)
 
 	/* ArrayAccess methods */
-	PHP_MALIAS(QuickHashIntHash, offsetGet,    get,    arginfo_qh_inthash_get,    ZEND_ACC_PUBLIC)
-	PHP_MALIAS(QuickHashIntHash, offsetSet,    set,    arginfo_qh_inthash_set,    ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntHash, offsetGet,  get,            arginfo_qh_inthash_get,              ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntHash, offsetSet,  arrayAccessSet, arginfo_qh_inthash_array_access_set, ZEND_ACC_PUBLIC)
 
 	{NULL, NULL, NULL}
 };
@@ -265,6 +293,23 @@ PHP_METHOD(QuickHashIntHash, set)
 	}
 	inthash_obj = Z_QH_INTHASH_OBJ_P(object TSRMLS_CC);
 	RETURN_LONG(qhi_hash_set(inthash_obj->hash, (qhv) (int32_t) key, (qhv) (int32_t) value));
+}
+/* }}} */
+
+/* {{{ proto void QuickHashIntHash::arrayAccessSet( int key, int value )
+   Updates the value of an element if it exists, or otherwise adds a new element */
+PHP_METHOD(QuickHashIntHash, arrayAccessSet)
+{
+	zval               *object;
+	php_qh_inthash_obj *inthash_obj;
+	long                key;
+	long                value;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Oll", &object, qh_ce_inthash, &key, &value) == FAILURE) {
+		RETURN_FALSE;
+	}
+	inthash_obj = Z_QH_INTHASH_OBJ_P(object TSRMLS_CC);
+	qhi_hash_set(inthash_obj->hash, (qhv) (int32_t) key, (qhv) (int32_t) value);
 }
 /* }}} */
 

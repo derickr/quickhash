@@ -642,7 +642,7 @@ qhi *qhi_obtain_set(qho *options, void *context, qhi_buffer_get_size get_size, q
 	int32_t     key_buffer[1024];
 	qhi        *tmp;
 	int32_t     buffer_size;
-	
+
 	buffer_size = get_size(context);
 
 	// if the filesize is not an increment of 4, abort

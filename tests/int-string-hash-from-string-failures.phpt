@@ -12,12 +12,20 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
 	$hash = QuickHashIntStringHash::loadFromString( 1024, 1024, 2, 'stuff' );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -30,6 +38,10 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
@@ -39,12 +51,20 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
 	$hash = QuickHashIntStringHash::loadFromString( new StdClass );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -59,15 +79,19 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 ?>
 --EXPECTF--
 
 Wrong params: 
-QuickHashIntStringHash::loadFromString() expects at least 1 parameter, 0 given
-QuickHashIntStringHash::loadFromString() expects at most 3 parameters, 4 given
-QuickHashIntStringHash::loadFromString() expects parameter 3 to be %s, string given
-QuickHashIntStringHash::loadFromString() expects parameter 2 to be %s, string given
-QuickHashIntStringHash::loadFromString() expects parameter 1 to be string, object given
+QuickHashIntStringHash::loadFromString() expects at least 1 %s, 0 given
+QuickHashIntStringHash::loadFromString() expects at most 3 %s, 4 given
+QuickHashIntStringHash::loadFromString()%s%s, string given
+QuickHashIntStringHash::loadFromString()%s%s, string given
+QuickHashIntStringHash::loadFromString()%sstring, %s given
 
 Wrong size: 
 QuickHashIntStringHash::loadFromString(): String is in the wrong format

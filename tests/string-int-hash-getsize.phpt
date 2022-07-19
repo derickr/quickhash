@@ -28,7 +28,7 @@ var_dump( $hash->getSize() );
 
 // Now we check with dupe checking enabled.
 $file = dirname( __FILE__ ) . "/simple.hash.string";
-$hash = QuickHashStringIntHash::loadFromFile( $file, null, QuickHashStringIntHash::CHECK_FOR_DUPES );
+$hash = QuickHashStringIntHash::loadFromFile( $file, 0, QuickHashStringIntHash::CHECK_FOR_DUPES );
 var_dump( $hash->getSize() );
 $hash->add( "15d0", 5 );
 $hash->add( "15d1", 9 );

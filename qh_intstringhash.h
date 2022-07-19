@@ -33,6 +33,7 @@ PHP_METHOD(QuickHashIntStringHash, __construct);
 PHP_METHOD(QuickHashIntStringHash, add);
 PHP_METHOD(QuickHashIntStringHash, get);
 PHP_METHOD(QuickHashIntStringHash, set);
+PHP_METHOD(QuickHashIntStringHash, arrayAccessSet);
 PHP_METHOD(QuickHashIntStringHash, update);
 PHP_METHOD(QuickHashIntStringHash, delete);
 PHP_METHOD(QuickHashIntStringHash, loadFromFile);

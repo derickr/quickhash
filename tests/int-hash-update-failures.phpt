@@ -7,17 +7,44 @@ $hash = new QuickHashIntHash( 1024 );
 
 $hash->add( 3141592654, 2718281828 );
 
-$hash->update( 3141592654 );
-$hash->update( 3141592654, 1, 2 );
+try
+{
+	$hash->update( 3141592654 );
+}
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
-$hash->update( 'fooabar', 2 );
-$hash->update( 3141592654, 'space chimps' );
+try
+{
+	$hash->update( 3141592654, 1, 2 );
+}
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
+
+try
+{
+	$hash->update( 'fooabar', 2 );
+}
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
+
+try
+{
+	$hash->update( 3141592654, 'space chimps' );
+}
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 ?>
 --EXPECTF--
-Warning: QuickHashIntHash::update() expects exactly 2 parameters, 1 given in %sint-hash-update-failures.php on line 6
-
-Warning: QuickHashIntHash::update() expects exactly 2 parameters, 3 given in %sint-hash-update-failures.php on line 7
-
-Warning: QuickHashIntHash::update() expects parameter 1 to be %s, string given in %sint-hash-update-failures.php on line 9
-
-Warning: QuickHashIntHash::update() expects parameter 2 to be %s, string given in %sint-hash-update-failures.php on line 10
+%SQuickHashIntHash::update() expects exactly 2 %s, 1 given%S
+%AQuickHashIntHash::update() expects exactly 2 %s, 3 given%S
+%AQuickHashIntHash::update()%s, string given%S
+%AQuickHashIntHash::update()%s, string given%S

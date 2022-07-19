@@ -14,6 +14,10 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
@@ -23,9 +27,13 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 ?>
---EXPECT--
+--EXPECTF--
 
 Wrong params: 
-QuickHashIntStringHash::saveToString() expects exactly 0 parameters, 2 given
-QuickHashIntStringHash::saveToString() expects exactly 0 parameters, 1 given
+QuickHashIntStringHash::saveToString() expects exactly 0 %s, 2 given
+QuickHashIntStringHash::saveToString() expects exactly 0 %s, 1 given

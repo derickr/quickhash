@@ -12,12 +12,20 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
 	$hash = QuickHashStringIntHash::loadFromFile( 1024, 1024, 2, 'stuff' );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -30,12 +38,20 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
 	$hash = QuickHashStringIntHash::loadFromFile( 1024, 'stuff' );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -48,6 +64,10 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 echo "\nEmpty file: \n";
 try
@@ -55,6 +75,10 @@ try
 	$hash = QuickHashStringIntHash::loadFromFile( '' );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -69,6 +93,10 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 echo "\nNon existing: \n";
 try
@@ -77,6 +105,10 @@ try
 	$hash = QuickHashStringIntHash::loadFromFile( $file );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -91,6 +123,10 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 echo "\nURL: \n";
 try
@@ -101,24 +137,28 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 ?>
 --EXPECTF--
 
 Wrong params: 
-QuickHashStringIntHash::loadFromFile() expects at least 1 parameter, 0 given
-QuickHashStringIntHash::loadFromFile() expects at most 3 parameters, 4 given
-QuickHashStringIntHash::loadFromFile() expects parameter 3 to be %s, string given
-QuickHashStringIntHash::loadFromFile() expects parameter 2 to be %s, string given
-QuickHashStringIntHash::loadFromFile() expects parameter 1 to be string, object given
+QuickHashStringIntHash::loadFromFile() expects at least 1 %s, 0 given
+QuickHashStringIntHash::loadFromFile() expects at most 3 %s, 4 given
+QuickHashStringIntHash::loadFromFile()%s, string given
+QuickHashStringIntHash::loadFromFile()%s, string given
+QuickHashStringIntHash::loadFromFile()%sstring, %s given
 
 Empty file: 
-QuickHashStringIntHash::loadFromFile(): Filename cannot be empty
+%s
 
 Directory: 
 QuickHashStringIntHash::loadFromFile(): File is not a normal file
 
 Non existing: 
-QuickHashStringIntHash::loadFromFile(%stests/does-not-exist.set): failed to open stream: No such file or directory
+QuickHashStringIntHash::loadFromFile(%stests/does-not-exist.set): %s to open stream: No such file or directory
 
 Wrong size: 
 QuickHashStringIntHash::loadFromFile(): File is in the wrong format

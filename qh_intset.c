@@ -56,16 +56,9 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_add, 0, 0, 1)
 	ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_exists, 0, 0, 1)
-	ZEND_ARG_INFO(0, key)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_delete, 0, 0, 1)
-	ZEND_ARG_INFO(0, key)
-ZEND_END_ARG_INFO()
-
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_load_from_file, 0, 0, 1)
 	ZEND_ARG_INFO(0, filename)
+	ZEND_ARG_INFO(0, size)
 	ZEND_ARG_INFO(0, flags)
 ZEND_END_ARG_INFO()
 
@@ -75,16 +68,48 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_load_from_string, 0, 0, 1)
 	ZEND_ARG_INFO(0, contents)
+	ZEND_ARG_INFO(0, size)
 	ZEND_ARG_INFO(0, flags)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_save_to_string, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
+#if PHP_VERSION_ID >= 80100
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_intset_exists, 0, 1, _IS_BOOL, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_intset_array_access_get, 0, 1, IS_MIXED, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_intset_array_access_set, 0, 2, IS_VOID, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+    ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_intset_array_access_unset, 0, 1, IS_VOID, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_qh_intset_delete, 0, 1, _IS_BOOL, 0)
+    ZEND_ARG_TYPE_INFO(0, offset, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+#else
+ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_exists, 0, 0, 1)
+	ZEND_ARG_INFO(0, key)
+ZEND_END_ARG_INFO()
+
+#define arginfo_qh_intset_array_access_get   arginfo_qh_intset_exists
+#define arginfo_qh_intset_delete             arginfo_qh_intset_exists
+#define arginfo_qh_intset_array_access_unset arginfo_qh_intset_exists
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_qh_intset_array_access_set, 0, 0, 2)
 	ZEND_ARG_INFO(0, key)
 	ZEND_ARG_INFO(0, value)
 ZEND_END_ARG_INFO()
+#endif
 
 /* Class methods definition */
 zend_function_entry qh_funcs_intset[] = {
@@ -92,17 +117,17 @@ zend_function_entry qh_funcs_intset[] = {
 	PHP_ME(QuickHashIntSet, getSize,        arginfo_qh_intset_get_size,         ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, add,            arginfo_qh_intset_add,              ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, exists,         arginfo_qh_intset_exists,           ZEND_ACC_PUBLIC)
-	PHP_ME(QuickHashIntSet, delete,         arginfo_qh_intset_exists,           ZEND_ACC_PUBLIC)
+	PHP_ME(QuickHashIntSet, delete,         arginfo_qh_intset_delete,           ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, loadFromFile,   arginfo_qh_intset_load_from_file,   ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, saveToFile,     arginfo_qh_intset_save_to_file,     ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, loadFromString, arginfo_qh_intset_load_from_string, ZEND_ACC_STATIC|ZEND_ACC_PUBLIC)
 	PHP_ME(QuickHashIntSet, saveToString,   arginfo_qh_intset_save_to_string,   ZEND_ACC_PUBLIC)
 
 	/* ArrayAccess methods */
-	PHP_MALIAS(QuickHashIntSet, offsetExists, exists, arginfo_qh_intset_exists, ZEND_ACC_PUBLIC)
-	PHP_MALIAS(QuickHashIntSet, offsetGet,    exists, arginfo_qh_intset_exists, ZEND_ACC_PUBLIC)
-	PHP_MALIAS(QuickHashIntSet, offsetSet,    add,    arginfo_qh_intset_array_access_set, ZEND_ACC_PUBLIC)
-	PHP_MALIAS(QuickHashIntSet, offsetUnset,  delete, arginfo_qh_intset_delete, ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntSet, offsetExists, exists,           arginfo_qh_intset_exists, ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntSet, offsetGet,    exists,           arginfo_qh_intset_array_access_get, ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntSet, offsetSet,    arrayAccessSet,   arginfo_qh_intset_array_access_set, ZEND_ACC_PUBLIC)
+	PHP_MALIAS(QuickHashIntSet, offsetUnset,  arrayAccessUnset, arginfo_qh_intset_array_access_unset, ZEND_ACC_PUBLIC)
 	{NULL, NULL, NULL}
 };
 
@@ -252,6 +277,23 @@ PHP_METHOD(QuickHashIntSet, add)
 }
 /* }}} */
 
+/* {{{ proto bool QuickHashIntSet::arrayAccessSet( int key )
+   Adds an element with key key to the set */
+PHP_METHOD(QuickHashIntSet, arrayAccessSet)
+{
+	zval              *object;
+	php_qh_intset_obj *intset_obj;
+	long               key;
+	long               dummy; /* Dummy long so that it can work with ArrayAccess. */
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol|l", &object, qh_ce_intset, &key, &dummy) == FAILURE) {
+		RETURN_FALSE;
+	}
+	intset_obj = Z_QH_INTSET_OBJ_P(object TSRMLS_CC);
+	qhi_set_add(intset_obj->hash, (qhv) (int32_t) key);
+}
+/* }}} */
+
 /* {{{ proto bool QuickHashIntSet::exists( int key )
    Tests whether the element with key key is part of the set */
 PHP_METHOD(QuickHashIntSet, exists)
@@ -281,6 +323,22 @@ PHP_METHOD(QuickHashIntSet, delete)
 	}
 	intset_obj = Z_QH_INTSET_OBJ_P(object TSRMLS_CC);
 	RETURN_BOOL(qhi_set_delete(intset_obj->hash, (qhv) (int32_t) key));
+}
+/* }}} */
+
+/* {{{ proto void QuickHashIntSet::arrayAccessUnset( int key )
+   Deletes an entry with the key from the set */
+PHP_METHOD(QuickHashIntSet, arrayAccessUnset)
+{
+	zval              *object;
+	php_qh_intset_obj *intset_obj;
+	long               key;
+
+	if (zend_parse_method_parameters(ZEND_NUM_ARGS() TSRMLS_CC, getThis(), "Ol", &object, qh_ce_intset, &key) == FAILURE) {
+		RETURN_FALSE;
+	}
+	intset_obj = Z_QH_INTSET_OBJ_P(object TSRMLS_CC);
+	qhi_set_delete(intset_obj->hash, (qhv) (int32_t) key);
 }
 /* }}} */
 

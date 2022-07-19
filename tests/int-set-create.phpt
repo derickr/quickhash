@@ -15,6 +15,10 @@ catch ( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
@@ -24,13 +28,17 @@ catch ( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 ?>
---EXPECT--
+--EXPECTF--
 object(QuickHashIntSet)#1 (0) {
 }
 object(QuickHashIntSet)#1 (0) {
 }
 object(QuickHashIntSet)#1 (0) {
 }
-QuickHashIntSet::__construct() expects at least 1 parameter, 0 given
-QuickHashIntSet::__construct() expects at most 2 parameters, 3 given
+QuickHashIntSet::__construct() expects at least 1 %s, 0 given
+QuickHashIntSet::__construct() expects at most 2 %s, 3 given

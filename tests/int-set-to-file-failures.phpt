@@ -14,12 +14,20 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
 	$hash->saveToFile( 1024, 'stuff' );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -32,6 +40,10 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 echo "\nEmpty file: \n";
 try
@@ -39,6 +51,10 @@ try
 	$hash->saveToFile( '' );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -53,6 +69,10 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 echo "\nURL: \n";
 try
@@ -63,19 +83,23 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 ?>
 --EXPECTF--
 
 Wrong params: 
-QuickHashIntSet::saveToFile() expects exactly 1 parameter, 0 given
-QuickHashIntSet::saveToFile() expects exactly 1 parameter, 2 given
-QuickHashIntSet::saveToFile() expects parameter 1 to be string, object given
+QuickHashIntSet::saveToFile() expects exactly 1 %s, 0 given
+QuickHashIntSet::saveToFile() expects exactly 1 %s, 2 given
+QuickHashIntSet::saveToFile()%sstring, %s given
 
 Empty file: 
-QuickHashIntSet::saveToFile(): Filename cannot be empty
+%s
 
 Directory: 
-QuickHashIntSet::saveToFile(%stests): failed to open stream: Is a directory
+QuickHashIntSet::saveToFile(%stests): %s to open stream: Is a directory
 
 URL: 
-QuickHashIntSet::saveToFile(http://derickrethans.nl/): failed to open stream: HTTP wrapper does not support writeable connection%s
+QuickHashIntSet::saveToFile(http://derickrethans.nl/): %s to open stream: HTTP wrapper does not support writeable connection%s

@@ -7,14 +7,34 @@ $hash = new QuickHashStringIntHash( 1024 );
 
 $hash->add( "pi", 2139487234 );
 
-$hash->update( "pi" );
-$hash->update( "pi", 1, 2 );
+try
+{
+	$hash->update( "pi" );
+}
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
-$hash->update( "pi", new stdclass );
+try
+{
+	$hash->update( "pi", 1, 2 );
+}
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
+
+try
+{
+	$hash->update( "pi", new stdclass );
+}
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 ?>
 --EXPECTF--
-Warning: QuickHashStringIntHash::update() expects exactly 2 parameters, 1 given in %sstring-int-hash-update-failures.php on line 6
-
-Warning: QuickHashStringIntHash::update() expects exactly 2 parameters, 3 given in %sstring-int-hash-update-failures.php on line 7
-
-Warning: QuickHashStringIntHash::update() expects parameter 2 to be %s, object given in %sstring-int-hash-update-failures.php on line 9
+%SQuickHashStringIntHash::update() expects exactly 2 %s, 1 given%S
+%AQuickHashStringIntHash::update() expects exactly 2 %s, 3 given%S
+%AQuickHashStringIntHash::update()%s, %s given%S

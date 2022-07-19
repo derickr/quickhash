@@ -28,7 +28,7 @@ var_dump( $hash->getSize() );
 
 // Now we check with dupe checking enabled.
 $file = dirname( __FILE__ ) . "/primes.hash";
-$hash = QuickHashIntHash::loadFromFile( $file, null, QuickHashIntHash::CHECK_FOR_DUPES );
+$hash = QuickHashIntHash::loadFromFile( $file, 0, QuickHashIntHash::CHECK_FOR_DUPES );
 var_dump( $hash->getSize() );
 $hash->add( 5 );
 $hash->add( 9 );

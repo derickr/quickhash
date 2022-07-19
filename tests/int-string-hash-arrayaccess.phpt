@@ -14,7 +14,15 @@ var_dump( $hash[4] );
 unset( $hash[4] );
 
 var_dump( $hash[8] );
-var_dump( $hash['foobar'] );
+try
+{
+	var_dump( $hash['foobar'] );
+}
+catch ( Error $e )
+{
+	echo $e->getMessage(), "\n";
+	var_dump( false );
+}
 
 var_dump( $hash[-1] );
 $hash[-2] = "minus fourty two";
@@ -28,8 +36,7 @@ string(4) "five"
 bool(false)
 bool(false)
 bool(false)
-
-Warning: QuickHashIntStringHash::offsetGet() expects parameter 1 to be %s, string given in %sint-string-hash-arrayaccess.php on line 13
+%AQuickHashIntStringHash::offsetGet()%s, string given%S
 bool(false)
 bool(false)
 string(16) "minus fourty two"

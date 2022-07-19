@@ -28,7 +28,7 @@ var_dump( $set->getSize() );
 
 // Now we check with dupe checking enabled.
 $file = dirname( __FILE__ ) . "/primes.set";
-$set = QuickHashIntSet::loadFromFile( $file, null, QuickHashIntSet::CHECK_FOR_DUPES );
+$set = QuickHashIntSet::loadFromFile( $file, 0, QuickHashIntSet::CHECK_FOR_DUPES );
 var_dump( $set->getSize() );
 $set->add( 5 );
 $set->add( 9 );

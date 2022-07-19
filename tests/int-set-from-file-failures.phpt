@@ -12,12 +12,24 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
 	$hash = QuickHashIntSet::loadFromFile( 1024, 1024, 2, 'stuff' );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -30,12 +42,20 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 try
 {
 	$hash = QuickHashIntSet::loadFromFile( 1024, 'stuff' );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -48,6 +68,10 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 echo "\nEmpty file: \n";
 try
@@ -55,6 +79,10 @@ try
 	$hash = QuickHashIntSet::loadFromFile( '' );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -80,6 +108,10 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 
 echo "\nWrong size: \n";
 try
@@ -88,6 +120,10 @@ try
 	$hash = QuickHashIntSet::loadFromFile( $file );
 }
 catch( Exception $e )
+{
+	echo $e->getMessage(), "\n";
+}
+catch( Error $e )
 {
 	echo $e->getMessage(), "\n";
 }
@@ -101,24 +137,28 @@ catch( Exception $e )
 {
 	echo $e->getMessage(), "\n";
 }
+catch( Error $e )
+{
+	echo $e->getMessage(), "\n";
+}
 ?>
 --EXPECTF--
 
 Wrong params: 
-QuickHashIntSet::loadFromFile() expects at least 1 parameter, 0 given
-QuickHashIntSet::loadFromFile() expects at most 3 parameters, 4 given
-QuickHashIntSet::loadFromFile() expects parameter 3 to be %s, string given
-QuickHashIntSet::loadFromFile() expects parameter 2 to be %s, string given
-QuickHashIntSet::loadFromFile() expects parameter 1 to be string, object given
+QuickHashIntSet::loadFromFile() expects at least 1 %s, 0 given
+QuickHashIntSet::loadFromFile() expects at most 3 %s, 4 given
+QuickHashIntSet::loadFromFile()%s, string given
+QuickHashIntSet::loadFromFile()%s, string given
+QuickHashIntSet::loadFromFile()%sstring, %s given
 
 Empty file: 
-QuickHashIntSet::loadFromFile(): Filename cannot be empty
+%s
 
 Directory: 
 QuickHashIntSet::loadFromFile(): File is not a normal file
 
 Non existing: 
-QuickHashIntSet::loadFromFile(%stests/does-not-exist.set): failed to open stream: No such file or directory
+QuickHashIntSet::loadFromFile(%stests/does-not-exist.set): %s to open stream: No such file or directory
 
 Wrong size: 
 QuickHashIntSet::loadFromFile(): File is in the wrong format
