@@ -58,6 +58,14 @@
 # define TYPE_ARG_L size_t
 #endif
 
+#if PHP_VERSION_ID >= 80000
+# define TSRMLS_DC
+# define TSRMLS_D
+# define TSRMLS_CC
+# define TSRMLS_C
+# define TSRMLS_FETCH()
+#endif
+
 typedef struct _php_qh_string_context {
 	char     *string;
 	uint32_t  string_len;
