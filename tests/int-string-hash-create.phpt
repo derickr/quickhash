@@ -1,7 +1,6 @@
 --TEST--
 Basic tests for creating an IntStringHash
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 var_dump( new QuickHashIntStringHash( 1024 ) );

@@ -1,7 +1,6 @@
 --TEST--
 Test for iterating over a set while adding/deleting entries.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $found = 0; $value = 0;

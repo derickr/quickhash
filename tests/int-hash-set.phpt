@@ -1,7 +1,6 @@
 --TEST--
 Test for setting (add or update) a value.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $hash = new QuickHashIntHash( 1024 );

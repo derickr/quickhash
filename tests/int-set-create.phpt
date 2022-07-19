@@ -1,7 +1,6 @@
 --TEST--
 Basic tests for creating an IntHash
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 var_dump( new QuickHashIntSet( 1024 ) );

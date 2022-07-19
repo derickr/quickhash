@@ -1,7 +1,6 @@
 --TEST--
 Timing tests for exists();
 --INI--
-xdebug.default_enable=0
 memory_limit=256M
 --FILE--
 <?php

@@ -1,7 +1,6 @@
 --TEST--
 Test with a very small set.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $found = 0;

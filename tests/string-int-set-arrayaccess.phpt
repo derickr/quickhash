@@ -1,7 +1,6 @@
 --TEST--
 ArrayAccess test.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $set = new QuickHashIntSet( 1024 );

@@ -1,7 +1,6 @@
 --TEST--
 Test for failure conditions for loadFromString.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 echo "\nWrong params: \n";

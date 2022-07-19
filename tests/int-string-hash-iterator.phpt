@@ -1,7 +1,6 @@
 --TEST--
 Test for iterating over a hash (with three different hashing algorithm).
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $found = 0; $value = 0;

@@ -1,7 +1,6 @@
 --TEST--
 Test for failure conditions for saveToString.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $hash = new QuickHashStringIntHash( 1024 );

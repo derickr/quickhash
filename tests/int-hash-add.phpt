@@ -1,7 +1,6 @@
 --TEST--
 Basic test for adding elements.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 echo "without dupe checking\n";

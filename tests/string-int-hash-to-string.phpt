@@ -1,7 +1,6 @@
 --TEST--
 Basic test for returning hashes as strings.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $file = dirname( __FILE__ ) . "/simple.hash.string";

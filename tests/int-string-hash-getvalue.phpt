@@ -1,7 +1,6 @@
 --TEST--
 Basic test for checking values that are linked to a hash keys.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $hash = new QuickHashIntStringHash( 8 );

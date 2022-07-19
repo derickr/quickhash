@@ -1,7 +1,6 @@
 --TEST--
 Test for the default value for add().
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $hash = new QuickHashIntHash( 1024 );

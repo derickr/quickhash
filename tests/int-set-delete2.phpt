@@ -1,7 +1,6 @@
 --TEST--
 More extensive test for deleting elements.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $set = new QuickHashIntSet( 64 );

@@ -1,7 +1,6 @@
 --TEST--
 Test for failures for deleting a value.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $set = new QuickHashIntSet( 1024 );

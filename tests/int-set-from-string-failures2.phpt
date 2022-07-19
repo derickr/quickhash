@@ -1,7 +1,6 @@
 --TEST--
 Test for string length failure conditions for loadFromString.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 for ( $i = 0; $i < 16; $i++ )

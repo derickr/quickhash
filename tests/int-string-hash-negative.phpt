@@ -1,7 +1,6 @@
 --TEST--
 Test that checks for negative value issues.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $hash = new QuickHashIntStringHash( 1024 );

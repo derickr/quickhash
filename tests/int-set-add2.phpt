@@ -1,7 +1,6 @@
 --TEST--
 More extensive test for adding elements.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 //generate 50000 elements

@@ -1,7 +1,6 @@
 --TEST--
 Slightly larger test for reading sets from files.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $found = 0;

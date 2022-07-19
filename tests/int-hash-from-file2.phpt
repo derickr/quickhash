@@ -1,7 +1,6 @@
 --TEST--
 Slightly larger test for reading hashes from files.
 --INI--
-xdebug.default_enable=0
 --FILE--
 <?php
 $found = 0; $value = 0;
