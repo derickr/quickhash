@@ -17,11 +17,11 @@ the sets and hashes.
   <email>derick@php.net</email>
   <active>yes</active>
  </lead>
- <date>2022-07-19</date>
- <time>13:14:26</time>
+ <date>2024-06-30</date>
+ <time>17:20:26</time>
  <version>
-  <release>1.1.1</release>
-  <api>1.1.1</api>
+  <release>1.1.2</release>
+  <api>1.1.2</api>
  </version>
  <stability>
   <release>stable</release>
