@@ -1,0 +1,12 @@
+{
+    "name": "derickr/quickhash",
+    "type": "php-ext",
+    "license": "PHP-1.03",
+    "description": "Provides a set of specific strongly-typed classes for sets and hashing",
+    "require": {
+        "php": ">=8.0"
+    },
+    "php-ext": {
+        "configure-options": []
+    }
+}
