@@ -18,10 +18,10 @@ the sets and hashes.
   <active>yes</active>
  </lead>
  <date>2024-06-30</date>
- <time>17:20:26</time>
+ <time>17:22:09</time>
  <version>
-  <release>1.1.2</release>
-  <api>1.1.2</api>
+  <release>1.1.3</release>
+  <api>1.1.3</api>
  </version>
  <stability>
   <release>stable</release>
